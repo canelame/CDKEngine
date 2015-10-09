@@ -1,3 +1,7 @@
+/** window2.h
+*  @author Alejandro Canela 2015
+*  Class Window
+*/
 #include "GL\glew.h"
 #include "GLFW\glfw3.h"
 #include "raii_pointer.h"
