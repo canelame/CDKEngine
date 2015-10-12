@@ -1,6 +1,4 @@
-/**
-*
-*/#ifndef __H_REF_COUNTER__
+#ifndef __H_REF_COUNTER__
 #define __H_REF_COUNTER__
 
 class Ref_Counter{
