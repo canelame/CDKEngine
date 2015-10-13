@@ -1,6 +1,6 @@
 -- Create Solution
 
-solution "SolutionTestGenie"
+solution "SolutionCDKEngine"
 
 configurations{"Debug","Release"}
 location("debug")
@@ -8,7 +8,7 @@ targetdir("debug/bin")
 debugdir("debug/bin")
 
 
-project "ProjectTestGenie"
+project "CDKEngine"
 kind "ConsoleApp"
 language "C++"
 defines {"_GLFW_WIN32","_GLFW_WGL","_GLFW_USE_OPENGL","GLEW_STATIC"}

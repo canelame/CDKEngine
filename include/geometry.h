@@ -1,20 +1,24 @@
 #ifndef __H_GEOMETRY__
 #define __H_GEOMETRY__
 #include "tiny_obj_loader.h"
+#include "GL\glew.h"
 /**
 * Geometry class
-* @author Alejandro Canela
+* @author Alejandro Canela Méndez 2015
 * @brief This class controls geometry generation. 
 * You can load from obj, wwhit this form you can load several shapes.
 * Otherwise you can load geometry whit loadAttributes, passing the values in the function.
+* REMEMBER TO USE A UNIQUE METHOD TO LOAD ATTRIBUTE VALUES.
 */
 class Geometry{
 public:
+	Geometry();
   /**
   * @brief This fucntion allows to load obj files. You can load several shapes from the file
   * using this funciton. You must call create(), after loading values
   * @param name File name.
   */
+
   void loadObjFile(const char* name);
   /**
   * @brief This funtion allow us to load the attribute values manually, you mast order the values and their
@@ -32,6 +36,11 @@ public:
   void create();
   
 private:
+
+	GLuint vao_;
+	GLuint vbo_[3]; //0 positions, 1 normals, 2 uvs;
+
+
   std::vector<float> vertex_;
   std::vector<float> normal_;
   std::vector<float> uv_;

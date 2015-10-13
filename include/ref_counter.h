@@ -1,6 +1,9 @@
 #ifndef __H_REF_COUNTER__
 #define __H_REF_COUNTER__
-
+/**
+* @author Alejandro Canela
+*
+*/
 class Ref_Counter{
 public:
   Ref_Counter(){};
