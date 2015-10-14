@@ -3,6 +3,8 @@
 #include "glm\glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "base.h"
+#include "raii_pointer.h"
 /**
 * camera.h 
 * @author Alejandro Canela Mendez 2015.
@@ -12,21 +14,18 @@
 class Camera
 {
 public:
+
+  
   Camera();
-  ~Camera();
+  ~Camera(){};
   void setPerspective(float fov, float aspect, float near, float far);
   void setLookAt();
 private:
   glm::mat4 proyection_mat_;
   glm::mat4 look_at_mat_;
+  raii_pointer < Base >b;
 };
 
-Camera::Camera()
-{
-}
 
-Camera::~Camera()
-{
-}
 
 #endif

@@ -5,15 +5,16 @@
 #include "raii_pointer.h"
 #include <thread>
 #include "geometry.h"
+#include "camera.h"
+raii_pointer<Camera> c;
 void createWindow(){
   raii_pointer<Window> g_win;
   g_win.alloc();
   if (!g_win.get()->init(800, 600)){
     printf("Error to init window.\n");
   }
-  raii_pointer<Geometry> geo;
-  geo.alloc();
-  geo.get()->loadObjFile("ok");
+ 
+  
   while (g_win.get()->processEvents()){
     float ratio = 800 / (float)600;
     glViewport(0, 0, 800, 600);
@@ -42,6 +43,7 @@ void createWindow(){
 }
 int main(){
   
+  c.alloc();
 
   std::thread t1(createWindow);
   t1.join();
