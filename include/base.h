@@ -1,6 +1,7 @@
 #ifndef __H_BASE__
 #define __H_BASE__
 #include "glm\glm.hpp"
+#include "raii_pointer.h"
 /**
 * base.h
 * @author Alejandro Canela Mendez
@@ -10,6 +11,7 @@
 class Base{
 
 public:
+  Base(){};
   void setPosition(float x, float y, float z);
   void setScale(float x, float y, float z);
   void setRotation(float x, float y, float z);

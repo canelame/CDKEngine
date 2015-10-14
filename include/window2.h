@@ -4,8 +4,9 @@
 */
 #include "GL\glew.h"
 #include "GLFW\glfw3.h"
+#include "ref_counter.h"
 #include "raii_pointer.h"
-class Window {
+class Window : virtual public Ref_Counter{
 public:
    struct _Window;
    _Window * window_s_;
@@ -14,7 +15,7 @@ public:
 	bool processEvents();
 	void swap();
 	void finish();
-
+  ~Window(){};
 private:
 
 	int width_ = 800;

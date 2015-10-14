@@ -6,16 +6,20 @@
 #include <thread>
 #include "geometry.h"
 #include "camera.h"
-raii_pointer<Camera> c;
+
 void createWindow(){
-  raii_pointer<Window> g_win;
-  g_win.alloc();
-  if (!g_win.get()->init(800, 600)){
+  Window g_win;
+  g_win;
+  if (!g_win.init(800, 600)){
     printf("Error to init window.\n");
   }
- 
+  raii_pointer<Camera> c;
+  c.alloc();
   
-  while (g_win.get()->processEvents()){
+
+  
+  
+  while (g_win.processEvents()){
     float ratio = 800 / (float)600;
     glViewport(0, 0, 800, 600);
 
@@ -37,13 +41,12 @@ void createWindow(){
     glColor3f(0.f, 0.f, 1.f);
     glVertex3f(0.f, 0.6f, 0.f);
     glEnd();
-    g_win.get()->swap();
+    g_win.swap();
   }
-
+  getchar();
 }
 int main(){
-  
-  c.alloc();
+
 
   std::thread t1(createWindow);
   t1.join();
