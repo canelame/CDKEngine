@@ -6,7 +6,7 @@
 #include <thread>
 #include "geometry.h"
 #include "camera.h"
-
+#include "display_list.h"
 void createWindow(){
   Window g_win;
   g_win;
@@ -15,6 +15,13 @@ void createWindow(){
   }
   raii_pointer<Camera> c;
   c.alloc();
+  
+  Geometry g;
+  
+
+  
+
+  g.addCommand(DisplayList::USE_GEOMETY_);
   
 
   

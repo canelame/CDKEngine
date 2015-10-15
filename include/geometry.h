@@ -2,6 +2,7 @@
 #define __H_GEOMETRY__
 #include "tiny_obj_loader.h"
 #include "GL\glew.h"
+#include "display_list.h"
 /**
 * Geometry class
 * @author Alejandro Canela Méndez 2015
@@ -10,7 +11,7 @@
 * Otherwise you can load geometry whit loadAttributes, passing the values in the function.
 * REMEMBER TO USE A UNIQUE METHOD TO LOAD ATTRIBUTE VALUES.
 */
-class Geometry{
+class Geometry : public DisplayList{
 public:
 	Geometry();
   /**
@@ -34,6 +35,10 @@ public:
   * @brief After loading the attributes we must call this function to create the geometry.
   */
   void create();
+
+  virtual void runCommand(){ 
+	  create(); 
+  }
   
 private:
 

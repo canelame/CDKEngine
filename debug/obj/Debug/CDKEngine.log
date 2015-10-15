@@ -1,0 +1,16 @@
+﻿Build started 15/10/2015 18:34:53.
+     1>Project "Z:\GENIE\debug\CDKEngine.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\include /ZI /nologo /W3 /WX- /MP /Od /Oy- /D _GLFW_WIN32 /D _GLFW_WGL /D _GLFW_USE_OPENGL /D GLEW_STATIC /Gm- /EHsc /RTC1 /MDd /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"obj\Debug\src\main.obj" /Fd"bin\CDKEngine.pdb" /Gd /TP /analyze- /errorReport:prompt   ..\src\main.cc
+         main.cc
+     1>z:\genie\src\main.cc(19): error C2259: 'Geometry' : cannot instantiate abstract class
+                 due to following members:
+                 'void DisplayList::runCommand(void) const' : is abstract
+                 z:\genie\include\display_list.h(11) : see declaration of 'DisplayList::runCommand'
+                 'void Command::addComand(void) const' : is abstract
+                 z:\genie\include\command.h(14) : see declaration of 'Command::addComand'
+     1>Done Building Project "Z:\GENIE\debug\CDKEngine.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:01.31

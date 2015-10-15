@@ -1,5 +1,5 @@
 #include "geometry.h"
-
+Geometry::Geometry(){}
 void Geometry::loadObjFile(const char*file){
   std::string err = tinyobj::LoadObj(shapes_, materials_, "C:\\Users\\Alejandro\\Desktop\\GENIE\\debug\\bin\\cube.obj");
   
@@ -46,3 +46,4 @@ void Geometry::create(){
 
 
 }
+
