@@ -15,6 +15,7 @@ public:
 	bool processEvents();
 	void swap();
 	void finish();
+  int main(int argc, char **argv);
   ~Window(){};
 private:
 

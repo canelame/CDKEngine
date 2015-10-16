@@ -7,18 +7,13 @@
 class DisplayList: public Command{
 public:
 
-	void addCommand(const Commands& c);
-	virtual void runCommand()const = 0;
+  void runCommand(int c)const{}
 private:
-	std::list<Commands> display_list_;
+	std::map<Commands,int> display_list_;
 
 
 };
 
-void inline  DisplayList::addCommand(const Commands& c) {
-	display_list_.push_back(c);
-
-}
 
 #endif
 

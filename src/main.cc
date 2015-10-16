@@ -7,9 +7,10 @@
 #include "geometry.h"
 #include "camera.h"
 #include "display_list.h"
+#include "draw.h"
 void createWindow(){
   Window g_win;
-  g_win;
+ 
   if (!g_win.init(800, 600)){
     printf("Error to init window.\n");
   }
@@ -21,7 +22,7 @@ void createWindow(){
 
   
 
-  g.addCommand(DisplayList::USE_GEOMETY_);
+                                               
   
 
   

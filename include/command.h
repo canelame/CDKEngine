@@ -10,8 +10,8 @@ public:
 			DRAW_SCENE
 		};
 	
-	virtual void runCommand()const =0;
-	virtual void addComand()const=0;
+	virtual void runCommand(int c)const =0;
+
 
 };
 

@@ -3,6 +3,7 @@
 #include "tiny_obj_loader.h"
 #include "GL\glew.h"
 #include "display_list.h"
+#include "command.h"
 /**
 * Geometry class
 * @author Alejandro Canela Méndez 2015
@@ -11,7 +12,7 @@
 * Otherwise you can load geometry whit loadAttributes, passing the values in the function.
 * REMEMBER TO USE A UNIQUE METHOD TO LOAD ATTRIBUTE VALUES.
 */
-class Geometry : public DisplayList{
+class Geometry : public Command{
 public:
 	Geometry();
   /**
@@ -19,7 +20,7 @@ public:
   * using this funciton. You must call create(), after loading values
   * @param name File name.
   */
-
+  void runCommand(int c);
   void loadObjFile(const char* name);
   /**
   * @brief This funtion allow us to load the attribute values manually, you mast order the values and their
@@ -35,10 +36,8 @@ public:
   * @brief After loading the attributes we must call this function to create the geometry.
   */
   void create();
-
-  virtual void runCommand(){ 
-	  create(); 
-  }
+ 
+  void runCommand(int c)const{};
   
 private:
 

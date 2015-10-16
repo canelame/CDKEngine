@@ -22,16 +22,16 @@ struct Window::_Window{
 Window::Window(){
   window_s_ = new _Window;
 }
-
+int Window::main(int argc, char**argv){ return 0; }
 bool Window::init(unsigned int width, unsigned int height){
 	
 	width_ = width;
 	height_ = height;
 	//Init GLFW
-	if (!glfwInit()){
-		printf("Error to init GLFW.\n");
-		return false;
-	}
+  if (!glfwInit()){
+    printf("Error glfInit()");
+    return false;
+  }
 	//Create Window
   window_s_->main_window_ = glfwCreateWindow(width_, height_, "Default name", nullptr, nullptr);
 

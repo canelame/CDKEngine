@@ -1,6 +1,6 @@
 /**
 * @author Alejandro Canela Mendez. 2015
-* Basic RAII Pattern implementation.
+* Basic RAII Pattern implementation whit reference counter.
 */
 #ifndef __H_RAII_P__
 #define __H_RAII_P__
@@ -10,8 +10,7 @@ template <class T>class raii_pointer{
 public:
 
   explicit raii_pointer<T>(T *t = NULL){
-    raii_p_ = t; 
-  
+    raii_p_ = t;
   }
 
   T* get()const{ return raii_p_; }
