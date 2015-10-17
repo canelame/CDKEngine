@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "display_list.h"
 #include "draw.h"
+#include <memory>
 void createWindow(){
   Window g_win;
  
@@ -17,7 +18,15 @@ void createWindow(){
   raii_pointer<Camera> c;
   c.alloc();
   
-  Geometry g;
+  std::shared_ptr<Geometry> g;
+  g = std::make_shared<Geometry>();
+  
+  
+
+  DisplayList dl;
+  dl.add(g);
+  dl.execute();
+
   
 
   

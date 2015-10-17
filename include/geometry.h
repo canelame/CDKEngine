@@ -15,12 +15,13 @@
 class Geometry : public Command{
 public:
 	Geometry();
+  
   /**
   * @brief This fucntion allows to load obj files. You can load several shapes from the file
   * using this funciton. You must call create(), after loading values
   * @param name File name.
   */
-  void runCommand(int c);
+ 
   void loadObjFile(const char* name);
   /**
   * @brief This funtion allow us to load the attribute values manually, you mast order the values and their
@@ -36,13 +37,14 @@ public:
   * @brief After loading the attributes we must call this function to create the geometry.
   */
   void create();
- 
-  void runCommand(int c)const{};
+  Command* c;
+  void runCommand(int c)const;
+  void add()const;
   
 private:
 
-	GLuint vao_;
-	GLuint vbo_[3]; //0 positions, 1 normals, 2 uvs;
+	mutable GLuint vao_;
+	mutable GLuint vbo_[3]; //0 positions, 1 normals, 2 uvs;
 
 
   std::vector<float> vertex_;

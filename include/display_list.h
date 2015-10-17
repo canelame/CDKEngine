@@ -1,16 +1,41 @@
 #ifndef __H_LISTCOMMAND__
 #define __H_LISTCOMMAND__
 
-#include <list>
+#include <vector>
 #include "command.h"
-
-class DisplayList: public Command{
+#include "geometry.h"
+#include "material.h"
+#include <deque>
+#include <memory>
+/**
+* command.h
+* @author Alejandro Canela Mendez
+* @brief This class makes a representation of an abstract DisplayList, we can add commands to the DL, 
+* this commands will be executed in render fucntion.
+*/
+class DisplayList{
 public:
-
-  void runCommand(int c)const{}
+  typedef std::shared_ptr<Command> Comm;
+  typedef std::deque < Comm > List;
+  List listCommand_;
+  DisplayList(){}
+  ~DisplayList(){}
+  void add( Comm command){
+    listCommand_.push_back(command);
+  }
+  void execute(){
+    for (int i = 0; i < listCommand_.size(); ++i){
+      listCommand_[i].get()->runCommand(0);
+    }
+   
+  };
 private:
-	std::map<Commands,int> display_list_;
+ 
+  
+ 
+  void pushCommand(){
 
+  }
 
 };
 

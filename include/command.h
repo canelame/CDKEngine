@@ -4,15 +4,15 @@
 
 class Command{
 public:
-		enum Commands{
-			USE_GEOMETY_ = 0,
-			USE_MATERIAL,
-			DRAW_SCENE
-		};
-	
+ // Command();
+//  ~Command();
 	virtual void runCommand(int c)const =0;
-
-
+  virtual void add()const=0;
+protected:
+  enum Commands{
+    USE_GEOMETRY=0,
+    USE_MATERIAL,
+  };
 };
 
 

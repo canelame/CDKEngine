@@ -27,12 +27,14 @@ void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal
 
 void Geometry::create(){
 
-	
+ 
 
 
 }
-
-void Geometry::runCommand(int c){
+void Geometry::add()const{
+  
+}
+void Geometry::runCommand(int c)const{
   glGenVertexArrays(1, &vao_);
   glBindVertexArray(vao_);
   glGenBuffers(3, vbo_);
@@ -52,3 +54,4 @@ void Geometry::runCommand(int c){
   glVertexAttribPointer(2, 2, uv_.size(), GL_FALSE, 0, 0);
   glEnableVertexAttribArray(2);
 }
+
