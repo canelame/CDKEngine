@@ -4,6 +4,8 @@
 #include "GL\glew.h"
 #include "display_list.h"
 #include "command.h"
+#include "buffer.h"
+#include <memory>
 /**
 * Geometry class
 * @author Alejandro Canela Méndez 2015
@@ -14,6 +16,8 @@
 */
 class Geometry : public Command{
 public:
+
+
 	Geometry();
   
   /**
@@ -41,22 +45,16 @@ public:
   /**
   * @brief Pure virtual function, this execute OpenGL code in displayList.
   */
-  int runCommand()const;
+  void runCommand()const;
   /**
   * @brief Pure virtual function, not need implementation.
   */
-  void add()const;
+ 
   
 private:
   bool loaded_ = false;
 
-	mutable GLuint vao_;
-	mutable GLuint vbo_[3]; //0 positions, 1 normals, 2 uvs;
-
-  std::vector<float> vertex_;
-  std::vector<float> normal_;
-  std::vector<float> uv_;
-  std::vector<unsigned int > index_;
+  std::unique_ptr<Buffer> geo_buff_;
 
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile
   std::vector<tinyobj::material_t> materials_; //Only ude whit loadObjFile

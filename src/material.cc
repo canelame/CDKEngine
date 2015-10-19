@@ -1,6 +1,6 @@
 #include "material.h"
 #include "stb_image.h"
-void Material::add()const{}
+
 
 Material::Material(TYPE t){
   t == 0 ? diffuse() : diffuseTexture();
@@ -31,7 +31,7 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
 
 }
 
-int Material::runCommand()const{
+void Material::runCommand()const{
   program_ = glCreateProgram();
 
   vertex_shader_=  glCreateShader(GL_VERTEX_SHADER);
@@ -55,7 +55,7 @@ int Material::runCommand()const{
     glGetProgramInfoLog(program_, 512, NULL, info_log);
     printf("LINKED PROGRAM ERROR: %s\n", info_log);
   }
-  return 0;
+ 
 }
 
 
@@ -66,7 +66,7 @@ void Material::diffuse(){
 void Material::diffuseTexture(){
   glGenTextures(1, &mat_attrib_.texture);
   glBindTexture(GL_TEXTURE_2D, mat_attrib_.texture);
-  stbi_load
+
 
 }
 

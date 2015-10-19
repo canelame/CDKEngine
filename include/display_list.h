@@ -4,6 +4,8 @@
 #include "command.h"
 #include <deque>
 #include <memory>
+#include <vector>
+#include "opengl_interfaz.h"
 /**
 * command.h
 * @author Alejandro Canela Mendez
@@ -12,20 +14,22 @@
 */
 class DisplayList{
 public:
+	OpenGlInterFaz opl();
 
-  typedef std::shared_ptr<Command> Comm;
-  typedef std::deque < Comm > List;
+  typedef std::shared_ptr<Command> Comm_;
+  typedef std::vector < Comm_ > List;
 
   List listCommand_;
   DisplayList(){}
   ~DisplayList(){}
-  int size(){ return listCommand_.size(); }
-  void add( Comm command){
-    listCommand_.push_back(command);
-  }
+  int size(){ return 0; }
+  void runCommand()const{};
+  void add( Comm_ c){
+	  listCommand_.push_back(c);
+   }
   void execute(){
     for (int i = 0; i < listCommand_.size(); ++i){
-      listCommand_[i].get()->runCommand();
+		listCommand_[i].get()->runCommand();
     }
    
   };

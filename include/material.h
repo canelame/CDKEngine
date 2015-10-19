@@ -28,8 +28,8 @@ public:
     Light material_light; //We can have multiples lights , creating an array. 
   };
   Material(TYPE t);
-  void add()const;
-  int runCommand()const;
+  
+  void runCommand()const;
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
