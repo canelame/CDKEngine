@@ -9,38 +9,39 @@
 #include "display_list.h"
 #include "draw.h"
 #include <memory>
+#include "material.h"
 void createWindow(){
   Window g_win;
  
   if (!g_win.init(800, 600)){
     printf("Error to init window.\n");
   }
-  raii_pointer<Camera> c;
-  c.alloc();
+
   
   std::shared_ptr<Geometry> g;
   g = std::make_shared<Geometry>();
+  g->loadObjFile("Cube.obj");
   
-  
+  std::shared_ptr<Material> m;
+  m = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
+
+
+  std::shared_ptr<Camera> c;
+  c = std::make_shared<Camera>();
 
   DisplayList dl;
   dl.add(g);
-  dl.execute();
+  dl.add(m);
 
-  
-
-  
-
-                                               
-  
-
-  
+  c->setPerspective(45.0f, 800.0 / 60.0, 1.0, 1000.0);
   
   while (g_win.processEvents()){
     float ratio = 800 / (float)600;
     glViewport(0, 0, 800, 600);
 
     glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(1.0, 0.0, 0.0, 1.0);
+ 
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -60,15 +61,15 @@ void createWindow(){
     glEnd();
     g_win.swap();
   }
-  getchar();
+ 
 }
 int main(){
 
-
+  
   std::thread t1(createWindow);
   t1.join();
 
-  getchar();
+ 
   
   return 0;
 }

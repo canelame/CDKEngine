@@ -32,6 +32,11 @@ bool Window::init(unsigned int width, unsigned int height){
     printf("Error glfInit()");
     return false;
   }
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
 	//Create Window
   window_s_->main_window_ = glfwCreateWindow(width_, height_, "Default name", nullptr, nullptr);
 
@@ -40,17 +45,18 @@ bool Window::init(unsigned int width, unsigned int height){
 		return false;
 	}
 
+  //Set ViewPort
+  
+  glfwMakeContextCurrent(window_s_->main_window_);
+  glfwSetKeyCallback(window_s_->main_window_, key_callback);
 	//Init GLEW
 	glewExperimental = GL_TRUE;
 
-	if (!glewInit()){
+	if (glewInit()!=GLEW_OK){
 	printf("Error to init GLEW.\n");
 	return false;
 	}
-	//Set ViewPort
-	glViewport(0, 0, width_, height_);
-  glfwMakeContextCurrent(window_s_->main_window_);
-  glfwSetKeyCallback(window_s_->main_window_,key_callback);
+  glViewport(0, 0, width_, height_);
 	return true;
 	
 }

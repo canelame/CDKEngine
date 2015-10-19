@@ -6,7 +6,11 @@ class Command{
 public:
  // Command();
 //  ~Command();
-	virtual void runCommand(int c)const =0;
+  /**
+  * @brief This commands run OpenGL code, in subclasses.
+  * @return Return command executed.
+  */
+	virtual int runCommand()const =0;
   virtual void add()const=0;
 protected:
   enum Commands{

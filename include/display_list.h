@@ -1,10 +1,7 @@
 #ifndef __H_LISTCOMMAND__
 #define __H_LISTCOMMAND__
 
-#include <vector>
 #include "command.h"
-#include "geometry.h"
-#include "material.h"
 #include <deque>
 #include <memory>
 /**
@@ -15,27 +12,23 @@
 */
 class DisplayList{
 public:
+
   typedef std::shared_ptr<Command> Comm;
   typedef std::deque < Comm > List;
+
   List listCommand_;
   DisplayList(){}
   ~DisplayList(){}
+  int size(){ return listCommand_.size(); }
   void add( Comm command){
     listCommand_.push_back(command);
   }
   void execute(){
     for (int i = 0; i < listCommand_.size(); ++i){
-      listCommand_[i].get()->runCommand(0);
+      listCommand_[i].get()->runCommand();
     }
    
   };
-private:
- 
-  
- 
-  void pushCommand(){
-
-  }
 
 };
 

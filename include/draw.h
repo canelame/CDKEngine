@@ -1,7 +1,7 @@
 #ifndef __H_DRAW__
 #define __H_DRAW__
  
-#include "geometry.h"
+#include "display_list.h"
 //TODO: #include "material.h"
 /**
 * draw.h
@@ -10,10 +10,10 @@
 */
 
 class Draw{
-
+  
 public:
   Draw(){};
-  void render(){};
+  void render(DisplayList){};
 private:
   Geometry *geo;
 

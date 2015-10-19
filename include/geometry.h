@@ -38,14 +38,20 @@ public:
   */
   void create();
   Command* c;
-  void runCommand(int c)const;
+  /**
+  * @brief Pure virtual function, this execute OpenGL code in displayList.
+  */
+  int runCommand()const;
+  /**
+  * @brief Pure virtual function, not need implementation.
+  */
   void add()const;
   
 private:
+  bool loaded_ = false;
 
 	mutable GLuint vao_;
 	mutable GLuint vbo_[3]; //0 positions, 1 normals, 2 uvs;
-
 
   std::vector<float> vertex_;
   std::vector<float> normal_;
