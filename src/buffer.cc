@@ -40,6 +40,6 @@ std::vector<unsigned int > Buffer::getIndexes(){
 
 void Buffer::setDirty(bool d){ d = dirty_; }
 
-void Buffer::useGeometry(){
-	interface_->useGeometry();
+void Buffer::useGeometry(Buffer *c){
+	interface_->useGeometry(c);
 }

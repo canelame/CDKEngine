@@ -6,6 +6,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include "opengl_interfaz.h"
 /**
 * material.h
 * @author Alejandro Canela Mendez
@@ -28,7 +29,7 @@ public:
     Light material_light; //We can have multiples lights , creating an array. 
   };
   Material(TYPE t);
-  
+  bool is_compiled_;
   void runCommand()const;
   /**
   * @brief This function allows to load own shader.
@@ -36,7 +37,7 @@ public:
   * @param fragment_file he name of fragment GLSL file.
   */
   void loadShader(const char*vertex_file, const char*fragment_file);
-
+  GLuint getProgram();
   
   GLuint texture(){ return mat_attrib_.texture; }
   ~Material(){};
@@ -52,12 +53,12 @@ private:
 
   const char* vertex_data_;
   const char* fragment_data_;
-
+  void useMaterial();
   void compileShader(GLuint shader)const;
   void diffuse();
   void diffuseTexture();
 
-
+  friend OpenGlInterFaz;
 };
 
 

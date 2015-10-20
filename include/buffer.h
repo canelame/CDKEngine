@@ -8,7 +8,7 @@ class Buffer{
 
 public:
 	Buffer(){ 
-		interface_=new OpenGlInterFaz(); 
+  		interface_=new OpenGlInterFaz(); 
 	};
 	void loadData(std::vector<float>positions, std::vector<float>normals, std::vector<float>uvs,
 				std::vector<unsigned int> indexes);
@@ -20,7 +20,7 @@ public:
 	GLuint* getVBO();
 	std::vector<float>* getAttributes();
 	std::vector<unsigned int> getIndexes();
-	void useGeometry();
+	void useGeometry(Buffer *c);
 	void setDirty(bool d);
 private:
 
@@ -33,6 +33,7 @@ private:
 	OpenGlInterFaz *interface_;
 	 GLuint vao_;
 	 GLuint vbo_[4]; //0 positions, 1 normals, 2 uvs,3 indexes;
+	 friend OpenGlInterFaz;
 };
 
 

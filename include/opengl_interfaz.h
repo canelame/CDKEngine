@@ -9,13 +9,13 @@ public:
 	OpenGlInterFaz(){
 		
 	};
-	void useGeometry();
-	void useMaterial();
-	void useDrawGeometry();
+	void useGeometry(Buffer *f);
+	void useMaterial(Material *m);
+	void useDrawGeometry(Buffer *b);
 	~OpenGlInterFaz();
 private:
 	Buffer *buf__ptr;
-	Material * matM;
+	Material * mat_ptr_;
 
 
 

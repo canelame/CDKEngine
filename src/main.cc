@@ -31,6 +31,7 @@ void createWindow(){
 
   DisplayList dl;
   dl.add(g);
+  dl.add(m);
   dl.execute();
 
   c->setPerspective(45.0f, 800.0 / 60.0, 1.0, 1000.0);

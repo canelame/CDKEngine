@@ -32,29 +32,7 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
 }
 
 void Material::runCommand()const{
-  program_ = glCreateProgram();
-
-  vertex_shader_=  glCreateShader(GL_VERTEX_SHADER);
-  GLint lenght = strlen(vertex_data_);
-  glShaderSource(vertex_shader_, 1, &vertex_data_,&lenght);
-  compileShader(vertex_shader_);
-
-  //FRAGENT SHADER
-
-  fragment_shader_ = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader_, 1, &fragment_data_, &lenght);
-  compileShader(fragment_shader_);
-  
-  glLinkProgram(program_);
-  GLint program_compiled;
-  glGetProgramiv(program_, GL_COMPILE_STATUS, &program_compiled);
-  
-
-  if (program_compiled == GL_FALSE){
-    GLchar info_log[512];
-    glGetProgramInfoLog(program_, 512, NULL, info_log);
-    printf("LINKED PROGRAM ERROR: %s\n", info_log);
-  }
+ 
  
 }
 
@@ -92,3 +70,5 @@ void Material::compileShader(GLuint shader)const{
     
   }
 }
+
+GLuint Material::getProgram(){ return program_; }

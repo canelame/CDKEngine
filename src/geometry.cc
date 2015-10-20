@@ -33,7 +33,7 @@ void Geometry::create(){
 
 void Geometry::runCommand()const{
 
-	geo_buff_.get()->useGeometry();
+	geo_buff_.get()->useGeometry(geo_buff_.get());
   
  
 }
