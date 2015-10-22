@@ -28,6 +28,7 @@ public:
   */
  
   void loadObjFile(const char* name);
+  void createTriangle();
   /**
   * @brief This funtion allow us to load the attribute values manually, you mast order the values and their
   * indexes . You must call create(), after load obj.
@@ -46,13 +47,14 @@ public:
   /**
   * @brief Pure virtual function, this execute OpenGL code in displayList.
   */
-  void runCommand()const;
+  void runCommand(OpenGlInterFaz i, OpenGlInterFaz &out)const;
   /**
   * @brief Pure virtual function, not need implementation.
   */
   void setPosition(vec3 &p);
   void setScale(vec3 &s);
   void setRotation(vec3 &r);
+  void createCube(int size);
 
   vec3 position();
   vec3 rotation();
@@ -63,6 +65,8 @@ private:
   vec3 rotation_;
   vec3 scale_;
   bool loaded_ = false;
+ mutable bool used_ = false;
+
   std::unique_ptr<Buffer> geo_buff_;
 
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile

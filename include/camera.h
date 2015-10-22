@@ -8,6 +8,7 @@
 #include "base.h"
 #include "display_list.h"
 #include "types.h"
+#include "opengl_interfaz.h"
 
 
 /**
@@ -17,8 +18,8 @@
 *
 */
 
-
-class Camera
+ 
+class Camera : public Command
 {
 public:
  
@@ -29,8 +30,9 @@ public:
    ~Camera(){}; 
     void render(DisplayList &dl);
   void cull();
+  void runCommand(OpenGlInterFaz i, OpenGlInterFaz &out)const;
 private:
- 
+	OpenGlInterFaz *interfaz_;
   mat4 proyection_mat_;
  mat4 look_at_mat_;
 

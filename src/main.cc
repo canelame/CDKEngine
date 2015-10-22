@@ -20,7 +20,7 @@ void createWindow(){
   
   std::shared_ptr<Geometry> g;
   g = std::make_shared<Geometry>();
-  g->loadObjFile("mycube.obj");
+  g->createTriangle();
   
   std::shared_ptr<Material> m;
   m = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
@@ -28,17 +28,21 @@ void createWindow(){
 
   std::shared_ptr<Camera> c;
   c = std::make_shared<Camera>();
+  c->setPerspective(45.0f, 800.0 / 600.0, 1.0, 1000.0);
 
   DisplayList dl;
-  dl.add(g);
   dl.add(m);
+  dl.add(g);
+  dl.add(c);
   
 
-  c->setPerspective(45.0f, 800.0 / 60.0, 1.0, 1000.0);
   
   while (g_win.processEvents()){
-  
-    dl.execute();
+	 
+	  glClearColor(.3f, .2f, .7f, 1.0f);
+	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	  glEnable(GL_DEPTH_TEST);
+	dl.execute();
 
     g_win.swap();
   }

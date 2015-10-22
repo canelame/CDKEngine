@@ -13,12 +13,12 @@ out vec3 o_normal;
 out vec4 o_world_position;
 
 
-vec3 camera_position = (inverse(view)*vec4(0.0,0.0,0.0,1.0)).xyz;
+vec3 camera_position = (inverse(u_view_m)*vec4(0.0,0.0,0.0,1.0)).xyz;
 void main(){
 	o_uv =uv;
-	o_normal = vec3( normalize( model * vec4( normal,0.0) ) );
-	o_world_position = model * vec4(position,1.0);
-	glPosition =projection*view*model*o_world_position;
+	o_normal = vec3( normalize( u_model_m * vec4( o_normal,0.0) ) );
+	o_world_position = u_model_m * vec4(position,1.0);
+	gl_Position = vec4(position.x,position.y,position.z,1.0);
 
 
 }

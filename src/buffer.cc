@@ -40,11 +40,17 @@ std::vector<unsigned int > Buffer::getIndexes(){
 
 void Buffer::setDirty(bool d){ d = dirty_; }
 
-void Buffer::useGeometry(){
+OpenGlInterFaz* Buffer::useGeometry(){
   if (isDirty()){
     std::vector<float> a[3] = { positions_, normals_, uvs_ };
     interface_->loadBuffer(a,indexes_);
     setDirty(true);
   }
 	interface_->useGeometry();
+	return interface_;
+}
+
+OpenGlInterFaz* Buffer::useDrawGeometry(){
+	interface_->useDrawGeometry();
+	return interface_;
 }

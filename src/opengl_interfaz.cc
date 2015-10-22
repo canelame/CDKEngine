@@ -19,13 +19,13 @@ void OpenGlInterFaz::loadBuffer(std::vector<float> attributes[3], std::vector<un
 		//Load normals
     glBindBuffer(GL_ARRAY_BUFFER, shadow_vbo_[1]);
     glBufferData(GL_ARRAY_BUFFER, shadow_attrib_[1].size()*sizeof(float), &shadow_attrib_[1], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, 0);
 		glEnableVertexAttribArray(1);
 		//Load uvs
     glBindBuffer(GL_ARRAY_BUFFER, shadow_vbo_[2]);
     glBufferData(GL_ARRAY_BUFFER, shadow_attrib_[2].size()*sizeof(float), &shadow_attrib_[2], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(2);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		glEnableVertexAttribArray(2);
 		//Indexes
@@ -33,7 +33,7 @@ void OpenGlInterFaz::loadBuffer(std::vector<float> attributes[3], std::vector<un
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, shadow_index_.size()*sizeof(unsigned int), &shadow_index_, GL_STATIC_DRAW);
 		
 		glBindVertexArray(0);	
-    glBindVertexArray(shadow_vao_);
+    
 }
 
 void OpenGlInterFaz::useGeometry(){
@@ -42,6 +42,7 @@ void OpenGlInterFaz::useGeometry(){
 void OpenGlInterFaz::useMaterial(){
 
   glUseProgram(shadow_program_);
+ 
 }
 void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_data){
 
@@ -58,9 +59,12 @@ void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_da
   glShaderSource(shadow_fragment_shader_, 1, &fragment_data, &lenght);
   compileShader(shadow_fragment_shader_);
 
+  glAttachShader(shadow_program_, shadow_vertex_shader_);
+  glAttachShader(shadow_program_, shadow_fragment_shader_);
+
   glLinkProgram(shadow_program_);
   GLint program_compiled;
-  glGetProgramiv(shadow_program_, GL_COMPILE_STATUS, &program_compiled);
+  glGetProgramiv(shadow_program_, GL_LINK_STATUS, &program_compiled);
 
 
   if (program_compiled == GL_FALSE){
@@ -69,11 +73,13 @@ void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_da
     printf("LINKED PROGRAM ERROR: %s\n", info_log);
    
   }
+  else{ printf("PROGRAM LINKED"); }
 
 }
 
 void OpenGlInterFaz::useDrawGeometry(){
 	glDrawElements(GL_TRIANGLES, shadow_index_.size(),GL_UNSIGNED_INT, &shadow_index_[0]);
+	glBindVertexArray(0);
 }
 
 void OpenGlInterFaz::compileShader(GLuint shader){
@@ -97,4 +103,21 @@ void OpenGlInterFaz::compileShader(GLuint shader){
     }
 
   }
+}
+
+
+void OpenGlInterFaz::useUnifor3f(const char* name, const float*data){
+	GLint pos = glGetUniformLocation(shadow_program_, name);
+	if (pos >= 0){
+		glUniform3fv(pos, 1, data);
+	}
+}
+
+void OpenGlInterFaz::useUniformMat4(const char* name,const float *m_data){
+
+	GLint pos = glGetUniformLocation(shadow_program_, name);
+	if (pos >= 0){
+		glUniformMatrix4fv(pos, 1, GL_FALSE, m_data);
+	}
+
 }

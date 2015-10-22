@@ -6,6 +6,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include "opengl_interfaz.h"
 /**
 * material.h
@@ -29,8 +30,8 @@ public:
     Light material_light; //We can have multiples lights , creating an array. 
   };
   Material(TYPE t);
-  bool is_compiled_;
-  void runCommand()const;
+
+  void runCommand(OpenGlInterFaz i, OpenGlInterFaz &out)const;
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
@@ -51,9 +52,9 @@ private:
   mutable  GLuint vertex_shader_;
   mutable  GLuint fragment_shader_;
    Material_attributes mat_attrib_;
-
-  const char* vertex_data_;
-  const char* fragment_data_;
+   mutable bool is_compiled_;
+  std::string vertex_data_;
+  std::string fragment_data_;
   void useMaterial();
   void compileShader(GLuint shader)const;
   OpenGlInterFaz *interfaz_;

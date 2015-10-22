@@ -1,6 +1,7 @@
 #ifndef __H_COMMAND__
 #define __H_COMMAND__
 
+class OpenGlInterFaz;
 
 class Command{
 public:
@@ -19,7 +20,7 @@ public:
   * @return Return command executed.
   */
 	
-	virtual void runCommand()const =0;
+	virtual void runCommand( OpenGlInterFaz in, OpenGlInterFaz &out)const = 0;
 
 protected:
  

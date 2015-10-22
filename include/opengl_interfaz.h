@@ -3,6 +3,7 @@
 #include <memory>
 #include "GL\glew.h"
 #include <vector>
+#include "types.h"
 
 class OpenGlInterFaz{
 public:
@@ -15,7 +16,10 @@ public:
   void useMaterial();
   void loadMaterial(const char*vertex_data, const char*fragment_data);
   void compileShader(GLuint shader);
-	~OpenGlInterFaz();
+  void useUniformMat4(const char *name,const float* m_data);
+  void useUnifor3f(const char *name, const float *data);
+
+  ~OpenGlInterFaz(){};
 private:
   //For materials
   GLuint shadow_program_;

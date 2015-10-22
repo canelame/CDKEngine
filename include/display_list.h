@@ -14,13 +14,16 @@
 */
 class DisplayList{
 public:
-	OpenGlInterFaz opl();
 
   typedef std::shared_ptr<Command> Comm_;
   typedef std::vector < Comm_ > List;
 
   List listCommand_;
-  DisplayList(){}
+  DisplayList(){
+	 
+	  interfaz_ = std::make_unique<OpenGlInterFaz>();
+	  
+  }
   ~DisplayList(){}
   int size(){ return 0; }
   void runCommand()const{};
@@ -29,11 +32,12 @@ public:
    }
   void execute(){
     for (int i = 0; i < listCommand_.size(); ++i){
-		listCommand_[i].get()->runCommand();
+		listCommand_[i].get()->runCommand(*interfaz_.get(),*interfaz_.get());
     }
    
   };
-
+private:
+	std::unique_ptr<OpenGlInterFaz> interfaz_;
 };
 
 

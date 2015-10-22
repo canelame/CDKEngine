@@ -20,7 +20,8 @@ public:
 	GLuint* getVBO();
 	std::vector<float>* getAttributes();
 	std::vector<unsigned int> getIndexes();
-	void useGeometry();
+	OpenGlInterFaz* useGeometry();
+	OpenGlInterFaz* useDrawGeometry();
 	void setDirty(bool d);
 private:
 

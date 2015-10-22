@@ -5,7 +5,7 @@ solution "SolutionCDKEngine"
 configurations{"Debug","Release"}
 location("debug")
 targetdir("debug/bin")
-debugdir("debug/bin")
+debugdir("data")
 
 
 project "CDKEngine"
