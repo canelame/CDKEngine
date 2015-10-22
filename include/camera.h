@@ -25,18 +25,20 @@ public:
   
   Camera();
   void setPerspective(float fov, float aspect, float near, float far);
-  void setLookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 up);
+  void setLookAt(vec3 eye, vec3 center, vec3 up);
    ~Camera(){}; 
     void render(DisplayList &dl);
   void cull();
 private:
  
-  glm::mat4 proyection_mat_;
-  glm::mat4 look_at_mat_;
+  mat4 proyection_mat_;
+ mat4 look_at_mat_;
 
-  glm::vec3 up_;
-  glm::vec3 right_;
-  glm::vec3 front_;
+
+ vec3 position_;
+  vec3 up_;
+  vec3 right_;
+  vec3 front_;
 protected:
  
 

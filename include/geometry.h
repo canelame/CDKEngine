@@ -6,6 +6,7 @@
 #include "command.h"
 #include "buffer.h"
 #include <memory>
+#include "types.h"
 /**
 * Geometry class
 * @author Alejandro Canela Méndez 2015
@@ -49,11 +50,19 @@ public:
   /**
   * @brief Pure virtual function, not need implementation.
   */
- 
+  void setPosition(vec3 &p);
+  void setScale(vec3 &s);
+  void setRotation(vec3 &r);
+
+  vec3 position();
+  vec3 rotation();
+  vec3 scale();
   
 private:
+  vec3 position_;
+  vec3 rotation_;
+  vec3 scale_;
   bool loaded_ = false;
-
   std::unique_ptr<Buffer> geo_buff_;
 
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile

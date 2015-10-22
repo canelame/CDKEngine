@@ -20,7 +20,7 @@ void createWindow(){
   
   std::shared_ptr<Geometry> g;
   g = std::make_shared<Geometry>();
-  g->loadObjFile("Cube.obj");
+  g->loadObjFile("mycube.obj");
   
   std::shared_ptr<Material> m;
   m = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
@@ -32,34 +32,14 @@ void createWindow(){
   DisplayList dl;
   dl.add(g);
   dl.add(m);
-  dl.execute();
+  
 
   c->setPerspective(45.0f, 800.0 / 60.0, 1.0, 1000.0);
   
   while (g_win.processEvents()){
-    float ratio = 800 / (float)600;
-    glViewport(0, 0, 800, 600);
+  
+    dl.execute();
 
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(1.0, 0.0, 0.0, 1.0);
- 
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-    glMatrixMode(GL_MODELVIEW);
-
-    glLoadIdentity();
-    glRotatef((float)glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
-
-    glBegin(GL_TRIANGLES);
-    glColor3f(1.f, 0.f, 0.f);
-    glVertex3f(-0.6f, -0.4f, 0.f);
-    glColor3f(0.f, 1.f, 0.f);
-    glVertex3f(0.6f, -0.4f, 0.f);
-    glColor3f(0.f, 0.f, 1.f);
-    glVertex3f(0.f, 0.6f, 0.f);
-    glEnd();
     g_win.swap();
   }
  

@@ -3,7 +3,10 @@
 
 
 Material::Material(TYPE t){
-  t == 0 ? diffuse() : diffuseTexture();
+  interfaz_ = new OpenGlInterFaz();
+  is_compiled_ = false;
+  
+  t == 0 ? loadShader("../../shaders/diffuse_v.glsl","shaders/diffuse_f.glsl") : loadShader("texture_v.glsl","texture_f.glsl");
 };
 
 void Material::loadShader(const char *vertex_file, const char* fragment_file){
@@ -32,43 +35,14 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
 }
 
 void Material::runCommand()const{
- 
- 
-}
+  if (!is_compiled_){
 
-
-void Material::diffuse(){
-
-}
-
-void Material::diffuseTexture(){
-  glGenTextures(1, &mat_attrib_.texture);
-  glBindTexture(GL_TEXTURE_2D, mat_attrib_.texture);
-
-
-}
-
-void Material::compileShader(GLuint shader)const{
-  glCompileShader(vertex_shader_);
-
-  GLint is_compiled;
-  GLchar infoLog[512];
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &is_compiled);
-  if (is_compiled == GL_FALSE){
-    glGetShaderInfoLog(shader, 512, NULL, infoLog);
-    GLint shader_type;
-    glGetShaderiv(shader, GL_SHADER_TYPE, &shader_type);
-    switch (shader_type)
-    {
-    default:
-    case GL_VERTEX_SHADER:
-      printf("VERTEX SHADER COMPILED ERROR: %s", infoLog);
-      break;
-    case GL_FRAGMENT_SHADER:
-      printf("FRAGMENT SHADER COMPILED ERROR: %s", infoLog);
-    }
-    
+    interfaz_->loadMaterial(vertex_data_, fragment_data_);
   }
+  interfaz_->useMaterial( );
+ 
 }
+
+
 
 GLuint Material::getProgram(){ return program_; }

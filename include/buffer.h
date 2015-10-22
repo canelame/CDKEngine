@@ -20,7 +20,7 @@ public:
 	GLuint* getVBO();
 	std::vector<float>* getAttributes();
 	std::vector<unsigned int> getIndexes();
-	void useGeometry(Buffer *c);
+	void useGeometry();
 	void setDirty(bool d);
 private:
 

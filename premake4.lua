@@ -14,7 +14,7 @@ project "CDKEngine"
 	defines {"_GLFW_WIN32","_GLFW_WGL","_GLFW_USE_OPENGL","GLEW_STATIC"}
 	links{"opengl32"}
 	includedirs{"include"}
-	files{"include/**.h","src/**.cc","src/**.c"}
+	files{"include/**.h","src/**.cc","src/**.c","shaders/**.glsl"}
 	configuration "Debug"
 	flags "Symbols"
 

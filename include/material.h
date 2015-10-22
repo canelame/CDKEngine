@@ -46,6 +46,7 @@ private:
     FRAGMENT_SHADER = 0,
     VERTEX_FRAGMENT
   };
+  bool texture_;
   mutable  GLint program_;
   mutable  GLuint vertex_shader_;
   mutable  GLuint fragment_shader_;
@@ -55,8 +56,7 @@ private:
   const char* fragment_data_;
   void useMaterial();
   void compileShader(GLuint shader)const;
-  void diffuse();
-  void diffuseTexture();
+  OpenGlInterFaz *interfaz_;
 
   friend OpenGlInterFaz;
 };

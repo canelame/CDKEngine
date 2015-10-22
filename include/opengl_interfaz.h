@@ -1,23 +1,32 @@
 #ifndef __H_OPENGL_INTERFAZ__
 #define __H_OPENGL_INTERFAZ__
-#include<memory>
-class Buffer;
-class Material;
+#include <memory>
+#include "GL\glew.h"
+#include <vector>
 
 class OpenGlInterFaz{
 public:
 	OpenGlInterFaz(){
 		
 	};
-	void useGeometry(Buffer *f);
-	void useMaterial(Material *m);
-	void useDrawGeometry(Buffer *b);
+  void useDrawGeometry();
+  void useGeometry();
+  void loadBuffer(std::vector<float> attributes[3], std::vector<unsigned int> &index);
+  void useMaterial();
+  void loadMaterial(const char*vertex_data, const char*fragment_data);
+  void compileShader(GLuint shader);
 	~OpenGlInterFaz();
 private:
-	Buffer *buf__ptr;
-	Material * mat_ptr_;
+  //For materials
+  GLuint shadow_program_;
+  GLuint shadow_vertex_shader_;
+  GLuint shadow_fragment_shader_;
 
-
+  //For geometries
+  GLuint shadow_vao_;
+  GLuint shadow_vbo_[4];
+  std::vector<float> shadow_attrib_[3];
+  std::vector<unsigned int > shadow_index_;
 
 };
 
