@@ -1,5 +1,5 @@
 #include "buffer.h"
-
+#include <list>
 void Buffer::init(int size){
 	size_ = size;
 }
@@ -26,25 +26,25 @@ GLuint* Buffer::getVAO(){ return &vao_; }
 
 GLuint* Buffer::getVBO(){ return vbo_; }
 
-std::vector<float>*Buffer::getAttributes(){
-	std::vector<float >t_a[4];
-	t_a[0] =positions_;
-	t_a[1] = normals_;
-	t_a[2] = uvs_;
-	return t_a;
+std::vector<std::vector<float>> Buffer::getAttributes(){
+  std::vector<std::vector<float>> temp;
+	temp.push_back(positions_);
+	temp.push_back( normals_);
+	temp.push_back( uvs_);
+	return temp;
 }
 
 std::vector<unsigned int > Buffer::getIndexes(){
 	return indexes_;
 }
 
-void Buffer::setDirty(bool d){ d = dirty_; }
+void Buffer::setDirty(bool d){  dirty_=d; }
 
 OpenGlInterFaz* Buffer::useGeometry(){
   if (isDirty()){
-    std::vector<float> a[3] = { positions_, normals_, uvs_ };
+    std::vector<std::vector<float>> a = { positions_, normals_, uvs_ };
     interface_->loadBuffer(a,indexes_);
-    setDirty(true);
+    setDirty(false);
   }
 	interface_->useGeometry();
 	return interface_;

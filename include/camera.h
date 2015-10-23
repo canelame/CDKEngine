@@ -30,7 +30,7 @@ public:
    ~Camera(){}; 
     void render(DisplayList &dl);
   void cull();
-  void runCommand(OpenGlInterFaz i, OpenGlInterFaz &out)const;
+  void runCommand(OpenGlInterFaz &i, OpenGlInterFaz &out)const;
 private:
 	OpenGlInterFaz *interfaz_;
   mat4 proyection_mat_;

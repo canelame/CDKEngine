@@ -38,7 +38,7 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
 
 }
 
-void Material::runCommand(OpenGlInterFaz i, OpenGlInterFaz &out)const{
+void Material::runCommand(OpenGlInterFaz &i, OpenGlInterFaz &out)const{
   if (!is_compiled_){
 
     i.loadMaterial(vertex_data_.c_str(), fragment_data_.c_str());

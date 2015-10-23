@@ -1,4 +1,5 @@
 #include "geometry.h"
+#include <list>
 Geometry::Geometry(){
 	geo_buff_ = std::make_unique<Buffer>();
 }
@@ -31,9 +32,20 @@ void Geometry::create(){
 
 }
 
-void Geometry::runCommand(OpenGlInterFaz i,  OpenGlInterFaz &out)const{
+void Geometry::runCommand(OpenGlInterFaz &i,  OpenGlInterFaz &out)const{
 	
-		out = *geo_buff_.get()->useGeometry();
+  if (geo_buff_->isDirty()){
+    std::vector<std::vector<float>>attrib;
+     attrib = geo_buff_->getAttributes();
+   
+    i.loadBuffer(attrib,geo_buff_->getIndexes());
+    geo_buff_->setDirty(false);
+  }
+
+    i.useGeometry();
+  
+  
+  out = i;
 	
 
 	

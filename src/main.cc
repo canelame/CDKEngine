@@ -20,7 +20,7 @@ void createWindow(){
   
   std::shared_ptr<Geometry> g;
   g = std::make_shared<Geometry>();
-  g->createTriangle();
+  g->createCube(1);
   
   std::shared_ptr<Material> m;
   m = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
@@ -28,11 +28,11 @@ void createWindow(){
 
   std::shared_ptr<Camera> c;
   c = std::make_shared<Camera>();
-  c->setPerspective(45.0f, 800.0 / 600.0, 1.0, 1000.0);
+  c->setPerspective(45, 800.0 / 600.0, 1.0, 1000.0);
 
   DisplayList dl;
-  dl.add(m);
   dl.add(g);
+  dl.add(m);
   dl.add(c);
   
 
@@ -41,7 +41,7 @@ void createWindow(){
 	 
 	  glClearColor(.3f, .2f, .7f, 1.0f);
 	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	  glEnable(GL_DEPTH_TEST);
+	 glEnable(GL_DEPTH_TEST);
 	dl.execute();
 
     g_win.swap();

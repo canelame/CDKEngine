@@ -21,7 +21,8 @@ public:
   List listCommand_;
   DisplayList(){
 	 
-	  interfaz_ = std::make_unique<OpenGlInterFaz>();
+	  interfaz_ = std::make_shared<OpenGlInterFaz>();
+
 	  
   }
   ~DisplayList(){}
@@ -31,13 +32,14 @@ public:
 	  listCommand_.push_back(c);
    }
   void execute(){
+    
     for (int i = 0; i < listCommand_.size(); ++i){
 		listCommand_[i].get()->runCommand(*interfaz_.get(),*interfaz_.get());
     }
    
   };
 private:
-	std::unique_ptr<OpenGlInterFaz> interfaz_;
+	std::shared_ptr<OpenGlInterFaz> interfaz_;
 };
 
 

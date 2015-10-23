@@ -20,7 +20,7 @@ public:
   * @return Return command executed.
   */
 	
-	virtual void runCommand( OpenGlInterFaz in, OpenGlInterFaz &out)const = 0;
+	virtual void runCommand( OpenGlInterFaz &in, OpenGlInterFaz &out)const = 0;
 
 protected:
  

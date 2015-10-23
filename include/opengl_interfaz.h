@@ -12,7 +12,7 @@ public:
 	};
   void useDrawGeometry();
   void useGeometry();
-  void loadBuffer(std::vector<float> attributes[3], std::vector<unsigned int> &index);
+  void loadBuffer(std::vector<std::vector<float>> attributes, std::vector<unsigned int> &index);
   void useMaterial();
   void loadMaterial(const char*vertex_data, const char*fragment_data);
   void compileShader(GLuint shader);
@@ -28,7 +28,8 @@ private:
 
   //For geometries
   GLuint shadow_vao_;
-  GLuint shadow_vbo_[4];
+  GLuint shadow_vbo_v_;
+  GLuint shadow_vbo_i_;
   std::vector<float> shadow_attrib_[3];
   std::vector<unsigned int > shadow_index_;
 

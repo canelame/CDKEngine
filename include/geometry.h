@@ -47,7 +47,7 @@ public:
   /**
   * @brief Pure virtual function, this execute OpenGL code in displayList.
   */
-  void runCommand(OpenGlInterFaz i, OpenGlInterFaz &out)const;
+  void runCommand(OpenGlInterFaz &i, OpenGlInterFaz &out)const;
   /**
   * @brief Pure virtual function, not need implementation.
   */

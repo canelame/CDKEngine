@@ -3,6 +3,7 @@
 #include "GL\glew.h"
 #include <vector>
 #include <memory>
+#include <list>
 #include "opengl_interfaz.h"
 class Buffer{
 
@@ -18,7 +19,7 @@ public:
 	bool isDirty();
 	GLuint* getVAO();
 	GLuint* getVBO();
-	std::vector<float>* getAttributes();
+	std::vector<std::vector<float>> getAttributes();
 	std::vector<unsigned int> getIndexes();
 	OpenGlInterFaz* useGeometry();
 	OpenGlInterFaz* useDrawGeometry();
