@@ -35,14 +35,17 @@ void Camera::cull(){
    glm::mat4 view;
    view = glm::lookAt(glm::vec3(camX, 0.0, camZ), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
-	i.useUniformMat4("u_projection_m", glm::value_ptr(proyection_mat_));
-	i.useUniformMat4("u_view_m", glm::value_ptr(look_at_mat_));
+
 	
 	mat4 model;
 	//view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
 	model = glm::scale(view, vec3(20.0, 20.0, 20.0));
 	model = glm::translate(view, vec3(0.0, 0.0, 0.0));
 	i.useUniformMat4("u_model_m", glm::value_ptr(model));
+  i.useUniformMat4("u_projection_m", glm::value_ptr(proyection_mat_));
+  i.useUniformMat4("u_view_m", glm::value_ptr(look_at_mat_));
+  const float  color[3]= { 1.0, 1.0, 0.0 };
+  //i.useUnifor3f("color_", color);
 	i.useDrawGeometry();
 	
 	out = i;

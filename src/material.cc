@@ -6,7 +6,7 @@ Material::Material(TYPE t){
   interfaz_ = new OpenGlInterFaz();
   is_compiled_ = false;
   
-  t == 0 ? loadShader("../shaders/diffuse_v.glsl","../shaders/diffuse_f.glsl") : loadShader("texture_v.glsl","texture_f.glsl");
+  t == 0 ? loadShader("shaders/diffuse_v.glsl","shaders/diffuse_f.glsl") : loadShader("texture_v.glsl","texture_f.glsl");
 };
 
 void Material::loadShader(const char *vertex_file, const char* fragment_file){

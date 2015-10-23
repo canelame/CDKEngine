@@ -20,7 +20,7 @@ void createWindow(){
   
   std::shared_ptr<Geometry> g;
   g = std::make_shared<Geometry>();
-  g->createCube(1);
+  g->loadObjFile("meshes/suzzane.obj");
   
   std::shared_ptr<Material> m;
   m = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
@@ -31,8 +31,8 @@ void createWindow(){
   c->setPerspective(45, 800.0 / 600.0, 1.0, 1000.0);
 
   DisplayList dl;
-  dl.add(g);
   dl.add(m);
+  dl.add(g);
   dl.add(c);
   
 
@@ -40,8 +40,8 @@ void createWindow(){
   while (g_win.processEvents()){
 	 
 	  glClearColor(.3f, .2f, .7f, 1.0f);
-	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	 glEnable(GL_DEPTH_TEST);
+	  glClear(GL_COLOR_BUFFER_BIT );
+   // glEnable(GL_DEPTH_TEST);
 	dl.execute();
 
     g_win.swap();

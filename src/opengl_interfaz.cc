@@ -8,40 +8,49 @@ void OpenGlInterFaz::loadBuffer(std::vector<std::vector<float>> attributes, std:
  shadow_attrib_[1]= temp_n = attributes[1];
  shadow_attrib_[2] =temp_uv = attributes[2];
   shadow_index_ = index;
+
+  GLint postion_size = temp_p.size()*sizeof(float);
+  GLint normal_size = temp_n.size()*sizeof(float);
+  GLint uv_size = temp_uv.size()*sizeof(float);
+  GLint index_size = shadow_index_.size()*sizeof(unsigned int);
+
+
   glGenVertexArrays(1, &shadow_vao_);
-  glBindVertexArray(shadow_vao_);
   glGenBuffers(1, &shadow_vbo_v_);
+  glGenBuffers(1, &shadow_vbo_i_);
+
+  glBindVertexArray(shadow_vao_);
   glBindBuffer(GL_ARRAY_BUFFER, shadow_vbo_v_);
-  glBufferData(GL_ARRAY_BUFFER, 0,NULL, GL_STATIC_DRAW);
+
+ // glBufferData(GL_ARRAY_BUFFER, postion_size,&temp_p[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, postion_size+normal_size+uv_size, NULL, GL_STATIC_DRAW);
+ // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*temp_p.size(), &temp_p[0]);
     //Load positions
   if (temp_p.size() != 0){
      glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*temp_p.size(), &temp_p[0]);
-     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-     glEnableVertexAttribArray(0);
+
   }
   //Load normals
   if (temp_n.size() != 0){
-    const unsigned int vs = sizeof(float)*temp_p.size();
-    glBufferSubData(GL_ARRAY_BUFFER, vs,sizeof(float)*temp_n.size() , &temp_n[0]);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vs);
-    glEnableVertexAttribArray(1);
+    glBufferSubData(GL_ARRAY_BUFFER, postion_size,normal_size, &temp_n[0]);
+    
   }
 
   //Load uvs
   if (temp_uv.size() != 0){
-    const unsigned int vs = sizeof(float)*temp_p.size() + sizeof(float)*temp_n.size();
-    glBufferSubData(GL_ARRAY_BUFFER, vs, sizeof(float)*temp_uv.size(), &temp_uv[0]);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)vs);
-    glEnableVertexAttribArray(2);
+    glBufferSubData(GL_ARRAY_BUFFER, postion_size+normal_size,uv_size , &temp_uv[0]);
   }
 		
-  if (index.size() != 0){
-    glGenBuffers(1, &shadow_vbo_i_);
+  if (shadow_index_.size() != 0){
+  
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shadow_vbo_i_);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, shadow_index_.size()*sizeof(unsigned int), &shadow_index_[0], GL_STATIC_DRAW);
   }
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),0);
+  glEnableVertexAttribArray(0);
   
-  
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void*)postion_size);
+  glEnableVertexAttribArray(1);
 	glBindVertexArray(0);	
     
 }
@@ -50,8 +59,8 @@ void OpenGlInterFaz::useGeometry(){
   glBindVertexArray(shadow_vao_);
 }
 void OpenGlInterFaz::useMaterial(){
-
-  glUseProgram(shadow_program_);
+  //printf("Using program:%d", shadow_program_);
+   glUseProgram(shadow_program_);
  
 }
 void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_data){
@@ -88,6 +97,7 @@ void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_da
 }
 
 void OpenGlInterFaz::useDrawGeometry(){
+ // printf("Draw elements: %d indices\n",shadow_index_.size());
 	glDrawElements(GL_TRIANGLES, shadow_index_.size(),GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }

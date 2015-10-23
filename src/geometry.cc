@@ -32,17 +32,20 @@ void Geometry::create(){
 
 }
 
-void Geometry::runCommand(OpenGlInterFaz &i,  OpenGlInterFaz &out)const{
-	
+void Geometry::runCommand(OpenGlInterFaz &i, OpenGlInterFaz &out)const{
+
   if (geo_buff_->isDirty()){
     std::vector<std::vector<float>>attrib;
-     attrib = geo_buff_->getAttributes();
-   
-    i.loadBuffer(attrib,geo_buff_->getIndexes());
+    attrib = geo_buff_->getAttributes();
+
+    i.loadBuffer(attrib, geo_buff_->getIndexes());
     geo_buff_->setDirty(false);
   }
-
+  else{
     i.useGeometry();
+  }
+
+  
   
   
   out = i;
@@ -209,19 +212,52 @@ void Geometry::createCube(int size) {
 }
 
 void Geometry::createTriangle(){
-	float vertices[9] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		0.0f, 0.5f, 0.0f
-	};
-	std::vector<float> positions, normals, uvs;
-	std::vector<unsigned int> indes;
-	indes.push_back(0);
-	indes.push_back(1);
-	indes.push_back(2);
-	for (int i = 0; i < 9; i++){
-		positions.push_back(vertices[i]);
-	}
-	geo_buff_->loadData(positions, normals, uvs,indes);
+ // float x = 0, y = 0;
+  float x = 0.5;// width / 2;
+  float y = 0.5;// height / 2;
+
+  float quadVertices[12] = {
+
+    -1.0f*x, 1.0f*y, 0.0f,
+    -1.0f*x, -1.0f*y, 0.0f,
+    1.0f*x, -1.0f*y, 0.0f,
+    1.0f*x, 1.0f*y, 0.0f,
+
+
+  };
+  float quad_uv[8]{
+
+    0.0f, 1.0f,
+      0.0f, 0.0f,
+      1.0f, 0.0f,
+      1.0f, 1.0f,
+
+  };
+  unsigned int indices_quad[6] = {  // Note that we start from 0!
+    0, 1, 2,   // First Triangle
+    2, 3, 0    // Second Triangle
+  };
+
+  const float normales[]{
+    0, 0, 1,
+      0, 0, 1,
+      0, 0, 1,
+      0, 0, 1,
+  };
+  std::vector<float> positions, normals, uvs;
+  std::vector<unsigned int> indexes;
+  for (int i = 0; i < 12; i++) {
+    positions.push_back(quadVertices[i]);
+    normals.push_back(normales[i]);
+
+  }
+  for (int i = 0; i < 8; i++) {
+
+    uvs.push_back(quad_uv[i]);
+  }
+  for (int i = 0; i <6; i++) {
+    indexes.push_back(indices_quad[i]);
+  }
+	geo_buff_->loadData(positions, normals, uvs,indexes);
 
 }
