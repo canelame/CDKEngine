@@ -40,8 +40,8 @@ void createWindow(){
   while (g_win.processEvents()){
 	 
 	  glClearColor(.3f, .2f, .7f, 1.0f);
-	  glClear(GL_COLOR_BUFFER_BIT );
-   // glEnable(GL_DEPTH_TEST);
+	  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    glEnable(GL_DEPTH_TEST);
 	dl.execute();
 
     g_win.swap();

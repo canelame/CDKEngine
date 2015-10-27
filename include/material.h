@@ -31,7 +31,7 @@ public:
   };
   Material(TYPE t);
 
-  void runCommand(OpenGlInterFaz &i, OpenGlInterFaz &out)const;
+  void runCommand(OpenGlInterFaz &i)const;
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.

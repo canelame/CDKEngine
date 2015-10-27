@@ -15,9 +15,12 @@
 * Otherwise you can load geometry whit loadAttributes, passing the values in the function.
 * REMEMBER TO USE A UNIQUE METHOD TO LOAD ATTRIBUTE VALUES.
 */
+
+
+
+
 class Geometry : public Command{
 public:
-
 
 	Geometry();
   
@@ -47,7 +50,7 @@ public:
   /**
   * @brief Pure virtual function, this execute OpenGL code in displayList.
   */
-  void runCommand(OpenGlInterFaz &i, OpenGlInterFaz &out)const;
+  void runCommand(OpenGlInterFaz &i)const;
   /**
   * @brief Pure virtual function, not need implementation.
   */

@@ -34,7 +34,7 @@ public:
   void execute(){
     
     for (int i = 0; i < listCommand_.size(); ++i){
-		listCommand_[i].get()->runCommand(*interfaz_.get(),*interfaz_.get());
+		listCommand_[i].get()->runCommand(*interfaz_.get());
     }
    
   };

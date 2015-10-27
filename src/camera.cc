@@ -27,7 +27,7 @@ void Camera::cull(){
 
 }
 
- void Camera::runCommand(OpenGlInterFaz &i, OpenGlInterFaz &out)const{
+ void Camera::runCommand(OpenGlInterFaz &i)const{
 
    GLfloat radius = 10.0f;
    GLfloat camX = sin(glfwGetTime()) * radius;
@@ -39,14 +39,14 @@ void Camera::cull(){
 	
 	mat4 model;
 	//view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
-	model = glm::scale(view, vec3(20.0, 20.0, 20.0));
-	model = glm::translate(view, vec3(0.0, 0.0, 0.0));
+  model = glm::scale(model, vec3(2.0, 2.0, 2.0));
+  model = glm::translate(model, vec3(0.0, 0.0, 0.0));
 	i.useUniformMat4("u_model_m", glm::value_ptr(model));
   i.useUniformMat4("u_projection_m", glm::value_ptr(proyection_mat_));
-  i.useUniformMat4("u_view_m", glm::value_ptr(look_at_mat_));
+  i.useUniformMat4("u_view_m", glm::value_ptr(view));
   const float  color[3]= { 1.0, 1.0, 0.0 };
   //i.useUnifor3f("color_", color);
 	i.useDrawGeometry();
 	
-	out = i;
+
 }
