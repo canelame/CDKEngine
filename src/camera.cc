@@ -52,7 +52,7 @@ void Camera::cull(){
 	//view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
   model = glm::scale(model, vec3(10.0, 10.0, 10.0));
   model = glm::translate(model, vec3(0.0, 0.0, 0.0));
-//	i.useUniformMat4("u_model_m", glm::value_ptr(model));
+	i.useUniformMat4("u_model_m", glm::value_ptr(model));
   i.useUniformMat4("u_projection_m", glm::value_ptr(data->proyection_mat_));
   i.useUniformMat4("u_view_m", glm::value_ptr(view));
   const float  color[]= { 0 };

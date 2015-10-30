@@ -81,7 +81,8 @@ void OpenGlInterFaz::loadBuffer(std::vector<std::vector<float>> attributes, std:
   glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);	
-    
+  glDeleteBuffers(1, &data_->shadow_vbo_i_);
+  glDeleteBuffers(1, &data_->shadow_vbo_v_);
 }
 
 void OpenGlInterFaz::useGeometry(){
@@ -121,7 +122,11 @@ void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_da
     printf("LINKED PROGRAM ERROR: %s\n", info_log);
    
   }
-  else{ printf("PROGRAM LINKED"); }
+  else{ 
+    glDeleteShader(data_->shadow_vertex_shader_);
+    glDeleteShader(data_->shadow_fragment_shader_);
+    printf("PROGRAM LINKED");
+  }
 
 }
 
@@ -180,10 +185,6 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
 }
 
 void OpenGlInterFaz::loadTexture(const char* file){
-  /*  GLuint shadow_texture_;
-    glGenTextures(1,&shadow_texture_);
-    glBindTexture(GL_TEXTURE_2D, shadow_texture_);
-    */
   unsigned char* image_;
   int x, y;
   int w, h;
