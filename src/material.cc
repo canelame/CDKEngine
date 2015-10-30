@@ -5,8 +5,14 @@
 Material::Material(TYPE t){
   interfaz_ = new OpenGlInterFaz();
   is_compiled_ = false;
-  
-  t == 0 ? loadShader("shaders/diffuse_v.glsl","shaders/diffuse_f.glsl") : loadShader("texture_v.glsl","texture_f.glsl");
+  texture_ = std::make_unique<Texture>();
+  if (t == 0){
+    loadShader("shaders/diffuse_v.glsl", "shaders/diffuse_f.glsl");
+  }
+  else{
+    loadShader("shaders/texture_v.glsl", "shaders/texture_f.glsl");
+    is_texture_ = true;
+  }
 };
 
 void Material::loadShader(const char *vertex_file, const char* fragment_file){
@@ -44,6 +50,14 @@ void Material::runCommand(OpenGlInterFaz &i)const{
     i.loadMaterial(vertex_data_.c_str(), fragment_data_.c_str());
 	  is_compiled_ = true;
   }
+  if (is_texture_){
+    if (!texture_.get()->getLoaded()){
+      i.loadTexture(texture_name_.c_str());
+      texture_.get()->setLoaded(true);
+    } else{
+      i.useTexture();
+    }
+  }
   i.useMaterial( );
 
   
@@ -53,3 +67,7 @@ void Material::runCommand(OpenGlInterFaz &i)const{
 
 
 GLuint Material::getProgram(){ return program_; }
+
+void Material::loadTexture(const char*file_name){
+  texture_name_ = file_name;
+}

@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 #include "opengl_interfaz.h"
+#include "texture.h"
+#include <memory>
 /**
 * material.h
 * @author Alejandro Canela Mendez
@@ -30,8 +32,9 @@ public:
     Light material_light; //We can have multiples lights , creating an array. 
   };
   Material(TYPE t);
-
+  void loadTexture(const char* file_name);
   void runCommand(OpenGlInterFaz &i)const;
+
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
@@ -47,7 +50,7 @@ private:
     FRAGMENT_SHADER = 0,
     VERTEX_FRAGMENT
   };
-  bool texture_;
+  bool is_texture_;
   mutable  GLint program_;
   mutable  GLuint vertex_shader_;
   mutable  GLuint fragment_shader_;
@@ -55,10 +58,12 @@ private:
    mutable bool is_compiled_;
   std::string vertex_data_;
   std::string fragment_data_;
+  std::string texture_name_;
   void useMaterial();
+
   void compileShader(GLuint shader)const;
   OpenGlInterFaz *interfaz_;
-
+  std::unique_ptr<Texture> texture_;
   friend OpenGlInterFaz;
 };
 

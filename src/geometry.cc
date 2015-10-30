@@ -34,7 +34,6 @@ void Geometry::create(){
 
 
 }
-
 void Geometry::runCommand(OpenGlInterFaz &i)const{
 
   if (geo_buff_->isDirty()){
@@ -48,16 +47,7 @@ void Geometry::runCommand(OpenGlInterFaz &i)const{
     i.useGeometry();
   }
 
-  
-  
-  
-  
-	
-
-	
- 
 }
-
 void Geometry::setPosition(vec3 &p){
   position_ = p;
 }
@@ -70,7 +60,6 @@ void Geometry::setScale(vec3 &s){
 vec3 Geometry::position(){ return position_; }
 vec3 Geometry::scale(){ return scale_; }
 vec3 Geometry::rotation(){ return rotation_; }
-
 void Geometry::createCube(int size) {
 
 	const float cube_vertices[72]{
@@ -213,7 +202,6 @@ void Geometry::createCube(int size) {
 	}
 	geo_buff_->loadData(positions, normals, uvs, indices);
 }
-
 void Geometry::createTriangle(){
  // float x = 0, y = 0;
   float x = 0.5;// width / 2;

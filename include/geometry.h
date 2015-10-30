@@ -1,12 +1,14 @@
 #ifndef __H_GEOMETRY__
 #define __H_GEOMETRY__
+
 #include "tiny_obj_loader.h"
 #include "GL\glew.h"
 #include "display_list.h"
 #include "command.h"
 #include "buffer.h"
-#include <memory>
 #include "types.h"
+#include <memory>
+
 /**
 * Geometry class
 * @author Alejandro Canela Méndez 2015
@@ -52,7 +54,7 @@ public:
   */
   void runCommand(OpenGlInterFaz &i)const;
   /**
-  * @brief Pure virtual function, not need implementation.
+  * @brief This functions not must be here.
   */
   void setPosition(vec3 &p);
   void setScale(vec3 &s);
@@ -68,10 +70,8 @@ private:
   vec3 rotation_;
   vec3 scale_;
   bool loaded_ = false;
- mutable bool used_ = false;
-
+  mutable bool used_ = false;
   std::unique_ptr<Buffer> geo_buff_;
-
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile
   std::vector<tinyobj::material_t> materials_; //Only ude whit loadObjFile
 

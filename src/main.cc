@@ -20,11 +20,11 @@ void createWindow(){
   
   std::shared_ptr<Geometry> g;
   g = std::make_shared<Geometry>();
-  g->loadObjFile("meshes/suzzane.obj");
-  
+ // g->loadObjFile("meshes/suzzane.obj");
+  g->createCube(1);
   std::shared_ptr<Material> m;
-  m = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
-
+  m = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE);
+  m->loadTexture("textures/jovi.jpg");
 
   std::shared_ptr<Camera> c;
   c = std::make_shared<Camera>();

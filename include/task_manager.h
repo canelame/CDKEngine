@@ -8,6 +8,7 @@
 #include <condition_variable>
 class Task{
 public:
+
   virtual void runTask()=0;
 
 private:
@@ -27,7 +28,7 @@ public:
   }
 
 private:
-  std::unique_ptr<std::vector<Task>> task_list_;
+  std::unique_ptr<std::vector<Task>> task_li st_;
 };
 
 
