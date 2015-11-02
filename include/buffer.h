@@ -87,9 +87,11 @@ public:
   opengl_interfaz.
   * @return A pointer to opengl_interfaz.
   */
+	friend class OpenGlInterFaz;
+		friend class OpenGlInterFaz;
 private:
   Data *data_;
-  friend OpenGlInterFaz;
+  
 };
 
 

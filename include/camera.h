@@ -48,6 +48,7 @@ public:
   * @brief Runs the command 
   */
   void runCommand(OpenGlInterFaz &i)const;
+  friend class OpenGlInterFaz;
 private:
   Data *data;
 

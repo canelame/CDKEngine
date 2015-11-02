@@ -45,17 +45,20 @@ public:
   
   GLuint texture(){ return mat_attrib_.texture; }
   ~Material(){};
+  std::string getVertexData();
+  std::string getFragmentData();
 private:
   enum TYPE_SHADER {
     FRAGMENT_SHADER = 0,
     VERTEX_FRAGMENT
   };
+  unsigned char* image_;
   bool is_texture_;
   mutable  GLint program_;
   mutable  GLuint vertex_shader_;
   mutable  GLuint fragment_shader_;
-   Material_attributes mat_attrib_;
-   mutable bool is_compiled_;
+  Material_attributes mat_attrib_;
+  mutable bool is_compiled_;
   std::string vertex_data_;
   std::string fragment_data_;
   std::string texture_name_;

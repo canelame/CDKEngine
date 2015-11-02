@@ -9,8 +9,8 @@
 class OpenGlInterFaz{
 public:
   struct Data;
-  OpenGlInterFaz();
-  void drawGeometry();
+
+
   void useGeometry();
   void loadBuffer(std::vector<std::vector<float>> attributes, std::vector<unsigned int> &index);
   void useMaterial();
@@ -21,11 +21,18 @@ public:
   void useUniformUi(const char *name,int value);
   void loadTexture(const char *file);
   void useTexture();
+  void drawGeometry();
 
   ~OpenGlInterFaz(){};
+
+  friend class DisplayList;
 private:
+
+	OpenGlInterFaz();
   Data *data_;
- 
+  friend class Buffer;
+  friend class Camera;
+  friend class Material;
 
 };
 

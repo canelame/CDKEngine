@@ -34,14 +34,16 @@ void createWindow(){
   if (!g_win.init(800, 600)){
     printf("Error to init window.\n");
   }
+  
   std::unique_ptr<TaskManager> task_manager_;
   task_manager_ = std::make_unique<TaskManager>();
   task_manager_.get()->init();
   
   std::shared_ptr<Geometry> g;
   g = std::make_shared<Geometry>();
- // g->loadObjFile("meshes/suzzane.obj");
   g->createCube(1);
+ // g->loadObjFile("meshes/suzzane.obj");
+ // g->loadObjFile("meshes/suzzane.obj");
   std::shared_ptr<Material> m;
   m = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE);
   m->loadTexture("textures/jovi.jpg");
@@ -55,9 +57,10 @@ void createWindow(){
 
 
 
- dl->add(m);
-  dl->add(g);
-  dl->add(c);
+  //dl->add(std::make_shared <LoadMaterialCommand>(g) );
+  //dl->add(std::make_shared<UseMaterialCommand>() );
+  dl->add( std::make_shared<LoadGeometryCommand>(m) );
+  //dl->add(std::make_shared<>);
  
 
 

@@ -45,6 +45,7 @@ void Geometry::runCommand(OpenGlInterFaz &i)const{
 
     i.loadBuffer(attrib, geo_buff_->getIndexes());
     geo_buff_->setDirty(false);
+	i.useGeometry();
   }
   else{
     i.useGeometry();

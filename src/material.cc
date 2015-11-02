@@ -70,4 +70,16 @@ GLuint Material::getProgram(){ return program_; }
 
 void Material::loadTexture(const char*file_name){
   texture_name_ = file_name;
+
+  int x, y;
+  int w, h;
+  int comp;
+  image_ = stbi_load(texture_name_.c_str(), &w, &h, &comp, 0);
+  if (image_ == nullptr){
+	  printf("Failed to load texture\n ");
+
+  }
 }
+
+std::string Material::getFragmentData(){ return fragment_data_; }
+std::string Material::getVertexData(){ return vertex_data_; }

@@ -178,9 +178,9 @@ void OpenGlInterFaz::useUniformMat4(const char* name,const float *m_data){
 
 void OpenGlInterFaz::useUniformUi(const char *name, int value){
   int p = glGetUniformLocation(data_->shadow_program_, name);
-  const int *t = { 0 };
+  const int t = { 0 };
   if (p >= 0){
-    glUniform1iv(data_->shadow_program_, 1, t);
+  //  glUniform1iv(data_->shadow_program_, 1, t);
   }
 }
 
