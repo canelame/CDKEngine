@@ -38,6 +38,12 @@ public:
     }
    
   };
+  void update(){
+    Comm_ t_com;
+    for (int i = 0; i < listCommand_.size(); i++){
+      t_com = listCommand_.at(i);
+    }
+  }
 private:
 	std::shared_ptr<OpenGlInterFaz> interfaz_;
 };

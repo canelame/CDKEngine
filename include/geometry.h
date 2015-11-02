@@ -24,6 +24,7 @@
 class Geometry : public Command{
 public:
 
+  
 	Geometry();
   
   /**
@@ -74,7 +75,7 @@ private:
   std::unique_ptr<Buffer> geo_buff_;
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile
   std::vector<tinyobj::material_t> materials_; //Only ude whit loadObjFile
-
+  
 
 };
 

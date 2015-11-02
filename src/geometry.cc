@@ -3,8 +3,11 @@
 
 
 
+
 Geometry::Geometry(){
 	geo_buff_ = std::make_unique<Buffer>();
+  
+
 }
 
 
