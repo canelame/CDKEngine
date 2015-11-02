@@ -12,9 +12,13 @@ struct Camera::Data{
 };
 
 Camera::Camera(){
+  
+  model_scale =  vec3(5.0,5.0,5.0);//Added only to use a first implementation of ImGui
+
   data = new Data;
 	data->interfaz_ = new OpenGlInterFaz();
   data->position_.x = 0.0; 	data->position_.y = 0.0; 	data->position_.z = 10.0;
+  position_.x = 0.0; 	position_.y = 0.0; 	position_.z = 10.0;
   data->up_.x = 0; 	data->up_.y = 1.0; 	data->up_.z = 0;
   data->front_.x = 0.0; 	data->front_.y = 0.0; 	data->front_.z = -10.0;
   setLookAt(data->position_, data->position_ + data->front_, data->up_);
@@ -44,13 +48,13 @@ void Camera::cull(){
    GLfloat camX = sin(glfwGetTime()) * radius;
    GLfloat camZ = cos(glfwGetTime()) * radius;
    glm::mat4 view;
-   view = glm::lookAt(glm::vec3(camX, 0.0, camZ), data->front_, glm::vec3(0.0, 1.0, 0.0));
+   view = glm::lookAt(glm::vec3(position_.x, position_.y, position_.z), data->front_, glm::vec3(0.0, 1.0, 0.0));
 
 
 	
 	mat4 model;
 	//view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
-  model = glm::scale(model, vec3(10.0, 10.0, 10.0));
+  model = glm::scale(model, model_scale);
   model = glm::translate(model, vec3(0.0, 0.0, 0.0));
 	i.useUniformMat4("u_model_m", glm::value_ptr(model));
   i.useUniformMat4("u_projection_m", glm::value_ptr(data->proyection_mat_));

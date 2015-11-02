@@ -46,7 +46,8 @@ bool Window::init(unsigned int width, unsigned int height){
 	}
 
   //Set ViewPort
-  
+  ImGui_ImplGlfwGL3_Init(window_s_->main_window_,true);
+ 
   glfwMakeContextCurrent(window_s_->main_window_);
   glfwSetKeyCallback(window_s_->main_window_, key_callback);
 	//Init GLEW
@@ -71,6 +72,7 @@ bool Window::processEvents(){
 }
 
 void Window::swap(){
+
   glfwSwapBuffers(window_s_->main_window_);
 }
 void Window::finish(){

@@ -6,6 +6,8 @@
 #include "GLFW\glfw3.h"
 #include "ref_counter.h"
 #include "raii_pointer.h"
+#include "ImGui\imgui.h"
+#include "ImGui\imgui_impl_glfw_gl3.h"
 class Window : virtual public Ref_Counter{
 public:
    struct _Window;

@@ -21,6 +21,8 @@
 class Camera : public Command
 {
 public:
+  vec3 position_;
+  vec3 model_scale;
   struct Data;
   Camera();
   ~Camera(){};
