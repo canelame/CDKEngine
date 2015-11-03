@@ -25,7 +25,7 @@
 //
 //========================================================================
 
-#include "internal.h"
+#include "external/internal.h"
 
 #include <math.h>
 #include <float.h>

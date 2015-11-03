@@ -26,7 +26,7 @@
 //
 //========================================================================
 
-#include "internal.h"
+#include "external/internal.h"
 
 #include <string.h>
 #include <stdlib.h>

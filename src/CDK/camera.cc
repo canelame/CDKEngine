@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "CDK/camera.h"
 #include "GLFW\glfw3.h"
 
 struct Camera::Data{
@@ -13,7 +13,7 @@ struct Camera::Data{
 
 Camera::Camera(){
   
-  model_scale =  vec3(5.0,5.0,5.0);//Added only to use a first implementation of ImGui
+  model_scale =  vec3(2.0,2.0,2.0);//Added only to use a first implementation of ImGui
 
   data = new Data;
 	data->interfaz_ = new OpenGlInterFaz();
@@ -32,8 +32,10 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
   data->look_at_mat_ = glm::lookAt(eye, center, up);
 }
 
-void Camera::render(DisplayList &dl){
-
+void Camera::render(std::shared_ptr<Node>dl){
+	for (int i = 0; i < dl->size(); i++){
+		
+	}
 }
 
 void Camera::cull(){
@@ -57,8 +59,8 @@ void Camera::cull(){
  glm::mat4 Camera::getModel(){
    mat4 model;
    //view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
-   model = glm::scale(model, model_scale);
-   model = glm::translate(model, vec3(0.0, 0.0, 0.0));
+   model = glm::scale(model,  model_scale);
+   model = glm::translate(model, vec3(0.0, 0.0, -10.0));
    return model;
  }
  glm::mat4 Camera::getProyection(){

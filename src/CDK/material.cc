@@ -1,5 +1,5 @@
-#include "material.h"
-#include "stb_image.h"
+#include "CDK/material.h"
+#include "external/stb_image.h"
 
 
 Material::Material(TYPE t){

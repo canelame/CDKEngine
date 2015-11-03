@@ -1,11 +1,11 @@
 #ifndef __H_GEOMETRY__
 #define __H_GEOMETRY__
 
-#include "tiny_obj_loader.h"
+#include "external/tiny_obj_loader.h"
 #include "GL\glew.h"
-#include "command.h"
-#include "buffer.h"
-#include "types.h"
+#include "CDK/command.h"
+#include "CDK/buffer.h"
+#include "CDK/types.h"
 #include <memory>
 
 /**

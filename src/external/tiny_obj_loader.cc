@@ -38,7 +38,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "tiny_obj_loader.h"
+#include "external/tiny_obj_loader.h"
 
 namespace tinyobj {
 

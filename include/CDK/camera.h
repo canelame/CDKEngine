@@ -9,7 +9,7 @@
 #include "base.h"
 #include "types.h"
 #include "opengl_interfaz.h"
-
+#include "node.h"
 /**
 * camera.h 
 * @author Alejandro Canela Mendez 2015.
@@ -19,6 +19,7 @@
  
 class Camera 
 {
+
 public:
   vec3 position_;
   vec3 model_scale;
@@ -41,7 +42,7 @@ public:
   * @param up Vector that represents Where is the up of the camera, should be vec3(0.0,1.0,0.0)
   */
   void setLookAt(vec3 eye, vec3 center, vec3 up);
-  void render(DisplayList &dl);
+  void render(std::shared_ptr<Node> node);
   void cull();
   glm::mat4 getModel();
   glm::mat4 getProyection();

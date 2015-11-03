@@ -1,6 +1,6 @@
-#include "opengl_interfaz.h"
+#include "CDK/opengl_interfaz.h"
 #define STB_IMAGE_IMPLEMENTATION    
-#include "stb_image.h"
+#include "external/stb_image.h"
 
 struct OpenGlInterFaz::Data{
    GLuint shadow_texture_;

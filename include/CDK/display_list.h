@@ -197,8 +197,8 @@ public:
         
    
       m_com = dynamic_cast<LoadMaterialCommand*>(listCommand_[i].get());
-        g_com = dynamic_cast<LoadGeometryCommand*>(listCommand_[i].get());
-        t_com = dynamic_cast<LoadTextureCommand*>(listCommand_[i].get());
+      g_com = dynamic_cast<LoadGeometryCommand*>(listCommand_[i].get());
+      t_com = dynamic_cast<LoadTextureCommand*>(listCommand_[i].get());
         if (m_com != NULL){
           if (m_com->getMaterial()->is_compiled_){
             listCommand_.erase(listCommand_.begin() + i);
