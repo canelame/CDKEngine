@@ -7,7 +7,6 @@
 #include "ref_counter.h"
 #include "raii_pointer.h"
 #include "base.h"
-#include "display_list.h"
 #include "types.h"
 #include "opengl_interfaz.h"
 
@@ -18,7 +17,7 @@
 *
 */
  
-class Camera : public Command
+class Camera 
 {
 public:
   vec3 position_;
@@ -44,6 +43,9 @@ public:
   void setLookAt(vec3 eye, vec3 center, vec3 up);
   void render(DisplayList &dl);
   void cull();
+  glm::mat4 getModel();
+  glm::mat4 getProyection();
+  glm::mat4 getView();
   /**
   * @brief Runs the command 
   */

@@ -57,15 +57,26 @@ void createWindow(){
 
 
 
-  //dl->add(std::make_shared <LoadMaterialCommand>(g) );
+  dl->add(std::make_shared <LoadMaterialCommand>(m) );
+  dl->add(std::make_shared<LoadGeometryCommand>(g) );
+  dl->add(std::make_shared<LoadTextureCommand>(m) );
+  dl->add(std::make_shared<UseGeometryCommand>(g) );
+  dl->add(std::make_shared<UseTextureComman>(m) );
+  dl->add(std::make_shared<UseMaterialCommand>(m) );
+  dl->add(std::make_shared<SetupCameraCommand>(c));
+  dl->add(std::make_shared<DrawCommand>() );
+
+
+  
   //dl->add(std::make_shared<UseMaterialCommand>() );
-  dl->add( std::make_shared<LoadGeometryCommand>(m) );
+
   //dl->add(std::make_shared<>);
  
 
 
   
   while (g_win.processEvents()){
+    dl->update();
     ImGui_ImplGlfwGL3_NewFrame();
   //  task_manager_->addTask(std::make_shared<UpdateDisplay>(dl));
 	  glClearColor(.3f, .2f, .7f, 1.0f);

@@ -2,7 +2,6 @@
 #define __H_MATERIAL__
 #include "GL\glew.h"
 #include "glm\glm.hpp"
-#include "command.h"
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -15,7 +14,7 @@
 * @author Alejandro Canela Mendez
 * @brief This class represents a material for one mesh.
 */
-class Material :public Command{
+class Material {
 
 public:
   enum TYPE{
@@ -47,11 +46,12 @@ public:
   ~Material(){};
   std::string getVertexData();
   std::string getFragmentData();
-private:
   enum TYPE_SHADER {
     FRAGMENT_SHADER = 0,
     VERTEX_FRAGMENT
   };
+private:
+  
   unsigned char* image_;
   bool is_texture_;
   mutable  GLint program_;

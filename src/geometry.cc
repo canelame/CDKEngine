@@ -31,13 +31,13 @@ void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal
 
 }
 
-void Geometry::create(){
+std::shared_ptr< Buffer> Geometry::getBuffer(){
 
- 
+  return geo_buff_;
 
 
 }
-void Geometry::runCommand(OpenGlInterFaz &i)const{
+/*void Geometry::runCommand(OpenGlInterFaz &i)const{
 
   if (geo_buff_->isDirty()){
     std::vector<std::vector<float>>attrib;
@@ -51,7 +51,8 @@ void Geometry::runCommand(OpenGlInterFaz &i)const{
     i.useGeometry();
   }
 
-}
+}*/
+
 void Geometry::setPosition(vec3 &p){
   position_ = p;
 }

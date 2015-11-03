@@ -1,6 +1,7 @@
 #ifndef __H_LISTCOMMAND__
 #define __H_LISTCOMMAND__
 
+#include "glm\glm.hpp"
 #include "command.h"
 #include <deque>
 #include <memory>
@@ -9,6 +10,7 @@
 #include "material.h"
 #include "buffer.h"
 #include "geometry.h"
+#include "camera.h"
 /**
 * command.h
 * @author Alejandro Canela Mendez
@@ -16,108 +18,144 @@
 * this commands will be executed in render fucntion.
 */
 
+class DrawCommand : public Command{
+public:
+  DrawCommand(){
+   
+  }
+
+
+  void DrawCommand::runCommand(OpenGlInterFaz &in)const{
+
+    in.drawGeometry();
+  }
+
+};
 
 
 class UseGeometryCommand : public Command{
 public:
-	UseGeometryCommand(std::shared_ptr<Geometry*>&geo){
-		
+	UseGeometryCommand(std::shared_ptr<Geometry>geo){
+    t_geo = geo;
 	}
-	void runCommand(OpenGlInterFaz &in)const;
+	
 
-	void UseGeometryCommand::runCommand(OpenGlInterFaz &in){
+	void UseGeometryCommand::runCommand(OpenGlInterFaz &in)const{
+    
 		in.useGeometry();
 	}
 private:	
 	
-
+  std::shared_ptr<Geometry> t_geo;
 };
 
 
 class LoadGeometryCommand: public Command{
 public:	
-	LoadGeometryCommand(std::shared_ptr<Geometry*>&geo){
+	LoadGeometryCommand(std::shared_ptr<Geometry> geo){
 		t_geo = geo;
 	}
 
-	void runCommand(OpenGlInterFaz &in)const;
-	void LoadGeometryCommand::runCommand(OpenGlInterFaz &in){
-		in.useGeometry();
+
+	void LoadGeometryCommand::runCommand(OpenGlInterFaz &in)const{
+    if (t_geo.get()->getBuffer()->isDirty()){
+      std::vector<std::vector<float>>attrib;
+      attrib = t_geo.get()->getBuffer()->getAttributes();
+      in.loadBuffer(attrib, t_geo.get()->getBuffer()->getIndexes());
+      t_geo.get()->getBuffer()->setDirty(false);
+      delete_=true;
+    }
 	}
+  
+  bool deleted(){ return delete_; }
+  void shouldDelete(bool v){ delete_ = v; }
 private:
-	std::shared_ptr<Geometry*> t_geo;
+	std::shared_ptr<Geometry> t_geo;
+  mutable bool delete_ = false;
 
 };
 
 class LoadMaterialCommand : public Command{
-
-	LoadMaterialCommand(std::shared_ptr<Material*>&mat){
-		t_mat = std::move(mat);
+public:
+	LoadMaterialCommand(std::shared_ptr<Material> mat){
+		t_mat = mat;
 	}
 
-	void runCommand(OpenGlInterFaz &in)const;
-	void LoadMaterialCommand::runCommand(OpenGlInterFaz &in){
-		//in.loadMaterial( ( (*t_mat)->getVertexData().c_str(), (*t_mat)->getFragmentData().c_str() );
+ 
+	void LoadMaterialCommand::runCommand(OpenGlInterFaz &in)const{
+	  in.loadMaterial( t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str() );
 	}
-
-	std::shared_ptr<Material*> t_mat;
+private:
+	std::shared_ptr<Material> t_mat;
 
 };
 
 class LoadTextureCommand : public Command{
-	LoadTextureCommand(std::unique_ptr<Material>mat){
-		t_mat = std::move(mat);
-	}
-	void runCommand(OpenGlInterFaz &in)const;
-	void LoadTextureCommand::runCommand(OpenGlInterFaz &in){
-		//in.loadTexture();
+public:
+  LoadTextureCommand(std::shared_ptr<Material>mat){
+		t_mat =mat;
 	}
 
-	std::unique_ptr<Material> t_mat;
-
+	void LoadTextureCommand::runCommand(OpenGlInterFaz &in)const{
+		in.loadTexture("textures/o.jpg");
+	}
+private:
+  std::shared_ptr<Material> t_mat;
+  bool delete_ = false;
 
 };
 
 class UseTextureComman : public Command {
-
-	UseTextureComman(std::unique_ptr<Material>mat){
-		t_mat = std::move(mat);
+public:
+	UseTextureComman(std::shared_ptr<Material>mat){
+		t_mat = mat;
 	}
 
-	void runCommand(OpenGlInterFaz &in)const;
-	void UseTextureComman::runCommand(OpenGlInterFaz &in){
+
+	void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
 		in.useTexture();
 	}
 
-	std::unique_ptr<Material> t_mat;
+	std::shared_ptr<Material> t_mat;
 };
 
-class  SetupCameraCommand : public Command {
-
-	SetupCameraCommand(std::unique_ptr<Camera>cam){
+class SetupCameraCommand : public Command {
+public:
+  SetupCameraCommand(std::shared_ptr<Camera>cam){
 	 t_cam = std::move(cam);
 	}
 
-	void runCommand(OpenGlInterFaz &in)const;
-	void SetupCameraCommand::runCommand(OpenGlInterFaz &in){
-		
-	}
 
-	std::unique_ptr<Camera> t_cam;
+	void SetupCameraCommand::runCommand(OpenGlInterFaz &in)const{
+    in.useUniformMat4("u_model_m", glm::value_ptr(t_cam.get()->getModel() ));
+    in.useUniformMat4("u_projection_m", glm::value_ptr(t_cam.get()->getProyection()));
+    in.useUniformMat4("u_view_m", glm::value_ptr(t_cam.get()->getModel()));
+	}
+private:
+	std::shared_ptr<Camera> t_cam;
 
 };
-
-
 
 class UseMaterialCommand : public Command{
-	void runCommand(OpenGlInterFaz &in)const;
-	void UseMaterialCommand::runCommand(OpenGlInterFaz &in){
-		in.useMaterial();
-	}
+public:
+  UseMaterialCommand(std::shared_ptr<Material> mat){
+    t_mat = mat;
+  }
+
+
+  void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
+    in.useMaterial();
+  }
+private:
+  std::shared_ptr<Material> t_mat;
 
 };
 
+
+
+
 class DisplayList{
+  class UseGeometryCommand;
 public:
 	friend class OpenGlInterFaz;
   typedef std::shared_ptr<Command> Comm_;
@@ -150,9 +188,11 @@ public:
 
     Comm_ t_com;
     for (int i = 0; i < listCommand_.size(); i++){
-      t_com = listCommand_.at(i);
+      if (listCommand_[i].get()){
+       
+      }
     }
-
+    
   }
 private:
 	OpenGlInterFaz *interfaz_;

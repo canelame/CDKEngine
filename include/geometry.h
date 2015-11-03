@@ -3,7 +3,6 @@
 
 #include "tiny_obj_loader.h"
 #include "GL\glew.h"
-#include "display_list.h"
 #include "command.h"
 #include "buffer.h"
 #include "types.h"
@@ -45,15 +44,9 @@ public:
   */
   void loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
     std::vector<unsigned int>index);
-  /**
-  * @brief After loading the attributes we must call this function to create the geometry.
-  */
-  void create();
-  Command* c;
-  /**
-  * @brief Pure virtual function, this execute OpenGL code in displayList.
-  */
-  void runCommand(OpenGlInterFaz &i)const;
+
+  std::shared_ptr<Buffer> getBuffer();
+
   /**
   * @brief This functions not must be here.
   */
@@ -72,7 +65,7 @@ private:
   vec3 scale_;
   bool loaded_ = false;
   mutable bool used_ = false;
-  std::unique_ptr<Buffer> geo_buff_;
+  std::shared_ptr<Buffer> geo_buff_;
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile
   std::vector<tinyobj::material_t> materials_; //Only ude whit loadObjFile
   

@@ -33,9 +33,7 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
 }
 
 void Camera::render(DisplayList &dl){
-  for (int i = 0; i < dl.size(); i++){
-    dl.execute();
-  }
+
 }
 
 void Camera::cull(){
@@ -49,20 +47,23 @@ void Camera::cull(){
    GLfloat camZ = cos(glfwGetTime()) * radius;
    glm::mat4 view;
    view = glm::lookAt(glm::vec3(position_.x, position_.y, position_.z), data->front_, glm::vec3(0.0, 1.0, 0.0));
-
-
+   const float  color[]= { 0 };
+   i.useUniformUi("u_texture",0);
+   //i.useUnifor3f("color_", color);
+	 i.drawGeometry();
 	
-	mat4 model;
-	//view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
-  model = glm::scale(model, model_scale);
-  model = glm::translate(model, vec3(0.0, 0.0, 0.0));
-	i.useUniformMat4("u_model_m", glm::value_ptr(model));
-  i.useUniformMat4("u_projection_m", glm::value_ptr(data->proyection_mat_));
-  i.useUniformMat4("u_view_m", glm::value_ptr(view));
-  const float  color[]= { 0 };
-  i.useUniformUi("u_texture",0);
-  //i.useUnifor3f("color_", color);
-	i.drawGeometry();
-	
-
 }
+
+ glm::mat4 Camera::getModel(){
+   mat4 model;
+   //view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
+   model = glm::scale(model, model_scale);
+   model = glm::translate(model, vec3(0.0, 0.0, 0.0));
+   return model;
+ }
+ glm::mat4 Camera::getProyection(){
+   return data->proyection_mat_; 
+ }
+ glm::mat4 Camera::getView(){
+   return data->look_at_mat_;
+ }
