@@ -60,6 +60,8 @@ void createWindow(){
   
 	  Scene.cam = std::make_shared<Camera>();
 	  Scene.cam->setPerspective(45, 800.0 / 600.0, 1.0, 1000.0);
+	//Create Root
+	  Scene.root = std::make_shared<Node>();
  //Create Display List
 	  std::shared_ptr< DisplayList> dl;
 	  dl = std::make_shared<DisplayList>();
