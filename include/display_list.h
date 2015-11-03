@@ -85,6 +85,7 @@ public:
 	void LoadMaterialCommand::runCommand(OpenGlInterFaz &in)const{
 	  in.loadMaterial( t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str() );
 	}
+  std::shared_ptr<Material>  getMaterial(){ return t_mat; }
 private:
 	std::shared_ptr<Material> t_mat;
 
@@ -98,7 +99,9 @@ public:
 
 	void LoadTextureCommand::runCommand(OpenGlInterFaz &in)const{
 		in.loadTexture("textures/o.jpg");
+    t_mat.get()->getTexture().get()->setLoaded(true);
 	}
+  std::shared_ptr<Material>  getMaterial(){ return t_mat; }
 private:
   std::shared_ptr<Material> t_mat;
   bool delete_ = false;
@@ -145,6 +148,7 @@ public:
 
   void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
     in.useMaterial();
+    t_mat->is_compiled_ = true;
   }
 private:
   std::shared_ptr<Material> t_mat;
@@ -185,12 +189,35 @@ public:
   }
 
   void update(){
-
-    Comm_ t_com;
+    LoadMaterialCommand * m_com;
+    LoadGeometryCommand  *g_com;
+    LoadTextureCommand *t_com;
+    //Comm_ *t_com;
     for (int i = 0; i < listCommand_.size(); i++){
-      if (listCommand_[i].get()){
-       
-      }
+        
+   
+      m_com = dynamic_cast<LoadMaterialCommand*>(listCommand_[i].get());
+        g_com = dynamic_cast<LoadGeometryCommand*>(listCommand_[i].get());
+        t_com = dynamic_cast<LoadTextureCommand*>(listCommand_[i].get());
+        if (m_com != NULL){
+          if (m_com->getMaterial()->is_compiled_){
+            listCommand_.erase(listCommand_.begin() + i);
+          }
+          
+        }
+
+        if (g_com != NULL){
+          if (g_com->deleted()){
+            listCommand_.erase(listCommand_.begin() + i);
+          }
+        }
+
+        if (t_com != NULL){
+          if (t_com->getMaterial()->getTexture().get()->getLoaded()){
+            listCommand_.erase(listCommand_.begin() + i);
+          }
+        }
+
     }
     
   }

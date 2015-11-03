@@ -5,7 +5,7 @@
 Material::Material(TYPE t){
   interfaz_ = new OpenGlInterFaz();
   is_compiled_ = false;
-  texture_ = std::make_unique<Texture>();
+  texture_ = std::make_shared<Texture>();
   if (t == 0){
     loadShader("shaders/diffuse_v.glsl", "shaders/diffuse_f.glsl");
   }
@@ -48,7 +48,7 @@ void Material::runCommand(OpenGlInterFaz &i)const{
   if (!is_compiled_){
 
     i.loadMaterial(vertex_data_.c_str(), fragment_data_.c_str());
-	  is_compiled_ = true;
+	 
   }
   if (is_texture_){
     if (!texture_.get()->getLoaded()){

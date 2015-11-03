@@ -46,10 +46,12 @@ public:
   ~Material(){};
   std::string getVertexData();
   std::string getFragmentData();
+  std::shared_ptr<Texture> getTexture(){ return texture_; }
   enum TYPE_SHADER {
     FRAGMENT_SHADER = 0,
     VERTEX_FRAGMENT
   };
+  bool is_compiled_;
 private:
   
   unsigned char* image_;
@@ -58,7 +60,7 @@ private:
   mutable  GLuint vertex_shader_;
   mutable  GLuint fragment_shader_;
   Material_attributes mat_attrib_;
-  mutable bool is_compiled_;
+
   std::string vertex_data_;
   std::string fragment_data_;
   std::string texture_name_;
@@ -66,7 +68,7 @@ private:
 
   void compileShader(GLuint shader)const;
   OpenGlInterFaz *interfaz_;
-  std::unique_ptr<Texture> texture_;
+  std::shared_ptr<Texture> texture_;
   friend OpenGlInterFaz;
 };
 
