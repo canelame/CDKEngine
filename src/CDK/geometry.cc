@@ -1,15 +1,19 @@
 #include "CDK/geometry.h"
 #include <list>
-
-
-
+#include "glm\glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 Geometry::Geometry(){
 	geo_buff_ = std::make_unique<Buffer>();
-  
-
 }
-
+glm::mat4 Geometry::getModel(){
+  mat4 model;
+  // view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
+  model = glm::scale(model, scale_);
+  model = glm::translate(model, position_);
+  return model;
+}
 
 void Geometry::loadObjFile(const char*file){
   std::string err = tinyobj::LoadObj(shapes_, materials_, file);
@@ -30,29 +34,9 @@ void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal
 
 
 }
-
 std::shared_ptr< Buffer> Geometry::getBuffer(){
-
   return geo_buff_;
-
-
 }
-/*void Geometry::runCommand(OpenGlInterFaz &i)const{
-
-  if (geo_buff_->isDirty()){
-    std::vector<std::vector<float>>attrib;
-    attrib = geo_buff_->getAttributes();
-
-    i.loadBuffer(attrib, geo_buff_->getIndexes());
-    geo_buff_->setDirty(false);
-	i.useGeometry();
-  }
-  else{
-    i.useGeometry();
-  }
-
-}*/
-
 void Geometry::setPosition(vec3 &p){
   position_ = p;
 }

@@ -15,7 +15,6 @@ struct Buffer::Data {
 
 Buffer::Buffer(){
   data_ = new Data;
-  data_->interface_ = new OpenGlInterFaz();
 };
 void Buffer::init(int size){
   data_->size_ = size;
@@ -57,17 +56,7 @@ std::vector<unsigned int > Buffer::getIndexes(){
 
 void Buffer::setDirty(bool d){ data_->dirty_ = d; }
 
-OpenGlInterFaz* Buffer::useGeometry(){
-  if (isDirty()){
-    std::vector<std::vector<float>> a = { data_->positions_, data_->normals_, data_->uvs_ };
-    data_->interface_->loadBuffer(a, data_->indexes_);
-    setDirty(false);
-  }
-  data_->interface_->useGeometry();
-  return  data_->interface_;
-}
 
-OpenGlInterFaz* Buffer::useDrawGeometry(){
-  data_->interface_->drawGeometry();
-  return  data_->interface_;
+void Buffer::setVAO(GLuint v){
+  data_->vao_ = v;
 }

@@ -11,6 +11,9 @@ public:
   void runCommand(OpenGlInterFaz &dl)const{};
   void setLoaded(bool value);
   bool getLoaded();
+  unsigned char* getData();
+  int getWidth();
+  int getHeigth();
 private:
 	Data *data_;
 

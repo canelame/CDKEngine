@@ -1,6 +1,4 @@
 #include "CDK/opengl_interfaz.h"
-#define STB_IMAGE_IMPLEMENTATION    
-#include "external/stb_image.h"
 
 struct OpenGlInterFaz::Data{
    GLuint shadow_texture_;
@@ -13,7 +11,7 @@ struct OpenGlInterFaz::Data{
   GLuint shadow_vao_;
   GLuint shadow_vbo_v_;
   GLuint shadow_vbo_i_;
-  std::vector<float> shadow_attrib_[3];
+  std::vector<std::vector<float>> shadow_attrib_;
   std::vector<unsigned int > shadow_index_;
 
   };
@@ -22,19 +20,19 @@ OpenGlInterFaz::OpenGlInterFaz(){
   data_ = new Data;
 };
 
-void OpenGlInterFaz::loadBuffer(std::vector<std::vector<float>> attributes, std::vector<unsigned int> &index){
+void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
   std::vector<float> temp_p, temp_n, temp_uv;
-  
-  data_->shadow_attrib_[0]= temp_p = attributes[0];
-  data_->shadow_attrib_[1] = temp_n = attributes[1];
-  data_->shadow_attrib_[2] = temp_uv = attributes[2];
-  data_->shadow_index_ = index;
+  data_->shadow_attrib_ = buff->getAttributes();
+  data_->shadow_index_ = buff->getIndexes();
 
-  GLint postion_size = temp_p.size()*sizeof(float);
-  GLint normal_size = temp_n.size()*sizeof(float);
-  GLint uv_size = temp_uv.size()*sizeof(float);
+  GLint postion_size = data_->shadow_attrib_[0].size()*sizeof(float);
+  GLint normal_size = data_->shadow_attrib_[1].size()*sizeof(float);
+  GLint uv_size = data_->shadow_attrib_[2].size()* sizeof(float);
   GLint index_size = data_->shadow_index_.size()*sizeof(unsigned int);
 
+  temp_p = data_->shadow_attrib_[0];
+  temp_n = data_->shadow_attrib_[1];
+  temp_uv = data_->shadow_attrib_[2];
 
   glGenVertexArrays(1, &data_->shadow_vao_);
   glGenBuffers(1, &data_->shadow_vbo_v_);
@@ -48,7 +46,7 @@ void OpenGlInterFaz::loadBuffer(std::vector<std::vector<float>> attributes, std:
  // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*temp_p.size(), &temp_p[0]);
     //Load positions
   if (temp_p.size() != 0){
-     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*temp_p.size(), &temp_p[0]);
+     glBufferSubData(GL_ARRAY_BUFFER, 0, postion_size, &temp_p[0]);
 
   }
   //Load normals
@@ -83,14 +81,16 @@ void OpenGlInterFaz::loadBuffer(std::vector<std::vector<float>> attributes, std:
 	glBindVertexArray(0);	
   glDeleteBuffers(1, &data_->shadow_vbo_i_);
   glDeleteBuffers(1, &data_->shadow_vbo_v_);
+  buff->setVAO(data_->shadow_vao_);
 }
 
-void OpenGlInterFaz::useGeometry(){
-  glBindVertexArray(data_->shadow_vao_);
+void OpenGlInterFaz::useGeometry(GLuint vao){
+  glBindVertexArray(vao);;
 }
 void OpenGlInterFaz::useMaterial(){
   //printf("Using program:%d", shadow_program_);
   glUseProgram(data_->shadow_program_);
+
  
 }
 void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_data){
@@ -130,9 +130,11 @@ void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_da
 
 }
 
-void OpenGlInterFaz::drawGeometry(){
+void OpenGlInterFaz::drawGeometry(std::vector<unsigned int> indices){
  // printf("Draw elements: %d indices\n",shadow_index_.size());
-  glDrawElements(GL_TRIANGLES, data_->shadow_index_.size(), GL_UNSIGNED_INT, (void*)0);
+ 
+
+  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }
 
@@ -184,28 +186,22 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
   }
 }
 
-void OpenGlInterFaz::loadTexture(const char* file){
-  unsigned char* image_;
-  int x, y;
-  int w, h;
-    int comp;
-    image_ = stbi_load(file, &w, &h, &comp, 0);
-    if (image_==nullptr){
-      printf("Failed to load texture\n ");
+void OpenGlInterFaz::loadTexture(unsigned char* file,int w_texture,int h_texture){
 
-    }
     
     glGenTextures(1, &data_->shadow_texture_);
     glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image_);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w_texture, h_texture, 0, GL_RGB, GL_UNSIGNED_BYTE,file );
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,0);
-    stbi_image_free(image_);
+    
 }
 
 void OpenGlInterFaz::useTexture(){
+  int tex_i = glGetUniformLocation(data_->shadow_program_, "u_texture");
+  glActiveTexture(GL_TEXTURE0 + tex_i);
   glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
 }

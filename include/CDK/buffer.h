@@ -6,12 +6,13 @@
 #include <memory>
 #include <list>
 #include "GL\glew.h"
-#include "opengl_interfaz.h"
+
 /**
 * buffer.h
 * @author Alejandro Canela Mendez
 * @brief This class represents a buffer.
 */
+class OpenGlInterFaz;
 class Buffer{
 
 public:
@@ -60,6 +61,10 @@ public:
   */
 	GLuint* getVAO();
   /**
+  * @brief Set vao of the buffer
+  */
+  void setVAO(GLuint vao);
+  /**
   * @brief This function return  vbos ;
   * @return Where the vbos is binding.
   */
@@ -79,9 +84,7 @@ public:
   opengl_interfaz.
   * @return A pointer to opengl_interfaz.
   */
-	OpenGlInterFaz* useGeometry();
-
-	OpenGlInterFaz* useDrawGeometry();
+	;
   /**
   * @brief This function is used to call opengl to draw the geomtry, and return the instance of
   opengl_interfaz.

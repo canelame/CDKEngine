@@ -4,10 +4,14 @@
 #include <vector>
 #include "types.h"
 #include "drawable.h"
+#include "glm\glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 class Node{
 
 public:
 	struct Data;
+  struct Transform;
 	Node();
 	void addChild(std::shared_ptr<Drawable> child);
 	std::shared_ptr<Drawable> childAt(int index);

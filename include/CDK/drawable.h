@@ -11,6 +11,8 @@ public:
 	vec3 position();
 	vec3 rotation();
 	vec3 scale();
+  std::shared_ptr<Geometry> geometry();
+  std::shared_ptr<Material> material();
 
 	void setPosition(vec3 &data);
 	void setPosition(const float* data);

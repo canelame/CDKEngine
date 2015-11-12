@@ -25,7 +25,7 @@ public:
 
   
 	Geometry();
-  
+  glm::mat4 getModel();
   /**
   * @brief This fucntion allows to load obj files. You can load several shapes from the file
   * using this funciton. You must call create(), after loading values

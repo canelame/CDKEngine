@@ -9,11 +9,14 @@
 #include "opengl_interfaz.h"
 #include "texture.h"
 #include <memory>
+
 /**
 * material.h
 * @author Alejandro Canela Mendez
 * @brief This class represents a material for one mesh.
 */
+class TaskManager;
+class ReadFile;
 class Material {
 
 public:
@@ -30,8 +33,8 @@ public:
     GLuint texture;
     Light material_light; //We can have multiples lights , creating an array. 
   };
-  Material(TYPE t);
-  void loadTexture(const char* file_name);
+  Material(TYPE t,std::shared_ptr<TaskManager>);
+
   void runCommand(OpenGlInterFaz &i)const;
 
   /**
@@ -41,7 +44,7 @@ public:
   */
   void loadShader(const char*vertex_file, const char*fragment_file);
   GLuint getProgram();
-  
+  void setTexture(std::shared_ptr<Texture> txt);
   GLuint texture(){ return mat_attrib_.texture; }
   ~Material(){};
   std::string getVertexData();

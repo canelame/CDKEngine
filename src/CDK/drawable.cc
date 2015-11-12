@@ -9,7 +9,15 @@ struct Drawable::Data{
 Drawable::Drawable(){
 	data_ = new Data;
 }
-
+vec3 Drawable::position(){
+  return data_->position_;
+}
+vec3 Drawable::scale(){
+  return data_->scale_;
+}
+vec3 Drawable::rotation(){
+  return data_->rotation_;
+}
 void Drawable::setGeometry(std::shared_ptr<Geometry>geo){
 	data_->drawable_geometry_ = geo;
 }
@@ -43,3 +51,6 @@ void Drawable::setScale(const float* data){
 	data_->scale_.y = data[1];
 	data_->scale_.z = data[2];
 }
+
+std::shared_ptr<Geometry> Drawable::geometry(){ return data_->drawable_geometry_; }
+std::shared_ptr<Material> Drawable::material(){ return data_->drawable_material_; }

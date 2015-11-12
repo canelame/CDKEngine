@@ -10,6 +10,7 @@
 #include "types.h"
 #include "opengl_interfaz.h"
 #include "node.h"
+
 /**
 * camera.h 
 * @author Alejandro Canela Mendez 2015.
@@ -44,16 +45,18 @@ public:
   void setLookAt(vec3 eye, vec3 center, vec3 up);
   void render(std::shared_ptr<Node> node);
   void cull();
-  glm::mat4 getModel();
+  glm::mat4 getModel(vec3 position, vec3 rotation, vec3 scale);
   glm::mat4 getProyection();
   glm::mat4 getView();
+  mat4 globalModel();
   /**
   * @brief Runs the command 
   */
   void runCommand(OpenGlInterFaz &i)const;
   friend class OpenGlInterFaz;
 private:
-  Data *data;
+  void createDisplayList(std::shared_ptr<Node> node);
+  Data *data_;
 
 };
 
