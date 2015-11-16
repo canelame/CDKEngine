@@ -112,3 +112,16 @@ private:
 
 
 #endif
+
+#ifndef __TASK_HANDLE__
+#define __TASK_HANDLE__
+
+class TaskHandle {
+
+
+private:
+  int id_;
+};
+
+
+#endif
