@@ -9,10 +9,15 @@ public:
 	/**
 	* @brief Virtual methor, had to be reimplemented in each class that its derived of Task.
 	*/
-  virtual void runTask()const=0;
-
+	Task();
+  virtual void runTask()=0;
+	virtual ~Task();
+	bool getLocked();
+	void lock();
+	void unlock();
 private:
   int id_;
+	mutable	bool is_locked_;
 };
 #endif 
 
@@ -34,7 +39,7 @@ public:
 	/**
 	* @brief Execute the task
 	*/
-	void runTask()const;
+	void runTask();
 private:
   std::shared_ptr<DisplayList> dl_;
 };
@@ -59,7 +64,7 @@ public:
 	/**
 		@brief Execute the task.
 	*/
-	void ReadFile::runTask()const;
+	void ReadFile::runTask();
 private:
   const char* name_;
   mutable std::string data_;
@@ -118,9 +123,13 @@ private:
 
 class TaskHandle {
 
-
+public:
+	struct Data;
+	TaskHandle();
+	~TaskHandle();
 private:
-  int id_;
+
+	Data* data_;
 };
 
 

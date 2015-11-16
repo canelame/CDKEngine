@@ -186,7 +186,7 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
   }
 }
 
-void OpenGlInterFaz::loadTexture(unsigned char* file,int w_texture,int h_texture){
+void OpenGlInterFaz::loadTexture(std::shared_ptr<Material> m){
 
     
     glGenTextures(1, &data_->shadow_texture_);
@@ -194,14 +194,15 @@ void OpenGlInterFaz::loadTexture(unsigned char* file,int w_texture,int h_texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w_texture, h_texture, 0, GL_RGB, GL_UNSIGNED_BYTE,file );
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m->getTexture()->getWidth(),
+									m->getTexture()->getHeigth(), 0, GL_RGB, GL_UNSIGNED_BYTE,m->getTexture()->getData() );
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,0);
-    
+		m->getTexture()->setID(data_->shadow_texture_);
 }
 
-void OpenGlInterFaz::useTexture(){
-  int tex_i = glGetUniformLocation(data_->shadow_program_, "u_texture");
+void OpenGlInterFaz::useTexture(std::shared_ptr<Material>m){
+  int tex_i = glGetUniformLocation(m->getProgram(), "u_texture");
   glActiveTexture(GL_TEXTURE0 + tex_i);
-  glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
+  glBindTexture(GL_TEXTURE_2D, m->getTexture()->getID());
 }

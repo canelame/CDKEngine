@@ -67,7 +67,7 @@ void createWindow(){
     m->setTexture(txt1);
 
     std::shared_ptr<Texture> txt2 = std::make_shared<Texture>();
-    txt2->loadTexture("textures/o.jpg");
+    txt2->loadTexture("textures/red.png");
     m2->setTexture(txt2);
 	 
   
@@ -81,30 +81,26 @@ void createWindow(){
 	  std::shared_ptr< DisplayList> dl;
 	  dl = std::make_shared<DisplayList>();
 
-  for (int i = 0; i < 3; i++){
+  for (int i = 0; i <5; i++){
 	  std::shared_ptr<Drawable> drawable;
 	  drawable = std::make_shared<Drawable>();
 	  
     if (i == 1){
       drawable->setGeometry(g2);
-      drawable->setMaterial(m);
+      drawable->setMaterial(m2);
     }
     else{
       drawable->setGeometry(g);
-      drawable->setMaterial(m2);
+      drawable->setMaterial(m);
     }
 	 
-    drawable->setPosition(vec3( (-5.0+(i*5)), 0.0, 0.0));
+    drawable->setPosition(vec3( (-1.0+(i*2)), 0.0, -2.0+(i*2.0) ));
 	
     drawable->setScale(vec3(5.0,5.0,5.0));
     Scene.root.get()->addChild(drawable);
   }
   Scene.root.get()->setPosition(vec3(0.0, 0.0, -50.0));
-  Scene.root.get()->setRotation(vec3(0.0,0.0,2.0));
-
-
-
-
+  Scene.root.get()->setRotation(vec3(0.0,0.0,0.0));
 
   while (g_win.processEvents()){
     auto start_c = std::chrono::steady_clock::now();
@@ -116,18 +112,16 @@ void createWindow(){
 		Scene.cam->render(Scene.root);
 		imGuiWindow(Scene.cam.get()->model_scale, Scene.cam.get()->position_,Scene.root);
 		g_win.swap();
-    auto end_c = std::chrono::steady_clock::now();
-    auto diff = end_c - start_c;
-   // std::chrono::duration<double, std::chrono::nanoseconds>(diff).count();
+   
   }
- 
+	task_manager_->~TaskManager();
 }
 
 int main(){
 
   
   createWindow();
- 
+	printf("");
   
   return 0;
 }

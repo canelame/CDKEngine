@@ -1,7 +1,6 @@
 #ifndef __H_TEXTURE__
 #define __H_TEXTURE_
 #include "command.h"
-#include "opengl_interfaz.h"
 class Texture : public Command{
 public:
 	struct Data;
@@ -14,6 +13,9 @@ public:
   unsigned char* getData();
   int getWidth();
   int getHeigth();
+	unsigned int getTexturePosition();
+	unsigned int getID();
+	void setID(unsigned int value);
 private:
 	Data *data_;
 

@@ -64,7 +64,7 @@ void DisplayList::update(){
 int DisplayList::size(){ 
 	return 0;
 }
-///////// LOAD_TEXTURE_COMMAND CLASS/////////////////
+///////// USE_TEXTURE_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
 UseTextureComman::UseTextureComman(std::shared_ptr<Material>mat){
 	t_mat = mat;
@@ -73,7 +73,7 @@ UseTextureComman::UseTextureComman(std::shared_ptr<Material>mat){
 
 void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
 
-	in.useTexture();
+	in.useTexture(t_mat);
 }
 
 ///////// SETUP_CAMERA_COMMAND CLASS/////////////////
@@ -111,8 +111,7 @@ LoadTextureCommand::LoadTextureCommand(std::shared_ptr<Material>mat){
 }
 
 void LoadTextureCommand::runCommand(OpenGlInterFaz &in)const{
-	in.loadTexture((unsigned char*)t_mat->getTexture()->getData(), t_mat->getTexture()->getWidth(),
-									t_mat->getTexture()->getHeigth());
+	in.loadTexture(t_mat);
 	t_mat.get()->getTexture().get()->setLoaded(true);
 }
 std::shared_ptr<Material>  LoadTextureCommand::getMaterial(){
@@ -128,7 +127,11 @@ void LoadMaterialCommand::runCommand(OpenGlInterFaz &in)const{
 	in.loadMaterial(t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str());
 	t_mat->is_compiled_ = true;
 }
-std::shared_ptr<Material>  LoadMaterialCommand::getMaterial(){ return t_mat; }
+
+std::shared_ptr<Material>  LoadMaterialCommand::getMaterial(){ 
+	return t_mat; 
+}
+
 ///////// LOAD_GEO_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
 LoadGeometryCommand::LoadGeometryCommand(std::shared_ptr<Geometry> geo){
@@ -192,5 +195,4 @@ UseMaterialCommand::UseMaterialCommand(std::shared_ptr<Material> mat){
 
 void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
 	in.useMaterial();
-	t_mat->is_compiled_ = true;
 }

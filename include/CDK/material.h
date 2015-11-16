@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "opengl_interfaz.h"
 #include "texture.h"
 #include <memory>
 
@@ -59,9 +58,9 @@ private:
   
   unsigned char* image_;
   bool is_texture_;
-  mutable  GLint program_;
-  mutable  GLuint vertex_shader_;
-  mutable  GLuint fragment_shader_;
+  GLint program_;
+  GLuint vertex_shader_;
+  GLuint fragment_shader_;
   Material_attributes mat_attrib_;
 
   std::string vertex_data_;

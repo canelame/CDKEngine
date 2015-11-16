@@ -86,23 +86,23 @@ void Camera::cull(){
 
      data_->dl_cam_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
      data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material() ));
-     data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
-   
-     std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
+		 data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
 
-	 mat4 model_node;
-	 model_node = glm::rotate(model_node,node->rotation().x,vec3(1.0,0.0,0.0));
-	 model_node = glm::rotate(model_node, node->rotation().y, vec3(0.0, 1.0, 0.0));
-	 model_node = glm::rotate(model_node, node->rotation().z, vec3(0.0, 0.0, 1.0));
-	 model_node= glm::scale(model_node,vec3(2.0,2.0,2.0));
+		 mat4 model_node;
+		 {
+			 model_node = glm::rotate(model_node, node->rotation().x, vec3(1.0, 0.0, 0.0));
+			 model_node = glm::rotate(model_node, node->rotation().y, vec3(0.0, 1.0, 0.0));
+			 model_node = glm::rotate(model_node, node->rotation().z, vec3(0.0, 0.0, 1.0));
+			 model_node = glm::scale(model_node, vec3(2.0, 2.0, 2.0));
+			 model_node = glm::translate(model_node, node->position());
+		 }
 
-     model_node = glm::translate(model_node,node->position() );
-
-     data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c,
-                              (t_drawable->position()),
-                              (t_drawable->rotation()),
-                              (t_drawable->scale()),model_node ));
-     data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()) );
+		std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
+			 data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c,
+																(t_drawable->position()),
+																(t_drawable->rotation()),
+																(t_drawable->scale()),model_node ));
+			 data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()) );
    }
 
 

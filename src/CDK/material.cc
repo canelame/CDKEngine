@@ -24,8 +24,7 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
 
   vertex_data_ = vertex_file;
   fragment_data_ = fragment_file;
-
-
+	
 }
 
 void Material::runCommand(OpenGlInterFaz &i)const{

@@ -4,7 +4,7 @@
 
 struct Texture::Data{
 	bool is_loaded;
-	OpenGlInterFaz *interfaz_;
+	unsigned int texture_id_;
   unsigned char* image_;  
   int w, h;
 };
@@ -13,8 +13,6 @@ Texture::Texture(){
 	data_->is_loaded = false;
 };
 void Texture::loadTexture(const char*file){
-  //  data_->interfaz_->loadTexture(file);
-
   int x, y;
 
   int comp;
@@ -37,4 +35,11 @@ int Texture::getWidth(){
 }
 int Texture::getHeigth(){
   return data_->h;
+}
+unsigned int Texture::getID(){
+	return data_->texture_id_;
+}
+
+void Texture::setID(unsigned int id){
+	data_->texture_id_ = id;
 }

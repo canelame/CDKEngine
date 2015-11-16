@@ -5,9 +5,10 @@
 #include "GL\glew.h"
 #include <vector>
 #include "types.h"  
-
 #include <memory>
 #include "CDK/buffer.h"
+#include "CDK/material.h"
+
 class OpenGlInterFaz{
 public:
   struct Data;
@@ -21,8 +22,8 @@ public:
   void useUniformMat4(const char *name,const float* m_data);
   void useUnifor3f(const char *name, const float *data);
   void useUniformUi(const char *name,int value);
-  void loadTexture(unsigned char *file,int w_texture, int _texture);
-  void useTexture();
+	void loadTexture(std::shared_ptr<Material> m);
+  void useTexture(std::shared_ptr<Material>m);
   void drawGeometry(std::vector<unsigned int> indices);
 
   ~OpenGlInterFaz(){};

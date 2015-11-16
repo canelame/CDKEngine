@@ -1,25 +1,43 @@
 #include "CDK/task_manager.h"
-//DISPLAY_LIST IMPLEMENTATION
 
+Task::Task(){
+	id_ = 0;
+	is_locked_ = false;
+}
+Task::~Task(){
+
+}
+bool Task::getLocked(){
+	return is_locked_;
+}
+void Task::lock(){
+	is_locked_ = true;
+	}
+void Task::unlock(){
+	is_locked_ = false;
+}
+
+////////////TASK MANAGER///////////////
+//////////////////////////////////////
 std::mutex TaskManager::mutex_;
 std::condition_variable TaskManager::cond_variable_;
+TaskManager::TaskListT_ TaskManager::task_list_;
 bool stop_;
 bool TaskManager::stop_;
-TaskManager::TaskListT_ TaskManager::task_list_;
 
 void TaskManager::mainThreadLoop(){
 	while (true)
 	{
 		std::unique_lock<std::mutex> lck(TaskManager::mutex_);
     cond_variable_.wait(lck,[&]() {
-      return !(task_list_.size() == 0 && !stop_); });
+			return !(task_list_.size() == 0 && !stop_ ); });
   
-		
-		std::shared_ptr<Task> t =task_list_.front();
-    task_list_.erase(task_list_.begin());
-    t->runTask();
-    if(!task_list_.empty())printf("Task finished\n");
-
+			if (task_list_.at(0)->getLocked() != false){
+				std::shared_ptr<Task> t = task_list_.front();
+				task_list_.erase(task_list_.begin());
+				t->runTask();
+				if (!task_list_.empty())printf("Task finished\n");
+			}
    }
 }
 
@@ -40,12 +58,29 @@ void TaskManager::init(){
    }
 
    TaskManager::~TaskManager(){
-	   for (int i = 0; i < num_cores_; i++) {
+		 cond_variable_.notify_all();
+		 stop_ = true;
+		 for (int i = 0; i < num_cores_; i++) {
 		   list_thread_[i].join();
 	   }
-	   stop_ = true;
+	
    }
 
+	 ///////////////TASK HANDLE//////////////////
+	 /////////////////////////////////////////////////////
+	 struct TaskHandle::Data{
+		 int task_position_;
+		 int id_;
+	 };
+	 TaskHandle::TaskHandle(){
+		 data_ = new Data;
+	 }
+
+	 TaskHandle::~TaskHandle(){
+	 
+	 }
+	 
+	 
 	 ///////////////TASK IMPLEMENTATIONS//////////////////
 	 /////////////////////////////////////////////////////
 
@@ -53,8 +88,9 @@ void TaskManager::init(){
 	 UpdateDisplay::UpdateDisplay(std::shared_ptr<DisplayList> &dl){
 		 dl_ = dl;
 	 }
-	 void UpdateDisplay::runTask()const{
+	 void UpdateDisplay::runTask(){
 		 dl_->update();
+		 unlock();
 	 }
 	 
 
@@ -64,7 +100,7 @@ void TaskManager::init(){
 		 runTask();
 		 out_file = data_;
 	 };
-	 void ReadFile::runTask()const{
+	 void ReadFile::runTask(){
 		 std::stringstream temp_vertex_data;
 		 std::stringstream temp_fragment_data;
 		 std::string line;
@@ -77,7 +113,7 @@ void TaskManager::init(){
 			 data_ = line;
 		 }
 
-
+		 unlock();
 	 }
 
 	 //OTHERS TASKS
