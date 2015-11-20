@@ -3,7 +3,8 @@
 #include <memory>
 #include "CDK\geometry.h"
 #include "CDK\material.h"
-class Drawable{
+class Drawable {
+  
 public:
 	struct Data;
 	Drawable();
@@ -11,6 +12,7 @@ public:
 	vec3 position();
 	vec3 rotation();
 	vec3 scale();
+  
   std::shared_ptr<Geometry> geometry();
   std::shared_ptr<Material> material();
 

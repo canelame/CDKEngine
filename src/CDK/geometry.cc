@@ -28,6 +28,45 @@ void Geometry::loadObjFile(const char*file){
   loaded_ = true;
 }
 
+void Geometry::loadCdkFormat(const char* file_in){
+  FILE *file = fopen(file_in, "rb");
+
+  std::vector<float> v_V;
+  std::vector<float> v_N;
+  std::vector<float> v_UV;
+  std::vector<unsigned int> v_I;
+
+  if (file!=NULL){
+    int num_t_v = readInt(file);
+    for (int i = 0; i < num_t_v; i++){
+
+      v_V.push_back(readFloat(file));
+    }
+
+    int num_t_n = readInt(file);
+    for (int i = 0; i < num_t_n; i++){
+
+      v_N.push_back(readFloat(file));
+    }
+    //Read uvs
+    int num_t_uv = readInt(file);
+    for (int i = 0; i < num_t_uv; i++){
+
+      v_UV.push_back(readFloat(file));
+    }
+    //Read indices
+    int num_t_i = readInt(file);
+    for (int i = 0; i < num_t_i; i++){
+
+      v_I.push_back(readInt(file));
+    }
+  }
+  else{
+    printf("Eror to open file .CDK\n");
+  }
+  geo_buff_->loadData(v_V, v_N, v_UV, v_I);
+}
+
 void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
                               std::vector<unsigned int>index){
 	geo_buff_.get()->loadData(vertex, normal, uv, index);
@@ -240,4 +279,15 @@ void Geometry::createTriangle(){
   }
 	geo_buff_->loadData(positions, normals, uvs,indexes);
 
+}
+
+float Geometry::readFloat(FILE *file){
+  float temp = 0;
+  fread((void*)&temp, sizeof(float), 1, file);
+  return temp;
+}
+int Geometry::readInt(FILE *file){
+  int temp = 0;
+  fread((void*)&temp, sizeof(const int), 1, file);
+  return temp;
 }

@@ -36,6 +36,9 @@ public:
   */
  
   void loadObjFile(const char* name);
+
+  void loadCdkFormat(const char* name);
+
   void createTriangle();
   /**
   * @brief This funtion allow us to load the attribute values manually, you mast order the values and their
@@ -71,6 +74,9 @@ private:
   std::shared_ptr<Buffer> geo_buff_;
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile
   std::vector<tinyobj::material_t> materials_; //Only ude whit loadObjFile
+
+  float readFloat(FILE *file);
+  int readInt(FILE *file);
   
 
 };

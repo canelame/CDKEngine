@@ -50,7 +50,7 @@ void createWindow(){
   
 	  std::shared_ptr<Geometry> g;
 	  g = std::make_shared<Geometry>();
-    g->createCube(1);
+    g->loadCdkFormat("meshes/suzzane.CDK");
 	  std::shared_ptr<Geometry> g2;
 	  g2 = std::make_shared<Geometry>();
 	  g2->loadObjFile("meshes/suzzane.obj");
