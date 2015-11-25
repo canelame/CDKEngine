@@ -3,6 +3,7 @@
 #include "glm\glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+//Assimp include
 
 Geometry::Geometry(){
 	geo_buff_ = std::make_unique<Buffer>();
@@ -16,6 +17,8 @@ glm::mat4 Geometry::getModel(){
 }
 
 void Geometry::loadObjFile(const char*file){
+  /*Load whit tinyobj
+
   std::string err = tinyobj::LoadObj(shapes_, materials_, file);
   
   printf(err.c_str());
@@ -25,46 +28,68 @@ void Geometry::loadObjFile(const char*file){
 								shapes_[0].mesh.indices);
 
   }
-  loaded_ = true;
+  loaded_ = true;*/
+
+  //Load whit asssimp
+ 
 }
 
-void Geometry::loadCdkFormat(const char* file_in){
+void Geometry::loadCdkFormat(const char* file_in,bool assimp){
   FILE *file = fopen(file_in, "rb");
+ 
+    std::vector<float> v_V;
+    std::vector<float> v_N;
+    std::vector<float> v_UV;
+    std::vector<unsigned int> v_I;
+    std::vector<float> v_Tan;
+    std::vector<float> v_Bitan;
+    int num_meshes = 0;
 
-  std::vector<float> v_V;
-  std::vector<float> v_N;
-  std::vector<float> v_UV;
-  std::vector<unsigned int> v_I;
+    if (file != NULL){
+      num_meshes = readInt(file);
+      for (int m = 0; m < num_meshes;m++){
+        int num_t_v = readInt(file);
+        for (int i = 0; i < num_t_v; i++){
+          v_V.push_back(readFloat(file));
+        }
 
-  if (file!=NULL){
-    int num_t_v = readInt(file);
-    for (int i = 0; i < num_t_v; i++){
+        int num_t_n = readInt(file);
+        for (int i = 0; i < num_t_n; i++){
 
-      v_V.push_back(readFloat(file));
-    }
+          v_N.push_back(readFloat(file));
+        }
+        //Read uvs
+        int num_t_uv = readInt(file);
+        for (int i = 0; i < num_t_uv; i++){
 
-    int num_t_n = readInt(file);
-    for (int i = 0; i < num_t_n; i++){
+          v_UV.push_back(readFloat(file));
+        }
+        //Read uvs
+        int num_t_tan = readInt(file);
+        for (int i = 0; i < num_t_tan; i++){
 
-      v_N.push_back(readFloat(file));
-    }
-    //Read uvs
-    int num_t_uv = readInt(file);
-    for (int i = 0; i < num_t_uv; i++){
+          v_UV.push_back(readFloat(file));
+        }
 
-      v_UV.push_back(readFloat(file));
-    }
-    //Read indices
-    int num_t_i = readInt(file);
-    for (int i = 0; i < num_t_i; i++){
+        //Read tangents
+        int num_t_i = readInt(file);
+        for (int i = 0; i < num_t_i; i++){
+          v_Tan.push_back(readInt(file));
+        }
+        //Read tangents
+        int num_bt_i = readInt(file);
+        for (int i = 0; i < num_bt_i; i++){
+          v_Bitan.push_back(readInt(file));
+        }
 
-      v_I.push_back(readInt(file));
-    }
+      }
+    geo_buff_->loadData(v_V, v_N, v_UV, v_I);
+    fclose(file);
   }
   else{
+    
     printf("Eror to open file .CDK\n");
   }
-  geo_buff_->loadData(v_V, v_N, v_UV, v_I);
 }
 
 void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,

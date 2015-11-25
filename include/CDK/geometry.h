@@ -37,7 +37,7 @@ public:
  
   void loadObjFile(const char* name);
 
-  void loadCdkFormat(const char* name);
+  void loadCdkFormat(const char* name,bool assimp);
 
   void createTriangle();
   /**
