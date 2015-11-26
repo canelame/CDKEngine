@@ -47,40 +47,47 @@ void Geometry::loadCdkFormat(const char* file_in,bool assimp){
 
     if (file != NULL){
       num_meshes = readInt(file);
-      for (int m = 0; m < num_meshes;m++){
+      for (int m = 0; m < num_meshes; m++){
         int num_t_v = readInt(file);
-        for (int i = 0; i < num_t_v*3; i++){
-          v_V.push_back(readFloat(file));
+        std::string temp_data;
+     
+        void *a=NULL;
+        fread(&a, sizeof(float)*num_t_v, 1,file);
+        for (int i = 0; i < temp_data.length(); i+=sizeof(float)){
+          
+          
+
         }
 
-        int num_t_n = readInt(file);
-        for (int i = 0; i < num_t_n*3; i++){
+      /*  int num_t_n = readInt(file);
+        for (int i = 0; i < num_t_n * 3; i++){
 
           v_N.push_back(readFloat(file));
         }
         //Read uvs
         int num_t_uv = readInt(file);
-        for (int i = 0; i < num_t_uv*2; i++){
+        for (int i = 0; i < num_t_uv * 2; i++){
 
           v_UV.push_back(readFloat(file));
         }
-        //Read tangents
+        //Read uvs
         int num_t_tan = readInt(file);
-        for (int i = 0; i < num_t_tan*3; i++){
+        for (int i = 0; i < num_t_tan; i++){
 
           v_Tan.push_back(readFloat(file));
         }
 
         //Read tangents
-        int num_bt_i = readInt(file);
-        for (int i = 0; i < num_bt_i*3; i++){
-          v_Bitan.push_back(readFloat(file));
+        int num_t_i = readInt(file);
+        for (int i = 0; i < num_t_i * 3; i++){
+          v_Bitan.push_back(readInt(file));
         }
-		//Read indices
-		int num_i_i = readInt(file);
-		for (int i = 0; i < num_i_i; i++){
-			v_I.push_back(readInt(file));
-		}
+        //Read tangents
+        int num_bt_i = readInt(file);
+        for (int i = 0; i < num_bt_i * 3; i++){
+          v_I.push_back(readInt(file));
+        }*/
+        //
 
       }
     geo_buff_->loadData(v_V, v_N, v_UV, v_I);

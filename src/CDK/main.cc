@@ -50,10 +50,10 @@ void createWindow(){
   
 	  std::shared_ptr<Geometry> g;
 	  g = std::make_shared<Geometry>();
-    g->loadCdkFormat("meshes/sphere.cdk",true);
+    g->loadCdkFormat("meshes/wa.cdk",true);
 	  std::shared_ptr<Geometry> g2;
 	  g2 = std::make_shared<Geometry>();
-	  g2->loadObjFile("meshes/suzzane.obj");
+	  //g2->loadCdkFormat("meshes/cube.obj",true);
   //Create Material
   
 	  std::shared_ptr<Material> m;
