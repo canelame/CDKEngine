@@ -49,9 +49,11 @@ public:
   * @index Index values for each vertex.
   */
   void loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
-    std::vector<unsigned int>index);
+    std::vector<unsigned int>index,int num_mesh);
 
   std::shared_ptr<Buffer> getBuffer();
+  void readData(std::vector<float>&v_l,int count,FILE *file);
+  void readData(std::vector<unsigned int>&v_l, int count, FILE *file);
 
   /**
   * @brief This functions not must be here.
@@ -61,17 +63,25 @@ public:
   void setRotation(vec3 &r);
   void createCube(int size);
 
+  int numMes();
+  void setMes(int v);
+  int total_meshes();
+  std::shared_ptr<Buffer> getMeshBuffer(){
+	  return geo_buff_[num_mesh_];
+  }
+
   vec3 position();
   vec3 rotation();
   vec3 scale();
   
 private:
+	int num_mesh_;
   vec3 position_;
   vec3 rotation_;
   vec3 scale_;
   bool loaded_ = false;
   mutable bool used_ = false;
-  std::shared_ptr<Buffer> geo_buff_;
+  std::map<int,std::shared_ptr<Buffer>> geo_buff_;
   std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile
   std::vector<tinyobj::material_t> materials_; //Only ude whit loadObjFile
 

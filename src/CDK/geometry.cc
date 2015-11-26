@@ -6,7 +6,8 @@
 //Assimp include
 
 Geometry::Geometry(){
-	geo_buff_ = std::make_unique<Buffer>();
+	geo_buff_;// = std::make_unique<Buffer>();
+	num_mesh_=0;
 }
 glm::mat4 Geometry::getModel(){
   mat4 model;
@@ -33,6 +34,42 @@ void Geometry::loadObjFile(const char*file){
   //Load whit asssimp
  
 }
+int Geometry::numMes(){
+	return num_mesh_;
+}
+void Geometry::setMes(int v){
+	num_mesh_ = v;
+}
+void Geometry::readData(std::vector<float> &v_d,int count,FILE*file){
+	
+	std::unique_ptr<char*>data = std::make_unique<char*>(new char[sizeof(float)*count]);
+	
+	fread(*data, sizeof(float)*count, 1, file);
+	float *float_data = (float*)*data;
+	for (int i = 0; i < count; i++){
+		float v = *float_data;
+		float_data++;
+		v_d.push_back(v);
+	}
+
+
+}
+int Geometry::total_meshes(){
+	return geo_buff_.size();
+}
+void Geometry::readData(std::vector<unsigned int> &v_d, int count, FILE*file){
+
+	std::unique_ptr<char*>data = std::make_unique<char*>(new char[sizeof(float)*count]);
+	fread(*data, sizeof(unsigned int)*count, 1, file);
+	unsigned int *int_data = (unsigned int*)*data;
+	for (int i = 0; i < count; i++){
+		int v = *int_data;
+		int_data++;
+		v_d.push_back(v);
+	}
+
+}
+
 
 void Geometry::loadCdkFormat(const char* file_in,bool assimp){
   FILE *file = fopen(file_in, "rb");
@@ -47,50 +84,27 @@ void Geometry::loadCdkFormat(const char* file_in,bool assimp){
 
     if (file != NULL){
       num_meshes = readInt(file);
+
       for (int m = 0; m < num_meshes; m++){
-        int num_t_v = readInt(file);
-        std::string temp_data;
-     
-        void *a=NULL;
-        fread(&a, sizeof(float)*num_t_v, 1,file);
-        for (int i = 0; i < temp_data.length(); i+=sizeof(float)){
-          
-          
+		  int i_num_p = readInt(file);
 
-        }
-
-      /*  int num_t_n = readInt(file);
-        for (int i = 0; i < num_t_n * 3; i++){
-
-          v_N.push_back(readFloat(file));
-        }
-        //Read uvs
-        int num_t_uv = readInt(file);
-        for (int i = 0; i < num_t_uv * 2; i++){
-
-          v_UV.push_back(readFloat(file));
-        }
-        //Read uvs
-        int num_t_tan = readInt(file);
-        for (int i = 0; i < num_t_tan; i++){
-
-          v_Tan.push_back(readFloat(file));
-        }
-
-        //Read tangents
-        int num_t_i = readInt(file);
-        for (int i = 0; i < num_t_i * 3; i++){
-          v_Bitan.push_back(readInt(file));
-        }
-        //Read tangents
-        int num_bt_i = readInt(file);
-        for (int i = 0; i < num_bt_i * 3; i++){
-          v_I.push_back(readInt(file));
-        }*/
+		  readData(v_V, i_num_p*3, file);
+		  int num_t_n = readInt(file);
+		  readData(v_N, num_t_n * 3, file);
+		  int num_t_uv = readInt(file);
+		  readData(v_UV, num_t_uv * 2, file);
+		  int num_t_t = readInt(file);
+		  readData(v_Tan, num_t_t * 3, file);
+		  int num_t_bt = readInt(file);
+		  readData(v_Bitan, num_t_bt * 3, file);
+		  int num_i_i = readInt(file);
+		  readData(v_I, num_i_i * 3, file);
         //
-
+		  std::shared_ptr<Buffer> tb = std::make_shared<Buffer>();
+		  tb->loadData(v_V, v_N, v_UV, v_I);
+		  geo_buff_.emplace(m, tb);
       }
-    geo_buff_->loadData(v_V, v_N, v_UV, v_I);
+
     fclose(file);
   }
   else{
@@ -100,13 +114,14 @@ void Geometry::loadCdkFormat(const char* file_in,bool assimp){
 }
 
 void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
-                              std::vector<unsigned int>index){
-	geo_buff_.get()->loadData(vertex, normal, uv, index);
+                              std::vector<unsigned int>index,int num_mesh){
+	geo_buff_[num_mesh].get()->loadData(vertex, normal, uv, index);
+
 
 
 }
 std::shared_ptr< Buffer> Geometry::getBuffer(){
-  return geo_buff_;
+	return    geo_buff_[num_mesh_];
 }
 void Geometry::setPosition(vec3 &p){
   position_ = p;
@@ -260,7 +275,8 @@ void Geometry::createCube(int size) {
 	for (int i = 0; i < 36; i++) {
 		indices.push_back(indexes_cube[i]);
 	}
-	geo_buff_->loadData(positions, normals, uvs, indices);
+	
+	geo_buff_[num_mesh_]->loadData(positions, normals, uvs, indices);
 }
 void Geometry::createTriangle(){
  // float x = 0, y = 0;
@@ -309,7 +325,7 @@ void Geometry::createTriangle(){
   for (int i = 0; i <6; i++) {
     indexes.push_back(indices_quad[i]);
   }
-	geo_buff_->loadData(positions, normals, uvs,indexes);
+  geo_buff_[num_mesh_]->loadData(positions, normals, uvs, indexes);
 
 }
 

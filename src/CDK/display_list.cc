@@ -135,16 +135,24 @@ std::shared_ptr<Material>  LoadMaterialCommand::getMaterial(){
 ///////// LOAD_GEO_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
 LoadGeometryCommand::LoadGeometryCommand(std::shared_ptr<Geometry> geo){
-	t_geo = geo;
+	for (int i = 0; t_geo.get()->total_meshes(); i++){
+		t_geo->setMes(i);
+		t_geo = geo;
+	}
+t_geo->setMes(0);
 }
 void LoadGeometryCommand::runCommand(OpenGlInterFaz &in)const{
-	if (t_geo.get()->getBuffer()->isDirty()){
-		std::vector<std::vector<float>>attrib;
-		attrib = t_geo.get()->getBuffer()->getAttributes();
-		in.loadBuffer(t_geo->getBuffer());
-		t_geo.get()->getBuffer()->setDirty(false);
-		delete_ = true;
+	for (int i = 0; i < t_geo->total_meshes(); i++){
+		if (t_geo.get()->getMeshBuffer()->isDirty()){
+			std::vector<std::vector<float>>attrib;
+			attrib = t_geo.get()->getBuffer()->getAttributes();
+			in.loadBuffer(t_geo->getBuffer());
+			t_geo.get()->getMeshBuffer()->setDirty(false);
+			delete_ = true;
+			t_geo->setMes(t_geo->numMes() + 1);
+		}
 	}
+	t_geo->setMes(0);
 }
 bool LoadGeometryCommand::deleted(){
 	return delete_;
@@ -156,7 +164,11 @@ void LoadGeometryCommand::shouldDelete(bool v){
 ////////////////////////////////////////////
 
 SetModelMatrixCommand::SetModelMatrixCommand(std::shared_ptr<Geometry>geo){
-	t_geo = geo;
+	for (int i = 0; t_geo.get()->total_meshes(); i++){
+		t_geo->setMes(i);
+		t_geo = geo;
+	}
+	t_geo->setMes(0);
 }
 void SetModelMatrixCommand::runCommand(OpenGlInterFaz &in)const{
 
@@ -166,25 +178,39 @@ void SetModelMatrixCommand::runCommand(OpenGlInterFaz &in)const{
 ///////// USE_GEOMETRY CLASS/////////////////
 ////////////////////////////////////////////
 UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Geometry>geo){
-	t_geo = geo;
+	for (int i = 0; t_geo.get()->total_meshes(); i++){
+		t_geo->setMes(i);
+		t_geo = geo;
+	}
+	t_geo->setMes(0);
 }
 
 
 void UseGeometryCommand::runCommand(OpenGlInterFaz &in)const{
-
-	in.useGeometry(*t_geo.get()->getBuffer()->getVAO());
-
+	for (int i = 0; t_geo.get()->total_meshes(); i++){
+		in.useGeometry(*t_geo.get()->getMeshBuffer()->getVAO());
+		t_geo->setMes(i);
+	}
+	t_geo->setMes(0);
 }
 
 ///////// DRAW_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
 DrawCommand::DrawCommand(std::shared_ptr<Geometry>g){
-  t_geo = g;
+	for (int i = 0; t_geo.get()->total_meshes(); i++){
+		t_geo->setMes(i);
+		t_geo = g;
+	}
+	t_geo->setMes(0);
+
 }
 
 void DrawCommand::runCommand(OpenGlInterFaz &in)const{
-
-	in.drawGeometry(t_geo.get()->getBuffer()->getIndexes());
+	for (int i = 0; t_geo.get()->total_meshes(); i++){
+		t_geo->setMes(i);
+		in.drawGeometry(t_geo.get()->getMeshBuffer()->getIndexes());
+	}
+	t_geo->setMes(0);
 }
 
 ///////// USE_MATERIAL_COMMAND CLASS/////////

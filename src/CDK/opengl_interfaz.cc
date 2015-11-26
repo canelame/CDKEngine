@@ -134,7 +134,8 @@ void OpenGlInterFaz::drawGeometry(std::vector<unsigned int> indices){
  // printf("Draw elements: %d indices\n",shadow_index_.size());
  
 
-  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
+
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }
 
