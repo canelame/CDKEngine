@@ -1,9 +1,11 @@
 #ifndef __H_DRAWABLE__
 #define __H_DRAWABLE__
 #include <memory>
-#include "CDK\geometry.h"
+
 #include "CDK\material.h"
-class Drawable {
+#include "CDK\geometry.h"
+#include "node.h"
+class Drawable :public Node {
   
 public:
 	struct Data;
@@ -27,6 +29,7 @@ public:
 
 	void setGeometry(std::shared_ptr<Geometry>);
 	void setMaterial(std::shared_ptr<Material>);
+
 private:
 	Data *data_;
 

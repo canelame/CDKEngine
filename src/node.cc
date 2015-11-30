@@ -2,12 +2,13 @@
 
 
 struct Node::Data{
-	std::vector<std::shared_ptr<Drawable>> node_list_;
+	std::vector<std::shared_ptr<Node>> node_list_;
 	vec3 position_;
 	vec3 rotation_;
 	vec3 scale_;
   bool dirty_=true;
   mat4 world_transform_;
+  std::shared_ptr<Node> parent_;
 };
 struct Node::Transform{
   Transform(){
@@ -32,13 +33,24 @@ Node::Node(){
 	data_ = new Data;
 	
 }
-
-void Node::addChild(std::shared_ptr<Drawable>d){
-  data_->node_list_.push_back(d);
+Node::~Node(){}
+std::shared_ptr<Node> Node::getParent(){
+  return data_->parent_;
 }
 
-std::shared_ptr<Drawable> Node::childAt(int index){
+void Node::setParent(std::shared_ptr<Node>p){
+  data_->parent_ = p;
+}
+void Node::addChild(std::shared_ptr<Node>d){
+ 
+  data_->node_list_.push_back(d);
+  data_->parent_ = std::make_shared<Node>(*this);
+  
+}
+
+std::shared_ptr<Node> Node::childAt(int index){
 	return data_->node_list_.at(index);
+
 }
 
 void Node::setPosition(vec3 &data){

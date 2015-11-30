@@ -37,7 +37,9 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
 
 void Camera::render(std::shared_ptr<Node>dl){
   if (!data_->created_dl){
-    createDisplayList(dl);
+    for (int i = 0; i < dl.get()->size(); i++){
+
+    }
     data_->created_dl = true;
     data_->dl_cam_->execute();
   }
@@ -75,38 +77,45 @@ void Camera::cull(){
    return data_->look_at_mat_;
  }
 
- void Camera::createDisplayList(std::shared_ptr<Node> node){
-   std::shared_ptr<Drawable> t_drawable;
-   for (int i = 0; i < node->size();i++){
+ void Camera::loadNode(std::shared_ptr<Drawable> node){
+   std::shared_ptr<Drawable> t_drawable = node;
+   for (int i = 0; i < node->size(); i++){
+     data_->dl_cam_.get()->add(std::make_shared<LoadGeometryCommand>(t_drawable->geometry()));
+     data_->dl_cam_.get()->add(std::make_shared<LoadMaterialCommand>(t_drawable->material()));
+     data_->dl_cam_.get()->add(std::make_shared<LoadTextureCommand>(t_drawable->material()));
+     /**
+     lO MEJOR ES IMPROVISAAR
+     POR QUE QUIERO :·3 <3 A TI Y NO O SI?QUIEN SABE? TU ERES LA MAS GUAPA DEL REINO
 
-     t_drawable = node->childAt(i);
-     data_->dl_cam_.get()->add( std::make_shared<LoadGeometryCommand>(t_drawable->geometry() ));
-     data_->dl_cam_.get()->add(std::make_shared<LoadMaterialCommand>(t_drawable->material()  ));
-     data_->dl_cam_.get()->add(std::make_shared<LoadTextureCommand>( t_drawable->material() ));
 
+     */
+
+     data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material()));
      data_->dl_cam_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
-     data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material() ));
-		 data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
+     data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
 
-		 mat4 model_node;
-		 {
-			 model_node = glm::rotate(model_node, node->rotation().x, vec3(1.0, 0.0, 0.0));
-			 model_node = glm::rotate(model_node, node->rotation().y, vec3(0.0, 1.0, 0.0));
-			 model_node = glm::rotate(model_node, node->rotation().z, vec3(0.0, 0.0, 1.0));
-			 model_node = glm::scale(model_node, vec3(2.0, 2.0, 2.0));
-			 model_node = glm::translate(model_node, node->position());
-		 }
+     mat4 model_node;
+     {
+       model_node = glm::rotate(model_node, node->rotation().x, vec3(1.0, 0.0, 0.0));
+       model_node = glm::rotate(model_node, node->rotation().y, vec3(0.0, 1.0, 0.0));
+       model_node = glm::rotate(model_node, node->rotation().z, vec3(0.0, 0.0, 1.0));
+       model_node = glm::scale(model_node, vec3(2.0, 2.0, 2.0));
+       model_node = glm::translate(model_node, node->position());
+     }
 
-		std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
-			 data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c,
-																(t_drawable->position()),
-																(t_drawable->rotation()),
-																(t_drawable->scale()),model_node ));
-			 data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()) );
+     std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
+     data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c,
+       (t_drawable->position()),
+       (t_drawable->rotation()),
+       (t_drawable->scale()), model_node));
+     data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
+
+     //   loadNode(t_drawable);
    }
-
-
  }
+   
+
+ 
 
  mat4 Camera::globalModel(){
 

@@ -12,7 +12,14 @@ struct Buffer::Data {
   GLuint vao_;
   GLuint vbo_[4]; //0 positions, 1 normals, 2 uvs,3 indexes;
 };
-
+Buffer::Buffer(std::vector<float>positions, std::vector<float>normals, std::vector<float>uvs,
+  std::vector<unsigned int> indexes){
+  data_ = new Data;
+  data_->positions_ = positions;
+  data_->normals_ = normals;
+  data_->uvs_ = uvs;
+  data_->indexes_ = indexes;
+}
 Buffer::Buffer(){
   data_ = new Data;
 };

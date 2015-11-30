@@ -50,7 +50,7 @@ void createWindow(){
   
 	  std::shared_ptr<Geometry> g;
 	  g = std::make_shared<Geometry>();
-    g->loadCdkFormat("meshes/cyborg.cdk",true);
+    g->loadCdkFormat("meshes/jkk.cdk",true);
 	  std::shared_ptr<Geometry> g2;
 	  g2 = std::make_shared<Geometry>();
 	  //g2->loadCdkFormat("meshes/cube.obj",true);
@@ -81,24 +81,20 @@ void createWindow(){
 	  std::shared_ptr< DisplayList> dl;
 	  dl = std::make_shared<DisplayList>();
 
-  for (int i = 0; i <5; i++){
+
 	  std::shared_ptr<Drawable> drawable;
 	  drawable = std::make_shared<Drawable>();
 	  
-    if (i == 1){
-      drawable->setGeometry(g2);
-      drawable->setMaterial(m2);
-    }
-    else{
+
       drawable->setGeometry(g);
       drawable->setMaterial(m);
-    }
+   
 	 
-    drawable->setPosition(vec3( (-1.0+(i*2)), 0.0, -2.0+(i*2.0) ));
+    drawable->setPosition(vec3( (-1.0+(1*2)), 0.0, -2.0+(1*2.0) ));
 	
-    drawable->setScale(vec3(5.0,5.0,5.0));
+    drawable->setScale(vec3(20.0,20.0,20.0));
     Scene.root.get()->addChild(drawable);
-  }
+  
   Scene.root.get()->setPosition(vec3(0.0, 0.0, -50.0));
   Scene.root.get()->setRotation(vec3(0.0,0.0,0.0));
 

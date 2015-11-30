@@ -9,7 +9,7 @@
 #include "base.h"
 #include "types.h"
 #include "opengl_interfaz.h"
-#include "node.h"
+#include "drawable.h"
 
 /**
 * camera.h 
@@ -55,7 +55,7 @@ public:
   void runCommand(OpenGlInterFaz &i)const;
   friend class OpenGlInterFaz;
 private:
-  void createDisplayList(std::shared_ptr<Node> node);
+  void loadNode(std::shared_ptr<Drawable> node);
   Data *data_;
 
 };

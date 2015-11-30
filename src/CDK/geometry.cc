@@ -40,81 +40,16 @@ int Geometry::numMes(){
 void Geometry::setMes(int v){
 	num_mesh_ = v;
 }
-void Geometry::readData(std::vector<float> &v_d,int count,FILE*file){
-	
-	std::unique_ptr<char*>data = std::make_unique<char*>(new char[sizeof(float)*count]);
-	
-	fread(*data, sizeof(float)*count, 1, file);
-	float *float_data = (float*)*data;
-	for (int i = 0; i < count; i++){
-		float v = *float_data;
-		float_data++;
-		v_d.push_back(v);
-	}
 
-
+std::map<int,std::shared_ptr<Buffer>> Geometry::total_meshes(){
+  return geo_buff_;
 }
-int Geometry::total_meshes(){
-	return geo_buff_.size();
-}
-void Geometry::readData(std::vector<unsigned int> &v_d, int count, FILE*file){
-
-	std::unique_ptr<char*>data = std::make_unique<char*>(new char[sizeof(float)*count]);
-	fread(*data, sizeof(unsigned int)*count, 1, file);
-	unsigned int *int_data = (unsigned int*)*data;
-	for (int i = 0; i < count; i++){
-		int v = *int_data;
-		int_data++;
-		v_d.push_back(v);
-	}
-
-}
-
 
 void Geometry::loadCdkFormat(const char* file_in,bool assimp){
-  FILE *file = fopen(file_in, "rb");
- 
-    std::vector<float> v_V;
-    std::vector<float> v_N;
-    std::vector<float> v_UV;
-    std::vector<unsigned int> v_I;
-    std::vector<float> v_Tan;
-    std::vector<float> v_Bitan;
-    int num_meshes = 0;
-
-    if (file != NULL){
-      num_meshes = readInt(file);
-
-      for (int m = 0; m < num_meshes; m++){
-		  int i_num_p = readInt(file);
-
-		  readData(v_V, i_num_p*3, file);
-		  int num_t_n = readInt(file);
-		  readData(v_N, num_t_n * 3, file);
-		  int num_t_uv = readInt(file);
-		  readData(v_UV, num_t_uv * 2, file);
-		  int num_t_t = readInt(file);
-		  readData(v_Tan, num_t_t * 3, file);
-		  int num_t_bt = readInt(file);
-		  readData(v_Bitan, num_t_bt * 3, file);
-		  int num_i_i = readInt(file);
-		  readData(v_I, num_i_i * 3, file);
-        //
-		  std::shared_ptr<Buffer> tb = std::make_shared<Buffer>();
-		  tb->loadData(v_V, v_N, v_UV, v_I);
-		  geo_buff_.emplace(m, tb);
-      }
-
-    fclose(file);
-  }
-  else{
-    
-    printf("Eror to open file .CDK\n");
-  }
+  
 }
-
 void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
-                              std::vector<unsigned int>index,int num_mesh){
+                             std::vector<unsigned int>index,int num_mesh){
 	geo_buff_[num_mesh].get()->loadData(vertex, normal, uv, index);
 
 
@@ -327,15 +262,4 @@ void Geometry::createTriangle(){
   }
   geo_buff_[num_mesh_]->loadData(positions, normals, uvs, indexes);
 
-}
-
-float Geometry::readFloat(FILE *file){
-  float temp = 0;
-  fread((void*)&temp, sizeof(float), 1, file);
-  return temp;
-}
-int Geometry::readInt(FILE *file){
-  int temp = 0;
-  fread((void*)&temp, sizeof(const int), 1, file);
-  return temp;
 }

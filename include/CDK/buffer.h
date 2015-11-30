@@ -17,6 +17,8 @@ class Buffer{
 
 public:
   struct Data;
+  Buffer(std::vector<float>positions, std::vector<float>normals, std::vector<float>uvs,
+    std::vector<unsigned int> indexes);
   Buffer();
   /**
   * @brief This function is used to load the attributes for a mesh. This attributes are,

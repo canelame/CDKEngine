@@ -7,7 +7,6 @@
 #include "CDK/buffer.h"
 #include "CDK/types.h"
 #include <memory>
-
 /**
 * Geometry class
 * @author Alejandro Canela Méndez 2015
@@ -18,7 +17,7 @@
 */
 
 
-
+class Drawable;
 
 class Geometry  {
 public:
@@ -52,8 +51,7 @@ public:
     std::vector<unsigned int>index,int num_mesh);
 
   std::shared_ptr<Buffer> getBuffer();
-  void readData(std::vector<float>&v_l,int count,FILE *file);
-  void readData(std::vector<unsigned int>&v_l, int count, FILE *file);
+
 
   /**
   * @brief This functions not must be here.
@@ -65,7 +63,7 @@ public:
 
   int numMes();
   void setMes(int v);
-  int total_meshes();
+  std::map<int, std::shared_ptr<Buffer>> total_meshes();
   std::shared_ptr<Buffer> getMeshBuffer(){
 	  return geo_buff_[num_mesh_];
   }
@@ -82,12 +80,8 @@ private:
   bool loaded_ = false;
   mutable bool used_ = false;
   std::map<int,std::shared_ptr<Buffer>> geo_buff_;
-  std::vector<tinyobj::shape_t> shapes_; //Only used whit loadObjFile
-  std::vector<tinyobj::material_t> materials_; //Only ude whit loadObjFile
 
-  float readFloat(FILE *file);
-  int readInt(FILE *file);
-  
+
 
 };
 

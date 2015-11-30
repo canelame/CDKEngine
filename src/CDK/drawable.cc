@@ -6,8 +6,12 @@ struct Drawable::Data{
 	vec3 rotation_;
 	vec3 scale_;
 };
+
+
+
 Drawable::Drawable(){
 	data_ = new Data;
+  Node();
 }
 vec3 Drawable::position(){
   return data_->position_;
@@ -19,10 +23,19 @@ vec3 Drawable::rotation(){
   return data_->rotation_;
 }
 void Drawable::setGeometry(std::shared_ptr<Geometry>geo){
-	data_->drawable_geometry_ = geo;
+	data_->drawable_geometry_=geo;
+  std::shared_ptr<Drawable> t_dra;
+  std::map<int, std::shared_ptr<Buffer>> m_b = data_->drawable_geometry_->total_meshes();
+  
+    for (std::map<int, std::shared_ptr<Buffer>>::iterator it=m_b.begin(); it != m_b.end(); it++){
+      std::unique_ptr<Geometry> geo = std::make_unique<Geometry>();
+     
+    }
+   
+ 
 }
 void Drawable::setMaterial(std::shared_ptr<Material>mat){
-	data_->drawable_material_ = mat;
+	data_->drawable_material_=mat;
 }
 
 void Drawable::setPosition(vec3 &data){

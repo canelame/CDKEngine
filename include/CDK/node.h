@@ -3,18 +3,20 @@
 #include <memory>
 #include <vector>
 #include "types.h"
-#include "drawable.h"
+
 #include "glm\glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+class Drawable;
 class Node{
-
+  
 public:
 	struct Data;
   struct Transform;
 	Node();
-	void addChild(std::shared_ptr<Drawable> child);
-	std::shared_ptr<Drawable> childAt(int index);
+  ~Node();
+	void addChild(std::shared_ptr<Node> child);
+	std::shared_ptr<Node> childAt(int index);
 
 	//Getter and settersç
 	vec3 position();
@@ -29,7 +31,8 @@ public:
 
 	void setScale(vec3 &data);
 	void setScale(const float* data);
-
+  std::shared_ptr<Node> getParent();
+  void setParent(std::shared_ptr<Node>p);
 	int size();
 private:
 	Data *data_;
