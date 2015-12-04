@@ -32,7 +32,7 @@ public:
     GLuint texture;
     Light material_light; //We can have multiples lights , creating an array. 
   };
-  Material(TYPE t,std::shared_ptr<TaskManager>);
+  Material(TYPE t,std::shared_ptr<TaskManager>a =nullptr);
 
   void runCommand(OpenGlInterFaz &i)const;
 

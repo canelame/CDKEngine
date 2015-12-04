@@ -183,7 +183,7 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
   int p = glGetUniformLocation(data_->shadow_program_, name);
   const int t = { 0 };
   if (p >= 0){
-  //  glUniform1iv(data_->shadow_program_, 1, t);
+    glUniform1iv(data_->shadow_program_, 1, t);
   }
 }
 
@@ -203,7 +203,7 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Material> m){
 }
 
 void OpenGlInterFaz::useTexture(std::shared_ptr<Material>m){
-  int tex_i = glGetUniformLocation(m->getProgram(), "u_texture");
-  glActiveTexture(GL_TEXTURE0 + tex_i);
+  //int tex_i = glGetUniformLocation(m->getProgram(), "u_texture");
+  //glActiveTexture(GL_TEXTURE0 + tex_i);
   glBindTexture(GL_TEXTURE_2D, m->getTexture()->getID());
 }

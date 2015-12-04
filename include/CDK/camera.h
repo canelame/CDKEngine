@@ -55,7 +55,7 @@ public:
   void runCommand(OpenGlInterFaz &i)const;
   friend class OpenGlInterFaz;
 private:
-  void loadNode(std::shared_ptr<Drawable> node);
+  void loadNode(std::shared_ptr<Node> node);
   Data *data_;
 
 };

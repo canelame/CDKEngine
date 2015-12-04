@@ -11,7 +11,7 @@ void DisplayList::add(Comm_ c){
 void DisplayList::execute(){
 
 	for (int i = 0; i < listCommand_.size(); ++i){
-    if (i == 8);
+    
 		listCommand_[i].get()->runCommand(*interfaz_);
 	}
 
@@ -33,7 +33,7 @@ void DisplayList::update(){
 		l_g_com = dynamic_cast<LoadGeometryCommand*>(listCommand_[i].get());
 		l_m_com = dynamic_cast<LoadMaterialCommand*>(listCommand_[i].get());
 		l_t_com = dynamic_cast<LoadTextureCommand*>(listCommand_[i].get());
-		l_c_com = dynamic_cast<SetupCameraCommand*>(listCommand_[i].get());
+	//	l_c_com = dynamic_cast<SetupCameraCommand*>(listCommand_[i].get());
 		// l_c_com = std::make_shared<SetupCameraCommand>(listCommand_[i]);
 
 
@@ -78,29 +78,26 @@ void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
 
 ///////// SETUP_CAMERA_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-SetupCameraCommand::SetupCameraCommand(std::shared_ptr<Camera>cam, vec3 model_position, vec3 model_rotation, vec3 model_scale, glm::mat4 model_node){
+SetupCameraCommand::SetupCameraCommand(std::shared_ptr<Camera>cam,mat4 m_m){
 	t_cam = std::move(cam);
-	pos_ = model_position;
-	rot_ = model_rotation;
-	scal_ = model_scale;
-	model_n_ = model_node;
+	model_n_=m_m;
 }
 
 
 void SetupCameraCommand::runCommand(OpenGlInterFaz &in)const{
 
 	
-	glm::mat4 temp_model;
+	/*glm::mat4 temp_model;
 	temp_model = glm::rotate(temp_model, rot_.x, vec3(1.0, 0.0, 0.0));
 	temp_model = glm::rotate(temp_model, rot_.y, vec3(0.0, 1.0, 0.0));
 	temp_model = glm::rotate(temp_model, rot_.z, vec3(0.0, 0.0, 1.0));
 	temp_model = glm::scale(temp_model, scal_);
 	temp_model = glm::translate(temp_model, pos_);
-	temp_model = model_n_ * temp_model;
+	temp_model = model_n_ * temp_model;*/
 
 	in.useUniformMat4("u_projection_m", glm::value_ptr(t_cam.get()->getProyection()));
 	in.useUniformMat4("u_view_m", glm::value_ptr(t_cam.get()->getView()));
-	in.useUniformMat4("u_model_m", glm::value_ptr(temp_model));
+	in.useUniformMat4("u_model_m", glm::value_ptr(model_n_));
 
 }
 
@@ -140,11 +137,11 @@ LoadGeometryCommand::LoadGeometryCommand(std::shared_ptr<Geometry> geo){
 }
 void LoadGeometryCommand::runCommand(OpenGlInterFaz &in)const{
 
-		if (t_geo.get()->getMeshBuffer()->isDirty()){
+		if (t_geo.get()->getBuffer()->isDirty()){
 			std::vector<std::vector<float>>attrib;
-      attrib = t_geo.get()->getMeshBuffer()->getAttributes();
-      in.loadBuffer(t_geo->getMeshBuffer());
-			t_geo.get()->getMeshBuffer()->setDirty(false);
+      attrib = t_geo.get()->getBuffer()->getAttributes();
+      in.loadBuffer(t_geo->getBuffer());
+     t_geo.get()->getBuffer()->setDirty(true);
 			delete_ = true;
 			t_geo->setMes(t_geo->numMes() + 1);
 		}
@@ -181,7 +178,7 @@ UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Geometry>geo){
 
 void UseGeometryCommand::runCommand(OpenGlInterFaz &in)const{
 
-		in.useGeometry(*t_geo.get()->getMeshBuffer()->getVAO());
+  in.useGeometry(*t_geo.get()->getBuffer()->getVAO());
 
 
 }
@@ -198,7 +195,7 @@ DrawCommand::DrawCommand(std::shared_ptr<Geometry>g){
 
 void DrawCommand::runCommand(OpenGlInterFaz &in)const{
 
-		in.drawGeometry(t_geo.get()->getMeshBuffer()->getIndexes());
+  in.drawGeometry(t_geo.get()->getBuffer()->getIndexes());
 
 }
 

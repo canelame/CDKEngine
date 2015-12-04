@@ -7,14 +7,15 @@
 #include "glm\glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+
 class Drawable;
-class Node{
+class Node  {
   
 public:
 	struct Data;
   struct Transform;
 	Node();
-  ~Node();
+ virtual ~Node();
 	void addChild(std::shared_ptr<Node> child);
 	std::shared_ptr<Node> childAt(int index);
 
@@ -22,6 +23,11 @@ public:
 	vec3 position();
 	vec3 rotation();
 	vec3 scale();
+	mat4 modelMat();
+  mat4 worldMat();
+
+  void setWorldMat(mat4 w_m);
+  void setModelMat(mat4 w_m);
 
 	void setPosition(vec3 &data);
 	void setPosition(const float* data);
@@ -34,6 +40,8 @@ public:
   std::shared_ptr<Node> getParent();
   void setParent(std::shared_ptr<Node>p);
 	int size();
+	void  calculateModel();
+	void combine(std::shared_ptr<Node> c_m);
 private:
 	Data *data_;
 	
@@ -41,3 +49,4 @@ private:
 };
 
 #endif
+

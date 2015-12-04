@@ -18,14 +18,14 @@ public:
   std::shared_ptr<Geometry> geometry();
   std::shared_ptr<Material> material();
 
-	void setPosition(vec3 &data);
+/*	void setPosition(vec3 &data);
 	void setPosition(const float* data);
 
 	void setRotation(vec3 &data);
 	void setRotation(const float* data);
 
 	void setScale(vec3 &data);
-	void setScale(const float* data);
+	void setScale(const float* data);*/
 
 	void setGeometry(std::shared_ptr<Geometry>);
 	void setMaterial(std::shared_ptr<Material>);

@@ -6,7 +6,7 @@
 //Assimp include
 
 Geometry::Geometry(){
-	geo_buff_;// = std::make_unique<Buffer>();
+	geo_buff_ = std::make_unique<Buffer>();
 	num_mesh_=0;
 }
 glm::mat4 Geometry::getModel(){
@@ -40,8 +40,7 @@ int Geometry::numMes(){
 void Geometry::setMes(int v){
 	num_mesh_ = v;
 }
-
-std::map<int,std::shared_ptr<Buffer>> Geometry::total_meshes(){
+std::shared_ptr<Buffer> Geometry::total_meshes(){
   return geo_buff_;
 }
 
@@ -49,14 +48,14 @@ void Geometry::loadCdkFormat(const char* file_in,bool assimp){
   
 }
 void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
-                             std::vector<unsigned int>index,int num_mesh){
-	geo_buff_[num_mesh].get()->loadData(vertex, normal, uv, index);
+                             std::vector<unsigned int>index){
+	geo_buff_.get()->loadData(vertex, normal, uv, index);
 
 
 
 }
 std::shared_ptr< Buffer> Geometry::getBuffer(){
-	return    geo_buff_[num_mesh_];
+	return    geo_buff_;
 }
 void Geometry::setPosition(vec3 &p){
   position_ = p;
@@ -211,7 +210,7 @@ void Geometry::createCube(int size) {
 		indices.push_back(indexes_cube[i]);
 	}
 	
-	geo_buff_[num_mesh_]->loadData(positions, normals, uvs, indices);
+	geo_buff_->loadData(positions, normals, uvs, indices);
 }
 void Geometry::createTriangle(){
  // float x = 0, y = 0;
@@ -260,6 +259,6 @@ void Geometry::createTriangle(){
   for (int i = 0; i <6; i++) {
     indexes.push_back(indices_quad[i]);
   }
-  geo_buff_[num_mesh_]->loadData(positions, normals, uvs, indexes);
+  geo_buff_->loadData(positions, normals, uvs, indexes);
 
 }

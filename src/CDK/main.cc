@@ -11,7 +11,7 @@
 #include "ImGui\imgui.h"
 #include "ImGui\imgui_impl_glfw_gl3.h"
 #include "CDK/node.h"
-
+#include "CDK/loader.h"
 struct {
 	std::shared_ptr<Node> root;
 	std::shared_ptr<Camera> cam;
@@ -48,12 +48,14 @@ void createWindow(){
   
   //Create Geometry
   
+      std::unique_ptr<Loader> loader = std::make_unique<Loader>();
+      std::shared_ptr<Drawable> node_drawable = loader->loadCDK("meshes/cat.cdk", task_manager_);
 	  std::shared_ptr<Geometry> g;
 	  g = std::make_shared<Geometry>();
-    g->loadCdkFormat("meshes/jkk.cdk",true);
+    g->createCube(1);
 	  std::shared_ptr<Geometry> g2;
 	  g2 = std::make_shared<Geometry>();
-	  //g2->loadCdkFormat("meshes/cube.obj",true);
+	 // g2->loadCdkFormat("meshes/cube.obj",true);
   //Create Material
   
 	  std::shared_ptr<Material> m;
@@ -67,8 +69,8 @@ void createWindow(){
     m->setTexture(txt1);
 
     std::shared_ptr<Texture> txt2 = std::make_shared<Texture>();
-    txt2->loadTexture("textures/red.png");
-    m2->setTexture(txt2);
+   // txt2->loadTexture("textures/red.png");
+    //m2->setTexture(txt2);
 	 
   
   //Create Camera
@@ -84,24 +86,24 @@ void createWindow(){
 
 	  std::shared_ptr<Drawable> drawable;
 	  drawable = std::make_shared<Drawable>();
-	  
 
-      drawable->setGeometry(g);
-      drawable->setMaterial(m);
-   
-	 
-    drawable->setPosition(vec3( (-1.0+(1*2)), 0.0, -2.0+(1*2.0) ));
-	
-    drawable->setScale(vec3(20.0,20.0,20.0));
-    Scene.root.get()->addChild(drawable);
-  
-  Scene.root.get()->setPosition(vec3(0.0, 0.0, -50.0));
-  Scene.root.get()->setRotation(vec3(0.0,0.0,0.0));
+    node_drawable->setPosition(vec3(10, 0.0, 0.0));
+
+	drawable->setPosition(vec3(-1.5 + (2.0),0.0f,0.0 ));
+    drawable->setGeometry(g);
+    drawable->setMaterial(m);
+
+    node_drawable->setScale(vec3(10.0, 10.0, 10.0));
+	drawable->setScale(vec3(0.75, 0.75, 0.75));
+  Scene.root.get()->addChild(node_drawable);
+  Scene.root.get()->addChild(drawable);
+  Scene.root.get()->setPosition(vec3(0.0, 0.0, 60.0));
+  Scene.root.get()->setRotation(vec3(0,0,0));
 
   while (g_win.processEvents()){
     auto start_c = std::chrono::steady_clock::now();
 		ImGui_ImplGlfwGL3_NewFrame();
-		task_manager_->addTask(std::make_shared<UpdateDisplay>(dl));
+	//	task_manager_->addTask(std::make_shared<UpdateDisplay>(dl));
 		glClearColor(.3f, .2f, .7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		glEnable(GL_DEPTH_TEST);

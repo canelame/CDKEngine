@@ -120,12 +120,11 @@ private:
 #include "opengl_interfaz.h"
 class SetupCameraCommand : public Command {
 public:
-	SetupCameraCommand(std::shared_ptr<Camera>cam, vec3 model_position, vec3 model_rotation,
-						vec3 model_scale, glm::mat4 model_node);
+	SetupCameraCommand(std::shared_ptr<Camera>cam,mat4 m_m);
   void runCommand(OpenGlInterFaz &in)const;
 private:
 	std::shared_ptr<Camera> t_cam;
-  vec3 pos_, rot_, scal_; mat4 model_n_;
+ mat4 model_n_;
 };
 #endif
 

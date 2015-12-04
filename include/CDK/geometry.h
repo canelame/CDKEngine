@@ -48,7 +48,7 @@ public:
   * @index Index values for each vertex.
   */
   void loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
-    std::vector<unsigned int>index,int num_mesh);
+    std::vector<unsigned int>index);
 
   std::shared_ptr<Buffer> getBuffer();
 
@@ -63,10 +63,8 @@ public:
 
   int numMes();
   void setMes(int v);
-  std::map<int, std::shared_ptr<Buffer>> total_meshes();
-  std::shared_ptr<Buffer> getMeshBuffer(){
-	  return geo_buff_[num_mesh_];
-  }
+ std::shared_ptr<Buffer> total_meshes();
+
 
   vec3 position();
   vec3 rotation();
@@ -79,7 +77,7 @@ private:
   vec3 scale_;
   bool loaded_ = false;
   mutable bool used_ = false;
-  std::map<int,std::shared_ptr<Buffer>> geo_buff_;
+  std::shared_ptr<Buffer> geo_buff_;
 
 
 

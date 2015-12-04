@@ -19,10 +19,10 @@ Camera::Camera(){
 
   data_ = new Data;
   data_->interfaz_ = new OpenGlInterFaz();
-  data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z = 10.0;
-  position_.x = 0.0; 	position_.y = 0.0; 	position_.z = 10.0;
+  data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =100.0;
+  position_.x = 0.0; 	position_.y = 0.0; 	position_.z = 100.0;
   data_->up_.x = 0; 	data_->up_.y = 1.0; 	data_->up_.z = 0;
-  data_->front_.x = 0.0; 	data_->front_.y = 0.0; 	data_->front_.z = -10.0;
+  data_->front_.x = 0.0; 	data_->front_.y = 0.0; 	data_->front_.z = -100.0;
   setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
   data_->dl_cam_ = std::make_shared<DisplayList>();
 }
@@ -37,9 +37,10 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
 
 void Camera::render(std::shared_ptr<Node>dl){
   if (!data_->created_dl){
-    for (int i = 0; i < dl.get()->size(); i++){
 
-    }
+    //const Drawable* draw =dynamic_cast<Drawable*>(dl.get());
+    loadNode(dl);
+    
     data_->created_dl = true;
     data_->dl_cam_->execute();
   }
@@ -77,41 +78,57 @@ void Camera::cull(){
    return data_->look_at_mat_;
  }
 
- void Camera::loadNode(std::shared_ptr<Drawable> node){
-   std::shared_ptr<Drawable> t_drawable = node;
-   for (int i = 0; i < node->size(); i++){
-     data_->dl_cam_.get()->add(std::make_shared<LoadGeometryCommand>(t_drawable->geometry()));
-     data_->dl_cam_.get()->add(std::make_shared<LoadMaterialCommand>(t_drawable->material()));
-     data_->dl_cam_.get()->add(std::make_shared<LoadTextureCommand>(t_drawable->material()));
-     /**
-     lO MEJOR ES IMPROVISAAR
-     POR QUE QUIERO :·3 <3 A TI Y NO O SI?QUIEN SABE? TU ERES LA MAS GUAPA DEL REINO
+ void Camera::loadNode(std::shared_ptr<Node> node){
 
+   Drawable* t_drawable = dynamic_cast<Drawable*>(node.get());
+   if (node->getParent() != nullptr){
+     node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
+   }
+   else{
+     node->setWorldMat(node->modelMat());
+   }
 
-     */
-
-     data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material()));
-     data_->dl_cam_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
-     data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
-
-     mat4 model_node;
-     {
-       model_node = glm::rotate(model_node, node->rotation().x, vec3(1.0, 0.0, 0.0));
-       model_node = glm::rotate(model_node, node->rotation().y, vec3(0.0, 1.0, 0.0));
-       model_node = glm::rotate(model_node, node->rotation().z, vec3(0.0, 0.0, 1.0));
-       model_node = glm::scale(model_node, vec3(2.0, 2.0, 2.0));
-       model_node = glm::translate(model_node, node->position());
+   if (t_drawable){
+     if (t_drawable->geometry() != nullptr)  {
+       data_->dl_cam_.get()->add(std::make_shared<LoadGeometryCommand>(t_drawable->geometry()));
+     }
+     if (t_drawable->material() != nullptr){
+       data_->dl_cam_.get()->add(std::make_shared<LoadMaterialCommand>(t_drawable->material()));
+     }
+     if (t_drawable->material() != nullptr){
+       data_->dl_cam_.get()->add(std::make_shared<LoadTextureCommand>(t_drawable->material()));
      }
 
-     std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
-     data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c,
-       (t_drawable->position()),
-       (t_drawable->rotation()),
-       (t_drawable->scale()), model_node));
-     data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
+     if (t_drawable->material() != nullptr){
+       data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material()));
+     }
+     if (t_drawable->geometry() != nullptr){
+       data_->dl_cam_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
+     }
+     if (t_drawable->material() != nullptr){
+       data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
+     }
 
-     //   loadNode(t_drawable);
+     if (t_drawable->geometry() != nullptr && t_drawable->material() != nullptr){
+
+     
+       std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
+       data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c, t_drawable->worldMat()));
+     }
+
+     if (t_drawable->geometry() != nullptr){
+       data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
+     }
    }
+
+   //hijos
+     for (int i = 0; i < node->size(); i++){
+	    //std::shared_ptr<Node> nod = node->childAt(i);
+       //const Drawable* draw = dynamic_cast<Drawable*>(nod.get());
+       loadNode(node->childAt(i));
+   }
+
+
  }
    
 
