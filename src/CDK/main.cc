@@ -84,7 +84,7 @@ void createWindow(){
       glEnable(GL_DEPTH_TEST);
       angle += 0.002;
 
-
+      printf("Total tasks: %d", task_manager_->runingTasks());
 
       Scene.root->setRotation(vec3(0.0,angle , 0.0f));
       printf("Num childs %d\n", Scene.root->size());

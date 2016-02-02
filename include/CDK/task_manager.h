@@ -41,16 +41,16 @@ public:
 	*	@brief Constructor of the task UpdateDisplay
 	* @param dl The display list to update
 	*/
-  UpdateDisplay(std::shared_ptr<DisplayList> dl,Node *n,Camera*cam);
+  UpdateDisplay(DisplayList *dl,std::shared_ptr<Node> n,Camera*cam);
 	/**
 	* @brief Execute the task
 	*/
 	void runTask();
-  void loadNode(Node *);
+  void loadNode(std::shared_ptr<Node>node );
 private:
- Node* nod_;
+ std::shared_ptr<Node> nod_;
   Camera * cam_;
- std::shared_ptr<DisplayList> dl_;
+DisplayList* dl_;
 };
 #endif
 
@@ -140,6 +140,8 @@ public:
 	*/
   void init();
   void waitTask(Task &t);
+  unsigned int totalTasks();
+  unsigned int runingTasks();
   std::vector<TaskT_> run_tasks_list_;
 private:
 	//Needed variables to manage the threads

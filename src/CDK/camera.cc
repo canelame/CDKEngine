@@ -52,7 +52,7 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
 
 void Camera::render(std::shared_ptr<Node>node, TaskManager *tk){
   //
-  std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_, node.get(), this);
+  std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, this);
 
      tk->addTask(update_task);
      if (data_->last_task.get() != nullptr){

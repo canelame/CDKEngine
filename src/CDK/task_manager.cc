@@ -85,8 +85,9 @@ int Task::getId(){
        for (int i = 0; i < run_tasks_list_.size(); i++){
          if (t.getId() == run_tasks_list_[i]->getId()){
            if (run_tasks_list_[i]->finished_){
-             i = run_tasks_list_.size();//break for
              is_finish = true;
+             run_tasks_list_.erase(run_tasks_list_.begin() + i);
+             i = run_tasks_list_.size();//break for
 
            }
          }
@@ -97,21 +98,6 @@ int Task::getId(){
          return;
        }
     }
-
-      /* if (!finded){
-          int l_size = run_tasks_list_.size();
-          for (int i = 0; i < l_size; i++){
-            if (t.getId() == run_tasks_list_[i]->getId()){
-              if (run_tasks_list_[i]->getLocked()){
-                run_tasks_list_.erase(run_tasks_list_.begin() + i);
-                is_finish = true;
-                i = l_size;//break for
-              }
-            }
-          }
-        }^*/
-
-
    }
 
    TaskManager::~TaskManager(){
@@ -131,7 +117,7 @@ int Task::getId(){
 	 /////////////////////////////////////////////////////
 
 	 //UPDATE_DISPLAY_LIST_TASK
-	 UpdateDisplay::UpdateDisplay(std::shared_ptr<DisplayList>dl,Node* n,Camera *cam){
+	 UpdateDisplay::UpdateDisplay(DisplayList*dl,std::shared_ptr<Node> n,Camera *cam){
      dl_ = dl;
      nod_ = n;
      cam_ = cam;
@@ -142,13 +128,14 @@ int Task::getId(){
      unlock();
    }
 
-   void UpdateDisplay::loadNode(Node *node){
+   void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
 
-     std::vector<Light> lights;
-    Drawable *t_drawable =(dynamic_cast<Drawable*>(node));
+    std::vector<Light> lights;
+    std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
+    
  
      if (node->getParent() == nullptr){
-       lights = node->getLigths();
+    //   lights = node->getLigths();
      }
 
      if (node->getParent() != nullptr){
@@ -162,13 +149,13 @@ int Task::getId(){
 
        if (t_drawable->geometry() != nullptr && t_drawable->material() != nullptr){
 
-         dl_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
-         dl_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
-         dl_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material()));
-         dl_.get()->add(std::make_shared<LightsCommand>(lights));
+         dl_->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
+         dl_->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
+         dl_->add(std::make_shared<UseTextureComman>(t_drawable->material()));
+         dl_->add(std::make_shared<LightsCommand>(lights));
          std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*cam_);
-         dl_.get()->add(std::make_shared<SetupCameraCommand>(t_c, t_drawable->worldMat()));
-         dl_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
+         dl_->add(std::make_shared<SetupCameraCommand>(t_c, t_drawable->worldMat()));
+         dl_->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
          t_drawable->setDirtyNode(false);
        }
      }
@@ -178,7 +165,7 @@ int Task::getId(){
 
      //hijos
      for (int i = 0; i < node->size(); i++){
-       loadNode(node->childAt(i).get());
+       loadNode(node->childAt(i));
      }
      finished_ = true;
      unlock();
@@ -236,4 +223,9 @@ int Task::getId(){
    }
 
 
-  
+   unsigned int TaskManager::totalTasks(){
+     return task_list_.size();
+   }
+   unsigned int TaskManager::runingTasks(){
+     return run_tasks_list_.size();
+   }
