@@ -3,41 +3,66 @@
 
 struct Buffer::Data {
   bool dirty_;
-  int size_;
-  std::vector<float>positions_;
-  std::vector<float>normals_;
-  std::vector<float>uvs_;
-  std::vector<unsigned int>indexes_;
+
+  std::shared_ptr<float *>positions;
+  std::shared_ptr<float *>normals;
+  std::shared_ptr<float * > uvs;
+  std::shared_ptr<unsigned int*> indices;
+
+  std::unique_ptr<char[]> data;
+
+  int num_position_vertex_;
+  int num_normal_vertex_;
+  int num_uv_vertex_;
+  int num_tan_vertex_;
+  int num_bitan_vertex_;
+  int num_indices_;
+
   OpenGlInterFaz *interface_;
   GLuint vao_;
   GLuint vbo_[4]; //0 positions, 1 normals, 2 uvs,3 indexes;
 };
-Buffer::Buffer(std::vector<float>positions, std::vector<float>normals, std::vector<float>uvs,
-  std::vector<unsigned int> indexes){
+
+
+Buffer::Buffer(float*positions, float*normals, float*uvs,
+  unsigned int* indexes){
   data_ = new Data;
-  data_->positions_ = positions;
-  data_->normals_ = normals;
-  data_->uvs_ = uvs;
-  data_->indexes_ = indexes;
+  data_->positions = std::make_shared<float*>(positions);
+  data_->normals = std::make_shared<float*>(normals);
+  data_->uvs = std::make_shared<float*>(uvs);
+  data_->indices = std::make_shared<unsigned int*>(indexes);
 }
 Buffer::Buffer(){
   data_ = new Data;
 };
-void Buffer::init(int size){
-  data_->size_ = size;
+void Buffer::setAttributeSize(int p, int n, int uv, int t, int bt, int i){
+  data_->num_position_vertex_ = p;
+  data_->num_normal_vertex_ = n;
+  data_->num_uv_vertex_ = uv;
+  data_->num_tan_vertex_ = t;
+  data_->num_bitan_vertex_ = bt;
+  data_->num_indices_ = i;
 }
-void Buffer::loadData(std::vector<float>positions, std::vector<float>normals, std::vector<float>uvs,
-	std::vector<unsigned int> indexes){
-	//Reserve vectors.
-  data_->positions_.reserve(positions.size()*sizeof(float));
-  data_->normals_.reserve(normals.size()*sizeof(float));
-  data_->uvs_.reserve(uvs.size()*sizeof(float));
-  data_->indexes_.reserve(indexes.size()*sizeof(unsigned int));
+void Buffer::init(int size){
 
-  data_->positions_ = positions;
-  data_->normals_ = normals;
-  data_->uvs_ = uvs;
-  data_->indexes_ = indexes;
+}
+std::vector<int>Buffer::getSizes(){
+  std::vector<int> t;
+  t.push_back(data_->num_position_vertex_);
+  t.push_back(data_->num_normal_vertex_);
+  t.push_back(data_->num_uv_vertex_);
+  t.push_back(data_->num_tan_vertex_);
+  t.push_back(data_->num_bitan_vertex_);
+  t.push_back(data_->num_indices_);
+  return t;
+}
+void Buffer::loadData(float*positions, float*normals, float*uvs,
+  unsigned int* indexes){
+  //Reserve vectors.
+  data_->positions = std::make_shared<float*>(positions);
+  data_->normals = std::make_shared<float*>(normals);
+  data_->uvs = std::make_shared<float*>(uvs);
+  data_->indices = std::make_shared<unsigned int*>(indexes);
   data_->dirty_ = true;
 }
 
@@ -49,18 +74,19 @@ GLuint* Buffer::getVAO(){ return &data_->vao_; }
 
 GLuint* Buffer::getVBO(){ return  data_->vbo_; }
 
-std::vector<std::vector<float>> Buffer::getAttributes(){
-  std::vector<std::vector<float>> temp;
-  temp.push_back(data_->positions_);
-  temp.push_back(data_->normals_);
-  temp.push_back(data_->uvs_);
-	return temp;
+
+
+std::vector<float*> Buffer::getAttributesT(){
+  std::vector<float*> temp;
+  temp.push_back(*data_->positions.get());
+  temp.push_back(*data_->normals.get());
+  temp.push_back(*data_->uvs.get());
+  return temp;
 }
 
-std::vector<unsigned int > Buffer::getIndexes(){
-  return  data_->indexes_;
+unsigned int * Buffer::getIndexesT(){
+  return  *data_->indices.get();
 }
-
 void Buffer::setDirty(bool d){ data_->dirty_ = d; }
 
 

@@ -4,23 +4,27 @@
 */
 #include "GL\glew.h"
 #include "GLFW\glfw3.h"
-#include "ref_counter.h"
-#include "raii_pointer.h"
-#include "ImGui\imgui.h"
-#include "ImGui\imgui_impl_glfw_gl3.h"
-class Window : virtual public Ref_Counter{
+#include "types.h"
+#include "input.h"
+class Window{
 public:
    struct _Window;
-   _Window * window_s_;
-	Window();
+   
+   Window();
+   /**
+   @brief init window
+   @param width Width of the screen
+   @param height Height of the screen
+   */
 	bool init(unsigned int width, unsigned int height);
 	bool processEvents();
 	void swap();
 	void finish();
-  int main(int argc, char **argv);
+  ///Main to rewrite by the user
+  static int main(int argc, char **argv);
   ~Window(){};
 private:
-
-	int width_ = 800;
-	int height_ = 600;
+  _Window * window_s_;
+	int32 width_ = 800;
+	int32 height_ = 600;
 };

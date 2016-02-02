@@ -10,6 +10,7 @@ public:
 	void runCommand(OpenGlInterFaz &in)const;
 private:
   std::shared_ptr<Geometry> t_geo;
+  int indices_size_;
 };
 
 #endif
@@ -25,6 +26,7 @@ public:
 private:	
 	
   std::shared_ptr<Geometry> t_geo;
+  mutable GLuint vao_;
 };
 #endif
 
@@ -60,6 +62,27 @@ public:
 private:
 	std::shared_ptr<Geometry> t_geo;
   mutable bool delete_ = false;
+
+};
+#endif
+
+
+#ifndef __H_LIGHTS_COMMAND__
+#define __H_LIGHTS_COMMAND__  
+#include "command.h"
+#include "light.h"
+#include <vector>
+#include "opengl_interfaz.h"
+class LightsCommand : public Command{
+public:
+  LightsCommand(std::vector<Light> geo);
+
+
+  void runCommand(OpenGlInterFaz &in)const;
+
+
+private:
+  mutable std::vector<Light> lights_;
 
 };
 #endif
@@ -122,6 +145,8 @@ class SetupCameraCommand : public Command {
 public:
 	SetupCameraCommand(std::shared_ptr<Camera>cam,mat4 m_m);
   void runCommand(OpenGlInterFaz &in)const;
+  std::shared_ptr<Camera> getCam(){ return t_cam; }
+
 private:
 	std::shared_ptr<Camera> t_cam;
  mat4 model_n_;
@@ -139,6 +164,8 @@ public:
 	void runCommand(OpenGlInterFaz &in)const;
 private:
   std::shared_ptr<Material> t_mat;
+  mutable const char* v_data;
+  mutable const char* f_data;
 
 };
 #endif
@@ -160,7 +187,11 @@ private:
 */
 
 class DisplayList{
- 
+ //private funtions
+  ///Draw Command variable
+  unsigned int indices_size_;
+  unsigned int vao_;
+
 public:
   friend class OpenGlInterFaz;
   typedef std::shared_ptr<Command> Comm_;
@@ -188,8 +219,12 @@ public:
 	/**
 	* @param  Update the display list.
 	*/
-  void update();
-
+  void update(Node*dr);
+  /**
+  *@brief Clean commands list
+  * @param  Update the display list.
+  */
+  void clear();
 private:
 	OpenGlInterFaz *interfaz_;
 	List listCommand_;

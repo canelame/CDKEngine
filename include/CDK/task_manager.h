@@ -1,5 +1,7 @@
 #ifndef __H_TASK__
 #define __H_TASK__
+#include <queue>
+#include "types.h"
 class Task{
 	/**
 	* @author Alejandro Canela Mendez 2015.
@@ -15,9 +17,13 @@ public:
 	bool getLocked();
 	void lock();
 	void unlock();
+  void setId(int32 id);
+  int getId();
+   bool finished_=false;
 private:
-  int id_;
+  int32 id_;
 	mutable	bool is_locked_;
+
 };
 #endif 
 
@@ -35,18 +41,22 @@ public:
 	*	@brief Constructor of the task UpdateDisplay
 	* @param dl The display list to update
 	*/
-	UpdateDisplay(std::shared_ptr<DisplayList> &dl);
+  UpdateDisplay(std::shared_ptr<DisplayList> dl,Node *n,Camera*cam);
 	/**
 	* @brief Execute the task
 	*/
 	void runTask();
+  void loadNode(Node *);
 private:
-  std::shared_ptr<DisplayList> dl_;
+ Node* nod_;
+  Camera * cam_;
+ std::shared_ptr<DisplayList> dl_;
 };
 #endif
 
 #ifndef __H_READ_FILE_TASK__
 #define __H_READ_FILE_TASK__
+#include <memory>
 	/**
 	* 
 	* @author Alejandro Canela Mendez 2015.
@@ -60,22 +70,48 @@ public:
 	* @param file_name The file to read.
 	* @param out_file Returns the content of the file.
 	*/
-	ReadFile(const char* file_name, std::string &out_file);
+	ReadFile(const char* file_name, std::shared_ptr<Material> m);
 	/**
 		@brief Execute the task.
 	*/
 	void ReadFile::runTask();
 private:
   const char* name_;
-  mutable std::string data_;
+  std::shared_ptr<Material> mat_;
+   std::string data_;
+};
+
+#endif
+
+#ifndef __H_READ_TEXTURE_TASK__
+#define __H_READ_TEXTURE_TASK__
+class ReadTexture : public Task{
+public:
+  /**
+  * @brief Constructor of the task ReadFile
+  * @param file_name The file to read.
+  * @param out_file Returns the content of the file.
+  */
+  ReadTexture(std::shared_ptr<Texture> t,const char*file_name,const char*type);
+  /**
+  @brief Execute the task.
+  */
+  void runTask();
+
+  ~ReadTexture(){};
+private:
+  std::shared_ptr<Texture> texture_;
+  const char* name_;
+   const char*type_;
 };
 
 #endif
 
 #ifndef __H_TASK_MANAGER__
 #define __H_TASK_MANAGER__
-#include "display_list.h"
+
 #include "geometry.h"
+
 #include <memory>
 #include <vector>
 #include <mutex>
@@ -90,7 +126,7 @@ private:
 class TaskManager {
 	/* Redefinition of types for manage list of task*/
   typedef std::shared_ptr<Task> TaskT_;
-  typedef std::vector<TaskT_> TaskListT_;
+  typedef std::deque<TaskT_> TaskListT_;
 public:
 	TaskManager() {};
 	~TaskManager();
@@ -103,34 +139,32 @@ public:
 	* @brief Init threads, the number of threads is equal to processor cores.
 	*/
   void init();
-
+  void waitTask(Task &t);
+  std::vector<TaskT_> run_tasks_list_;
 private:
 	//Needed variables to manage the threads
-	static void mainThreadLoop();
-	static std::mutex mutex_;
-	static  std::condition_variable cond_variable_;
-	static bool stop_;
+	 void mainThreadLoop();
+  std::mutex mutex_;
+  std::condition_variable cond_variable_;
+  bool stop_;
 	int num_cores_;
 	std::vector<std::thread> list_thread_;
-	static TaskListT_ task_list_;
+
+	 TaskListT_ task_list_;
+
 };
 
 
 #endif
 
-#ifndef __TASK_HANDLE__
-#define __TASK_HANDLE__
+#ifndef __H_TASK_HANDLE__
+#define __H_TASK_HANDLE__
 
-class TaskHandle {
+class TaskHandle{
 
-public:
-	struct Data;
-	TaskHandle();
-	~TaskHandle();
-private:
 
-	Data* data_;
+  int id_;
+
 };
-
 
 #endif

@@ -17,8 +17,9 @@ class Buffer{
 
 public:
   struct Data;
-  Buffer(std::vector<float>positions, std::vector<float>normals, std::vector<float>uvs,
-    std::vector<unsigned int> indexes);
+
+  Buffer(float*positions, float*normals, float*uvs,
+    unsigned int* indexes);
   Buffer();
   /**
   * @brief This function is used to load the attributes for a mesh. This attributes are,
@@ -40,8 +41,15 @@ public:
   * @param indexes Indexes to the mesh, must be in order respect the other attributes.
 
   */
-	void loadData(std::vector<float>positions, std::vector<float>normals, std::vector<float>uvs,
-	              std::vector<unsigned int> indexes);
+
+
+  void loadData(float*positions, float*normals, float*uvs,
+    unsigned int* indexes);
+
+  /**
+  
+  */
+  void setAttributeSize(int p, int n, int uv, int t, int bt, int i);
   /**
   * @brif This function initilices the buffer whit size.
   * @param size Buffer size
@@ -75,12 +83,13 @@ public:
   * @brief This function return three vectors, whose are the attributes. ;
   * @return Return three vectors.
   */
-	std::vector<std::vector<float>> getAttributes();
+  std::vector<float*> getAttributesT();
   /**
   * @brief This function return the indices list ;
   * @return Indices list.
   */
-	std::vector<unsigned int> getIndexes();
+  unsigned int* getIndexesT();
+  std::vector<int>getSizes();
   /**
   * @brief This function is used to call opengl to use the geometry, and return the instance of
   opengl_interfaz.

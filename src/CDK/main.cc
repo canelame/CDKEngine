@@ -8,35 +8,25 @@
 #include "CDK/draw.h"
 #include "CDK/material.h"
 #include "CDK/task_manager.h"
-#include "ImGui\imgui.h"
-#include "ImGui\imgui_impl_glfw_gl3.h"
+
 #include "CDK/node.h"
 #include "CDK/loader.h"
+#include "glm\glm.hpp"
+Window g_win;
+
 struct {
 	std::shared_ptr<Node> root;
 	std::shared_ptr<Camera> cam;
 
 }Scene;
 
-void imGuiWindow(glm::vec3 &scale, glm::vec3 &cam_position,std::shared_ptr<Node> &t_n){
-  float size[3] = { scale.x, scale.y, scale.z };
-  float rotation[3] = { t_n.get()->rotation().x, t_n.get()->rotation().y, t_n.get()->rotation().z };
-  float position[3] = {cam_position.x,cam_position.y,cam_position.z};
-  ImGui::SetWindowSize(ImVec2(200, 100), 0);
-  ImGui::Begin("Window");
-  ImGui::Text("Camera Mocement");
-  ImGui::SliderFloat3("Position cam", position, 0, 100);
-  ImGui::SliderFloat3("Scale object", size, 0, 100);
-  ImGui::SliderFloat3("Rotation object", rotation, 0, 100);
-  ImGui::End();
-  scale.x = size[0]; scale.y = size[1]; scale.z = size[2];
-  cam_position.x = position[0]; cam_position.y = position[1]; cam_position.z = position[2];
-  t_n.get()->setRotation(vec3(rotation[0],rotation[1], rotation[2]));
-  ImGui::Render();
-}
 
+
+void FPSCamera(){
+ 
+}
 void createWindow(){
-  Window g_win;
+ 
  
   if (!g_win.init(800, 600)){
     printf("Error to init window.\n");
@@ -45,74 +35,66 @@ void createWindow(){
 	  std::shared_ptr<TaskManager> task_manager_;
 	  task_manager_ = std::make_shared<TaskManager>();
 	  task_manager_.get()->init();
-  
+
   //Create Geometry
   
-      std::unique_ptr<Loader> loader = std::make_unique<Loader>();
-      std::shared_ptr<Drawable> node_drawable = loader->loadCDK("meshes/cat.cdk", task_manager_);
-	  std::shared_ptr<Geometry> g;
-	  g = std::make_shared<Geometry>();
-    g->createCube(1);
-	  std::shared_ptr<Geometry> g2;
-	  g2 = std::make_shared<Geometry>();
-	 // g2->loadCdkFormat("meshes/cube.obj",true);
-  //Create Material
-  
-	  std::shared_ptr<Material> m;
-	  m = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE,task_manager_);
+    std::unique_ptr<Loader> loader = std::make_unique<Loader>();
 
-    std::shared_ptr<Material> m2;
-    m2 = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE,task_manager_);
+    std::shared_ptr<Drawable> w = loader->loadCDK("meshes/cyb.cdk", task_manager_);
 
-    std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
-    txt1->loadTexture("textures/jovi.jpg");
-    m->setTexture(txt1);
+    std::shared_ptr<Drawable> w2 = loader->loadCDK("meshes/mlo.cdk", task_manager_);
 
-    std::shared_ptr<Texture> txt2 = std::make_shared<Texture>();
-   // txt2->loadTexture("textures/red.png");
-    //m2->setTexture(txt2);
-	 
-  
+    std::shared_ptr<Light> l1 = std::make_shared<Light>();
+    l1->setPosition(vec3(0.0, -2.0, 100.0));
+    l1->setAmbientColor(vec3(1.0, 0.0, 0.0));
+    l1->setDifusseColor(vec3(0.0,1.0,0.0));
   //Create Camera
   
 	  Scene.cam = std::make_shared<Camera>();
-	  Scene.cam->setPerspective(45, 800.0 / 600.0, 1.0, 1000.0);
+	  Scene.cam->setPerspective(45, 800.0 / 600.0, 0.1, 100000.0);
 	//Create Root
 	  Scene.root = std::make_shared<Node>();
  //Create Display List
 	  std::shared_ptr< DisplayList> dl;
 	  dl = std::make_shared<DisplayList>();
 
+   w->setPosition(vec3(0.0, 0.0, 0.0));
+   //w->setScale(vec3(1, 1, 1));
 
-	  std::shared_ptr<Drawable> drawable;
-	  drawable = std::make_shared<Drawable>();
-
-    node_drawable->setPosition(vec3(10, 0.0, 0.0));
-
-	drawable->setPosition(vec3(-1.5 + (2.0),0.0f,0.0 ));
-    drawable->setGeometry(g);
-    drawable->setMaterial(m);
-
-    node_drawable->setScale(vec3(10.0, 10.0, 10.0));
-	drawable->setScale(vec3(0.75, 0.75, 0.75));
-  Scene.root.get()->addChild(node_drawable);
-  Scene.root.get()->addChild(drawable);
-  Scene.root.get()->setPosition(vec3(0.0, 0.0, 60.0));
-  Scene.root.get()->setRotation(vec3(0,0,0));
-
-  while (g_win.processEvents()){
-    auto start_c = std::chrono::steady_clock::now();
-		ImGui_ImplGlfwGL3_NewFrame();
-	//	task_manager_->addTask(std::make_shared<UpdateDisplay>(dl));
-		glClearColor(.3f, .2f, .7f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		glEnable(GL_DEPTH_TEST);
-		Scene.cam->render(Scene.root);
-		imGuiWindow(Scene.cam.get()->model_scale, Scene.cam.get()->position_,Scene.root);
-		g_win.swap();
+   w2->setPosition(vec3(10.0f,0.0f,0.0f));
    
+   Scene.root.get()->addChild(w);
+   Scene.root.get()->addChild(w2);
+   Scene.root.get()->setPosition(vec3(0.0, -2.0, 95.0));
+   Scene.root.get()->setRotation(vec3(0,0,0));
+   Scene.root.get()->addLight(*l1.get());
+   double next_frame = 0;
+   double deltaTime = 0.0; 
+   float angle=96.0f;
+  while (g_win.processEvents()){
+
+      Scene.cam->FpsCameraUpdate();
+
+      if (Input::pressSpace()){
+         Scene.root->removeChild(1);
+      }
+
+      glClearColor(.3f, .2f, .7f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glEnable(GL_DEPTH_TEST);
+      angle += 0.002;
+
+
+
+      Scene.root->setRotation(vec3(0.0,angle , 0.0f));
+      printf("Num childs %d\n", Scene.root->size());
+      Scene.cam->render(Scene.root,task_manager_.get());
+
+      g_win.swap();
+    
   }
-	task_manager_->~TaskManager();
+
+ //task_manager_->~TaskManager();
 }
 
 int main(){

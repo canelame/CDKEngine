@@ -10,24 +10,26 @@ class Drawable :public Node {
 public:
 	struct Data;
 	Drawable();
-	//Getter and settersç
-	vec3 position();
-	vec3 rotation();
-	vec3 scale();
-  
+
+  /**
+  *@brief Get geometry to drawable
+  * @param  Update the display list.
+  */
   std::shared_ptr<Geometry> geometry();
+  /**
+  *@brief GSet material to drawable
+  * @param  Update the display list.
+  */
   std::shared_ptr<Material> material();
-
-/*	void setPosition(vec3 &data);
-	void setPosition(const float* data);
-
-	void setRotation(vec3 &data);
-	void setRotation(const float* data);
-
-	void setScale(vec3 &data);
-	void setScale(const float* data);*/
-
+  /**
+  *@brief Set geometry to drawable
+  * @param  Update the display list.
+  */
 	void setGeometry(std::shared_ptr<Geometry>);
+  /**
+  *@brief Set material to drawable
+  * @param  Update the display list.
+  */
 	void setMaterial(std::shared_ptr<Material>);
 
 private:

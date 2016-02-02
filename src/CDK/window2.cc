@@ -1,19 +1,22 @@
 #include "CDK/window2.h"
 
 #include <stdio.h>
+#include "CDK/input.h"
 
-bool g_keys[1024];
 
 void key_callback(GLFWwindow*window, int key, int scancode , int action, int mods){
  
   if (action == GLFW_PRESS){
-    g_keys[key] = true;
+    Input::instance().setInputPress(key);
   }
   else if (action == GLFW_RELEASE){
-    g_keys[key] = false;
+    Input::instance().setInputRealease(key);
   }
 
 
+}
+void mouse_callback(GLFWwindow* window, double xpos, double ypos){
+  Input::instance().setMouseXY(xpos, ypos);
 }
 
 struct Window::_Window{
@@ -22,7 +25,10 @@ struct Window::_Window{
 Window::Window(){
   window_s_ = new _Window;
 }
-int Window::main(int argc, char**argv){ return 0; }
+/*int main(int argc, char**argv){ 
+  //Window::main(argc,argv);
+  //return 0;
+}*/
 bool Window::init(unsigned int width, unsigned int height){
 	
 	width_ = width;
@@ -46,10 +52,11 @@ bool Window::init(unsigned int width, unsigned int height){
 	}
 
   //Set ViewPort
-  ImGui_ImplGlfwGL3_Init(window_s_->main_window_,true);
+
  
   glfwMakeContextCurrent(window_s_->main_window_);
   glfwSetKeyCallback(window_s_->main_window_, key_callback);
+  glfwSetCursorPosCallback(window_s_->main_window_, mouse_callback);
 	//Init GLEW
 	glewExperimental = GL_TRUE;
 
@@ -65,9 +72,7 @@ bool Window::init(unsigned int width, unsigned int height){
 bool Window::processEvents(){
   glfwPollEvents();
   
-  if (g_keys[GLFW_KEY_ESCAPE]){
-    return false;
-  }  
+  
   return true; 
 }
 

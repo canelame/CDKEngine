@@ -7,7 +7,7 @@
 #include "glm\glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
-
+class Light;
 class Drawable;
 class Node  {
   
@@ -17,7 +17,9 @@ public:
 	Node();
  virtual ~Node();
 	void addChild(std::shared_ptr<Node> child);
+  void removeChild(unsigned int index);
 	std::shared_ptr<Node> childAt(int index);
+  void addLight(Light t);
 
 	//Getter and settersç
 	vec3 position();
@@ -35,13 +37,16 @@ public:
 	void setRotation(vec3 &data);
 	void setRotation(const float* data);
 
-	void setScale(vec3 &data);
 	void setScale(const float* data);
   std::shared_ptr<Node> getParent();
   void setParent(std::shared_ptr<Node>p);
 	int size();
 	void  calculateModel();
 	void combine(std::shared_ptr<Node> c_m);
+  void setDirtyNode(bool value);
+  bool getDirtyNode();
+  std::vector<Light> getLigths();
+  
 private:
 	Data *data_;
 	

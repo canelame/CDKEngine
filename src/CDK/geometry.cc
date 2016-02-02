@@ -7,15 +7,14 @@
 
 Geometry::Geometry(){
 	geo_buff_ = std::make_unique<Buffer>();
-	num_mesh_=0;
+
 }
 glm::mat4 Geometry::getModel(){
   mat4 model;
-  // view = glm::rotate(view, 0.0, vec3(1.0, 0.0, 0.0));
-  model = glm::scale(model, scale_);
-  model = glm::translate(model, position_);
   return model;
 }
+
+
 
 void Geometry::loadObjFile(const char*file){
   /*Load whit tinyobj
@@ -35,40 +34,24 @@ void Geometry::loadObjFile(const char*file){
  
 }
 int Geometry::numMes(){
-	return num_mesh_;
-}
-void Geometry::setMes(int v){
-	num_mesh_ = v;
-}
-std::shared_ptr<Buffer> Geometry::total_meshes(){
-  return geo_buff_;
+	return 0;
 }
 
 void Geometry::loadCdkFormat(const char* file_in,bool assimp){
   
 }
-void Geometry::loadAttributes(std::vector<float>vertex, std::vector<float>normal, std::vector<float>uv,
-                             std::vector<unsigned int>index){
-	geo_buff_.get()->loadData(vertex, normal, uv, index);
 
+void Geometry::loadAttributes(float*positions, float*normals, float*uvs,
+  unsigned int* indexes){
 
-
+  geo_buff_->loadData(positions, normals, uvs, indexes);
 }
+
+
 std::shared_ptr< Buffer> Geometry::getBuffer(){
 	return    geo_buff_;
 }
-void Geometry::setPosition(vec3 &p){
-  position_ = p;
-}
-void Geometry::setRotation(vec3 &r){
-  rotation_ = r;
-}
-void Geometry::setScale(vec3 &s){
-  scale_ = s;
-}
-vec3 Geometry::position(){ return position_; }
-vec3 Geometry::scale(){ return scale_; }
-vec3 Geometry::rotation(){ return rotation_; }
+
 void Geometry::createCube(int size) {
 
 	const float cube_vertices[72]{
@@ -210,7 +193,7 @@ void Geometry::createCube(int size) {
 		indices.push_back(indexes_cube[i]);
 	}
 	
-	geo_buff_->loadData(positions, normals, uvs, indices);
+
 }
 void Geometry::createTriangle(){
  // float x = 0, y = 0;
@@ -245,20 +228,8 @@ void Geometry::createTriangle(){
       0, 0, 1,
       0, 0, 1,
   };
-  std::vector<float> positions, normals, uvs;
-  std::vector<unsigned int> indexes;
-  for (int i = 0; i < 12; i++) {
-    positions.push_back(quadVertices[i]);
-    normals.push_back(normales[i]);
+  geo_buff_->setAttributeSize(12, 12, 8, 0, 0, 6);
+  geo_buff_->loadData(quadVertices, 0, quad_uv, indices_quad);
 
-  }
-  for (int i = 0; i < 8; i++) {
-
-    uvs.push_back(quad_uv[i]);
-  }
-  for (int i = 0; i <6; i++) {
-    indexes.push_back(indices_quad[i]);
-  }
-  geo_buff_->loadData(positions, normals, uvs, indexes);
 
 }

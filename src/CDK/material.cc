@@ -1,22 +1,58 @@
 #include "CDK/material.h"
-#include "external/stb_image.h"
+
 #include "CDK/task_manager.h"
 
+struct Material::MaterialSettings{
+  Light material_lights_[10];
+  std::vector< std::shared_ptr<Texture> > texture_;
+};
 
 Material::Material(TYPE t, std::shared_ptr<TaskManager>tk){
 
   interfaz_ = new OpenGlInterFaz();
+  material_settings_ = new MaterialSettings;
   is_compiled_ = false;
   
   if (t == 0){
-    
-    tk.get()->addTask(std::make_shared<ReadFile>("shaders/diffuse_v.glsl", vertex_data_));
-    tk.get()->addTask(std::make_shared<ReadFile>("shaders/diffuse_f.glsl", fragment_data_));
+   std::shared_ptr<ReadFile> read_t = std::make_unique<ReadFile>("shaders/diffuse_v.glsl", std::make_shared<Material>(*this));
+   std::shared_ptr<ReadFile>read_t2 = std::make_unique<ReadFile>("shaders/diffuse_f.glsl", std::make_shared<Material>(*this));
+    tk.get()->addTask(read_t);
+    tk.get()->addTask(read_t2);
+    tk->waitTask(*read_t.get());
+    tk->waitTask(*read_t2.get());
   
   }
   else{
-    tk.get()->addTask(std::make_shared<ReadFile>("shaders/texture_v.glsl",vertex_data_));
-    tk.get()->addTask(std::make_shared<ReadFile>("shaders/texture_f.glsl", fragment_data_));
+  /*  std::shared_ptr<ReadFile> read_t = std::make_unique<ReadFile>("shaders/texture_v.glsl", &vertex_data_);
+    tk.get()->addTask(read_t);
+    tk->waitTask(*read_t.get());
+   std::shared_ptr<ReadFile>read_t2 = std::make_unique<ReadFile>("shaders/texture_f.glsl", &fragment_data_);
+    tk.get()->addTask(read_t2);
+    tk->waitTask(*read_t2.get());*/
+    std::stringstream temp_vertex_data;
+    std::stringstream temp_fragment_data;
+    std::string line;
+    printf("Reading file task | %s | \n", "shaders/texture_f.glsl");
+    std::ifstream file_V("shaders/texture_f.glsl");
+    if (file_V.is_open()){
+      temp_vertex_data << file_V.rdbuf();
+      file_V.close();
+      line = temp_vertex_data.str();
+      fragment_data_ = line;
+
+    }
+    std::stringstream temp_vertex_data1;
+    std::stringstream temp_fragment_data1;
+    std::ifstream file_V1("shaders/texture_v.glsl");
+    if (file_V1.is_open()){
+      temp_vertex_data1 << file_V1.rdbuf();
+      file_V1.close();
+      line = temp_vertex_data1.str();
+      vertex_data_ = line;
+
+    }
+
+    printf("");
   }
 ;}
 
@@ -24,14 +60,12 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
 
   vertex_data_ = vertex_file;
   fragment_data_ = fragment_file;
-	
-}
-
-void Material::runCommand(OpenGlInterFaz &i)const{
- 
 }
 
 
+void Material::setProgram(int value){
+  program_ = value;
+}
 
 GLuint Material::getProgram(){
   return program_; 
@@ -46,7 +80,25 @@ std::string Material::getVertexData(){
   return vertex_data_; 
 }
 
-void Material::setTexture(std::shared_ptr<Texture>tx){
-   texture_=tx;
+void Material::addTexture(std::shared_ptr<Texture>tx,std::shared_ptr<TaskManager> tk){
 
+  material_settings_->texture_.push_back(tx);
+
+}
+int Material::totalTextures(){
+  return material_settings_->texture_.size();
+}
+
+
+
+std::shared_ptr<Texture> Material::getTextureAt(int i){ 
+  return material_settings_->texture_.at(i); 
+}
+
+int Material::getTotalLights(){
+  return material_settings_->material_lights_->size();
+};
+
+Light Material::lightAt(int i){
+ return  material_settings_->material_lights_[i];
 }

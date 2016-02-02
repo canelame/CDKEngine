@@ -12,8 +12,9 @@ struct OpenGlInterFaz::Data{
   GLuint shadow_vbo_v_;
   GLuint shadow_vbo_i_;
   std::vector<std::vector<float>> shadow_attrib_;
+  std::vector<float*> shadow_attrib;
   std::vector<unsigned int > shadow_index_;
-
+  std::shared_ptr<unsigned int *>shadow_index;
   };
 
 OpenGlInterFaz::OpenGlInterFaz(){
@@ -21,18 +22,21 @@ OpenGlInterFaz::OpenGlInterFaz(){
 };
 
 void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
-  std::vector<float> temp_p, temp_n, temp_uv;
-  data_->shadow_attrib_ = buff->getAttributes();
-  data_->shadow_index_ = buff->getIndexes();
 
-  GLint postion_size = data_->shadow_attrib_[0].size()*sizeof(float);
-  GLint normal_size = data_->shadow_attrib_[1].size()*sizeof(float);
-  GLint uv_size = data_->shadow_attrib_[2].size()* sizeof(float);
-  GLint index_size = data_->shadow_index_.size()*sizeof(unsigned int);
+  std::vector<int>sizes = buff->getSizes();
+  GLint postion_size = sizes[0] * sizeof(float)*3;
+  GLint normal_size = sizes[1] * sizeof(float)*3;
+  GLint uv_size = sizes[2] * sizeof(float)*2;
+  GLint tan_size = sizes[3]*sizeof(float)*3;
+  GLint bitan_size = sizes[4] * sizeof(float)*3;
+  GLint index_size = sizes[5] * sizeof(unsigned int);
 
-  temp_p = data_->shadow_attrib_[0];
-  temp_n = data_->shadow_attrib_[1];
-  temp_uv = data_->shadow_attrib_[2];
+  data_->shadow_attrib = buff->getAttributesT();
+  data_->shadow_index = std::make_shared<unsigned int*>(buff->getIndexesT());
+  float *temp_p = data_->shadow_attrib[0];
+  float *temp_n = data_->shadow_attrib[1];
+  float *temp_uv = data_->shadow_attrib[2];
+  unsigned int *il = buff->getIndexesT();
 
   glGenVertexArrays(1, &data_->shadow_vao_);
   glGenBuffers(1, &data_->shadow_vbo_v_);
@@ -41,33 +45,29 @@ void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
   glBindVertexArray(data_->shadow_vao_);
   glBindBuffer(GL_ARRAY_BUFFER, data_->shadow_vbo_v_);
 
- // glBufferData(GL_ARRAY_BUFFER, postion_size,&temp_p[0], GL_STATIC_DRAW);
   glBufferData(GL_ARRAY_BUFFER, postion_size+normal_size+uv_size, NULL, GL_STATIC_DRAW);
- // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float)*temp_p.size(), &temp_p[0]);
+ 
     //Load positions
-  if (temp_p.size() != 0){
+  if (temp_p != NULL){
      glBufferSubData(GL_ARRAY_BUFFER, 0, postion_size, &temp_p[0]);
 
   }
   //Load normals
-  if (temp_n.size() != 0){
+  if (temp_n != NULL){
     glBufferSubData(GL_ARRAY_BUFFER, postion_size,normal_size, &temp_n[0]);
     
   }
 
-  if (temp_uv.size() != 0){
+  if (temp_uv != NULL){
     glBufferSubData(GL_ARRAY_BUFFER, postion_size+normal_size, uv_size, &temp_uv[0]);
 
   }
-  //Load uvs
-  if (temp_uv.size() != 0){
-    glBufferSubData(GL_ARRAY_BUFFER, postion_size+normal_size,uv_size , &temp_uv[0]);
-  }
+
 		
-  if (data_->shadow_index_.size() != 0){
+  if (data_->shadow_index != nullptr){
   
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data_->shadow_vbo_i_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, data_->shadow_index_.size()*sizeof(unsigned int), &data_->shadow_index_[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, &il[0], GL_STATIC_DRAW);
   }
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),0);
   glEnableVertexAttribArray(0);
@@ -85,15 +85,17 @@ void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
 }
 
 void OpenGlInterFaz::useGeometry(GLuint vao){
-  glBindVertexArray(vao);;
+  glBindVertexArray(vao);
 }
-void OpenGlInterFaz::useMaterial(){
+void OpenGlInterFaz::useMaterial(int mat_program){
   //printf("Using program:%d", shadow_program_);
-  glUseProgram(data_->shadow_program_);
+  glUseProgram(mat_program);
+
+
 
  
 }
-void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_data){
+int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_data){
 
   data_->shadow_program_ = glCreateProgram();
 
@@ -114,7 +116,7 @@ void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_da
   glLinkProgram(data_->shadow_program_);
   GLint program_compiled;
   glGetProgramiv(data_->shadow_program_, GL_LINK_STATUS, &program_compiled);
-
+ 
 
   if (program_compiled == GL_FALSE){
     GLchar info_log[512];
@@ -124,18 +126,19 @@ void OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_da
   }
   else{ 
     glDeleteShader(data_->shadow_vertex_shader_);
-    glDeleteShader(data_->shadow_fragment_shader_);
+    glDeleteShader(data_->shadow_fragment_shader_);  
     printf("PROGRAM LINKED");
+    return data_->shadow_program_;
   }
 
 }
 
-void OpenGlInterFaz::drawGeometry(std::vector<unsigned int> indices){
+void OpenGlInterFaz::drawGeometry(unsigned int indices){
  // printf("Draw elements: %d indices\n",shadow_index_.size());
  
 
 
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)0);
 	glBindVertexArray(0);
 }
 
@@ -187,23 +190,63 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
   }
 }
 
-void OpenGlInterFaz::loadTexture(std::shared_ptr<Material> m){
+void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 
     
     glGenTextures(1, &data_->shadow_texture_);
     glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m->getTexture()->getWidth(),
-									m->getTexture()->getHeigth(), 0, GL_RGB, GL_UNSIGNED_BYTE,m->getTexture()->getData() );
+    int w = m->getWidth();
+    int h = m->getHeigth();
+    unsigned char * d = m->getData();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
+									h, 0, GL_RGB, GL_UNSIGNED_BYTE,
+                  d);
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,0);
-		m->getTexture()->setID(data_->shadow_texture_);
+		m->setID(data_->shadow_texture_);
+    
 }
 
-void OpenGlInterFaz::useTexture(std::shared_ptr<Material>m){
-  //int tex_i = glGetUniformLocation(m->getProgram(), "u_texture");
-  //glActiveTexture(GL_TEXTURE0 + tex_i);
-  glBindTexture(GL_TEXTURE_2D, m->getTexture()->getID());
+void OpenGlInterFaz::useTexture(int pro,std::shared_ptr<Texture>m,int n_text,std::string u_name){
+  glActiveTexture(GL_TEXTURE0 + n_text);
+
+  int tex_i = glGetUniformLocation(pro,u_name.c_str());
+  
+  glBindTexture(GL_TEXTURE_2D, m->getID());
+}
+
+void OpenGlInterFaz::sendLight( Light *light, int num_light){
+  int l_pos = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].position").c_str() );
+  if (l_pos >= 0){
+    glUniform3f(data_->shadow_program_, light->getDirection().x, light->getDirection().y, light->getDirection().z);
+  }
+
+  int l_ac = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].ambient_color").c_str());
+  if (l_ac >= 0){
+    glUniform3f(data_->shadow_program_, light->getAmbientColor().x, light->getAmbientColor().y, light->getAmbientColor().z);
+  }
+
+  int l_dc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].diffuse_color").c_str());
+  if (l_dc >= 0){
+    glUniform3f(data_->shadow_program_, light->getDiffuseColor().x, light->getDiffuseColor().y, light->getDiffuseColor().z);
+  }
+
+  int l_sc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].specular_color").c_str());
+  if (l_sc >= 0){
+    glUniform3f(data_->shadow_program_, light->getSpecularColor().x, light->getSpecularColor().y, light->getSpecularColor().z);
+  }
+
+  int l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
+  if (l_sh >= 0){
+    glUniform1f(data_->shadow_program_, light->getShinenes());
+  }
+
+  int l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
+  if (l_t >= 0){
+    glUniform1ui(data_->shadow_program_, light->getType());
+  }
+
+
 }

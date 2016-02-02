@@ -8,6 +8,8 @@
 #include <string>
 #include "texture.h"
 #include <memory>
+#include <vector>
+#include "light.h"
 
 /**
 * material.h
@@ -16,6 +18,7 @@
 */
 class TaskManager;
 class ReadFile;
+class ReadTexture;
 class Material {
 
 public:
@@ -23,18 +26,17 @@ public:
     ONNLY_DIFFUSE_ = 0,
     DIFFUSE_TEXTURE
   };
-  struct Light{
-    glm::vec3 position;
-    glm::vec4 color;
 
+  enum TYPE_SHADER {
+    FRAGMENT_SHADER = 0,
+    VERTEX_FRAGMENT
   };
-  struct Material_attributes{
-    GLuint texture;
-    Light material_light; //We can have multiples lights , creating an array. 
-  };
+  
+ /// @brief Material Setting Struct 
+  
+  struct MaterialSettings;
+
   Material(TYPE t,std::shared_ptr<TaskManager>a =nullptr);
-
-  void runCommand(OpenGlInterFaz &i)const;
 
   /**
   * @brief This function allows to load own shader.
@@ -42,36 +44,71 @@ public:
   * @param fragment_file he name of fragment GLSL file.
   */
   void loadShader(const char*vertex_file, const char*fragment_file);
+  /**
+  @brief Get current program
+  @return program
+  */
   GLuint getProgram();
-  void setTexture(std::shared_ptr<Texture> txt);
-  GLuint texture(){ return mat_attrib_.texture; }
+  /**
+  @brief Set current program
+  @param value New program
+  */
+  void setProgram(int value);
+  /**
+  @brief add a texture to material
+  @param txt new texture
+  @param tk The current taskManager
+  */
+  void addTexture(std::shared_ptr<Texture> txt, std::shared_ptr<TaskManager> tk);
+
+  GLuint texture(){}
   ~Material(){};
+  /**
+  @brief Get current Vertex code
+  @return Vertex shader code
+  */
   std::string getVertexData();
+  /**
+  @brief Get total textures of the material
+  @return Total num texutures
+  */
+  int totalTextures();
+  /**
+  @brief Get the fragment glsl code
+  @returnm Code glsl of fragment shader
+  */
   std::string getFragmentData();
-  std::shared_ptr<Texture> getTexture(){ return texture_; }
-  enum TYPE_SHADER {
-    FRAGMENT_SHADER = 0,
-    VERTEX_FRAGMENT
-  };
+  /**
+  @Brief Return the texture placed at i
+  @return Texture of material on index i
+  */
+  std::shared_ptr<Texture> getTextureAt(int i);
+
+  int getTotalLights();
+
+  Light lightAt(int i);
+  //Variables
   bool is_compiled_;
+  std::string vertex_data_;
+  std::string fragment_data_;
 private:
-  
-  unsigned char* image_;
+  MaterialSettings *material_settings_;
+  void useMaterial();
+  void compileShader(GLuint shader)const;
+
+  unsigned char* image_; 
   bool is_texture_;
   GLint program_;
   GLuint vertex_shader_;
   GLuint fragment_shader_;
-  Material_attributes mat_attrib_;
-
-  std::string vertex_data_;
-  std::string fragment_data_;
   std::string texture_name_;
-  void useMaterial();
-
-  void compileShader(GLuint shader)const;
   OpenGlInterFaz *interfaz_;
-  std::shared_ptr<Texture> texture_;
   friend OpenGlInterFaz;
+
+
+
+
+
 };
 
 

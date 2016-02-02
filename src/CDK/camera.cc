@@ -1,6 +1,8 @@
 #include "CDK/camera.h"
 #include "GLFW\glfw3.h"
 #include "CDK/display_list.h"
+#include "CDK/input.h"
+#include "CDK/task_manager.h"
 struct Camera::Data{
   OpenGlInterFaz *interfaz_;
   mat4 proyection_mat_;
@@ -9,22 +11,35 @@ struct Camera::Data{
   vec3 up_;
   vec3 right_;
   vec3 front_;
+  bool first_mouse_ = false;
+  float last_x_ = 0.0;
+  float last_y_ = 0.0;
+  float yaw_fps_ = -90.0f;
+  float pitch_fps_ = 0.0f;
+  float mouseSpeed = 0.1f;
   std::shared_ptr<DisplayList> dl_cam_;
+  std::shared_ptr<DisplayList> dl_copy_;
+  std::shared_ptr<UpdateDisplay> last_task;
   bool created_dl = false;
+  const float fps_speed_move = 0.5f;
 };
 
 Camera::Camera(){
   
-  model_scale =  vec3(2.0,2.0,2.0);//Added only to use a first implementation of ImGui
-
   data_ = new Data;
   data_->interfaz_ = new OpenGlInterFaz();
   data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =100.0;
-  position_.x = 0.0; 	position_.y = 0.0; 	position_.z = 100.0;
   data_->up_.x = 0; 	data_->up_.y = 1.0; 	data_->up_.z = 0;
   data_->front_.x = 0.0; 	data_->front_.y = 0.0; 	data_->front_.z = -100.0;
   setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
   data_->dl_cam_ = std::make_shared<DisplayList>();
+  data_->dl_copy_ = std::make_shared<DisplayList>();
+}
+void Camera::setPosition(vec3 position){
+  data_->position_ = position;
+}
+void Camera::setFront(vec3 front){
+  data_->front_ = front;
 }
 
 void Camera::setPerspective(float fov, float aspect, float near, float far){
@@ -35,41 +50,88 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
   data_->look_at_mat_ = glm::lookAt(eye, center, up);
 }
 
-void Camera::render(std::shared_ptr<Node>dl){
-  if (!data_->created_dl){
+void Camera::render(std::shared_ptr<Node>node, TaskManager *tk){
+  //
+  std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_, node.get(), this);
 
-    //const Drawable* draw =dynamic_cast<Drawable*>(dl.get());
-    loadNode(dl);
-    
-    data_->created_dl = true;
-    data_->dl_cam_->execute();
+     tk->addTask(update_task);
+     if (data_->last_task.get() != nullptr){
+       tk->waitTask(*data_->last_task.get());
+     }
+     data_->last_task = update_task;
+     data_->dl_cam_->execute();
+     data_->dl_cam_->clear();
+     data_->dl_cam_.swap(data_->dl_copy_);
+
+ 
+}
+void Camera::FpsCameraUpdate(){
+  //KEyboard
+  vec3 current_position = data_->position_;
+  if (Input::instance().pressKeyA() == true){
+    vec3 temp_vector;
+    temp_vector = glm::cross(data_->front_, data_->up_);
+    temp_vector = glm::normalize(temp_vector);
+    temp_vector = temp_vector * data_->fps_speed_move;
+    current_position = current_position - temp_vector;
+    data_->position_ = current_position;
   }
-  else
-  {
-    data_->dl_cam_->update();
-    data_->dl_cam_->execute();
+  if (Input::instance().pressKeyS() == true){
+    vec3 temp_vector;
+    temp_vector = data_->front_*data_->fps_speed_move;
+    current_position = current_position - temp_vector;
+    data_->position_ = current_position;
   }
-  
 
+  if (Input::instance().pressKeyD() == true){
+    vec3 temp_vector;
+    temp_vector = glm::cross(data_->front_, data_->up_);
+    temp_vector = glm::normalize(temp_vector);
+    temp_vector = temp_vector * data_->fps_speed_move;
+    current_position = current_position + temp_vector;
+    data_->position_ = current_position;
+  }
+
+  if (Input::instance().pressKeyW() == true){
+    vec3 temp_vector;
+    temp_vector = data_->front_*data_->fps_speed_move;
+    current_position = current_position + temp_vector;
+    data_->position_ = current_position;
+
+  }
+  //Mouse
+  float mx = Input::instance().getMouseX();
+  float my = Input::instance().getMouseY();
+ 
+  if (data_->first_mouse_){
+    data_->last_x_ = mx;
+    data_->last_y_ = my;
+    data_->first_mouse_ = false;
+  }
+
+  float x_offset = mx - data_->last_x_;
+  float y_offset = my - data_->last_y_;
+  data_->last_x_ = mx;
+  data_->last_y_ = my;
+  x_offset *= data_->mouseSpeed;
+  y_offset *= data_->mouseSpeed;
+
+  data_->yaw_fps_ += x_offset;
+  data_->pitch_fps_ += y_offset;
+  if (data_->pitch_fps_ > 89.0f)
+    data_->pitch_fps_ = 89.0f;
+  if (data_->pitch_fps_ < -89.0f)
+    data_->pitch_fps_ = -89.0f;
+  vec3 front;
+  front.x = cos(glm::radians(data_->yaw_fps_))*cos(glm::radians(data_->pitch_fps_));
+  front.y = -sin(glm::radians(data_->pitch_fps_));
+  front.z = sin(glm::radians(data_->yaw_fps_))*cos(glm::radians(data_->pitch_fps_));
+  data_->front_ = glm::normalize(front);
+  setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
 }
 
-void Camera::cull(){
 
-}
 
- void Camera::runCommand(OpenGlInterFaz &i)const{
-
-   GLfloat radius = 50.0f;
-   GLfloat camX = sin(glfwGetTime()) * radius;
-   GLfloat camZ = cos(glfwGetTime()) * radius;
-   glm::mat4 view;
-   view = glm::lookAt(glm::vec3(position_.x, position_.y, position_.z), data_->front_, glm::vec3(0.0, 1.0, 0.0));
-   const float  color[]= { 0 };
-   i.useUniformUi("u_texture",0);
-   //i.useUnifor3f("color_", color);
-	 
-	
-}
 
  glm::mat4 Camera::getProyection(){
    return data_->proyection_mat_;
@@ -80,7 +142,12 @@ void Camera::cull(){
 
  void Camera::loadNode(std::shared_ptr<Node> node){
 
+   /*
    Drawable* t_drawable = dynamic_cast<Drawable*>(node.get());
+   if (node->getParent() == nullptr){
+     lights_ = node->getLigths();
+   }
+
    if (node->getParent() != nullptr){
      node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
    }
@@ -89,56 +156,26 @@ void Camera::cull(){
    }
 
    if (t_drawable){
-     if (t_drawable->geometry() != nullptr)  {
-       data_->dl_cam_.get()->add(std::make_shared<LoadGeometryCommand>(t_drawable->geometry()));
-     }
-     if (t_drawable->material() != nullptr){
-       data_->dl_cam_.get()->add(std::make_shared<LoadMaterialCommand>(t_drawable->material()));
-     }
-     if (t_drawable->material() != nullptr){
-       data_->dl_cam_.get()->add(std::make_shared<LoadTextureCommand>(t_drawable->material()));
-     }
-
-     if (t_drawable->material() != nullptr){
-       data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material()));
-     }
-     if (t_drawable->geometry() != nullptr){
-       data_->dl_cam_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
-     }
-     if (t_drawable->material() != nullptr){
-       data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
-     }
 
      if (t_drawable->geometry() != nullptr && t_drawable->material() != nullptr){
 
-     
+       data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
+       data_->dl_cam_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
+       data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material()));
+       data_->dl_cam_.get()->add(std::make_shared<LightsCommand>(lights_)) ;
        std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
        data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c, t_drawable->worldMat()));
-     }
-
-     if (t_drawable->geometry() != nullptr){
        data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
+       t_drawable->setDirtyNode(false);
      }
    }
-
+   else{
+    
+   }
    //hijos
-     for (int i = 0; i < node->size(); i++){
-	    //std::shared_ptr<Node> nod = node->childAt(i);
-       //const Drawable* draw = dynamic_cast<Drawable*>(nod.get());
+   for (int i = 0; i < node->size(); i++){
        loadNode(node->childAt(i));
    }
-
-
+   */
  }
-   
 
- 
-
- mat4 Camera::globalModel(){
-
-	 mat4 t_mat_m;
-	 return t_mat_m;
-	
-
-
- }

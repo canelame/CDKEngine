@@ -1,27 +1,33 @@
 #include "CDK/texture.h"
-#define STB_IMAGE_IMPLEMENTATION    
-#include "external/stb_image.h"
+
 
 struct Texture::Data{
 	bool is_loaded;
 	unsigned int texture_id_;
   unsigned char* image_;  
   int w, h;
+  int comp;
+  char path[30];
+  char type[30];
 };
 Texture::Texture(){ 
 	data_ = new Data;
 	data_->is_loaded = false;
 };
-void Texture::loadTexture(const char*file){
-  int x, y;
 
-  int comp;
-  data_->image_ = stbi_load(file, &data_->w, &data_->h, &comp, 0);
-  if (data_->image_ == nullptr){
-    printf("Failed to load texture\n ");
+  void Texture::loadTexture(const char*file,const char type[30]){
+
+    
+    memcpy(&data_->path[0], &file[0], strlen(file)); data_->path[strlen(file)] = '\0';
+    memcpy(&data_->type[0], &type[0], strlen(type)); data_->type[strlen(type)] = '\0';
+    data_->image_ = stbi_load(file, &data_->w, &data_->h, &data_->comp, 0);
+    if (data_->image_ == nullptr){
+      printf("Failed to load texture\n ");
+
+    }
 
   }
-}
+
   unsigned char* Texture::getData(){
     return data_->image_;
   }
@@ -43,3 +49,9 @@ unsigned int Texture::getID(){
 void Texture::setID(unsigned int id){
 	data_->texture_id_ = id;
 }
+ Texture::Texture(const Texture&t){
+  *this = t;
+}
+char* Texture::getPath(){ return data_->path; }
+
+char* Texture::getType(){ return data_->type; }

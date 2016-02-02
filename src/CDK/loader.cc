@@ -1,29 +1,51 @@
 #include "CDK/loader.h"
-void Loader::readData(std::vector<float> &v_d, int count, FILE*file){
+#include "CDK/buffer.h"
+ #include "CDK/task_manager.h"
+struct Loader::MeshData{
+  int num_positions;
+  int num_normals;
+  int num_uvs;
+  int num_tangents;
+  int num_bitangents;
+  int num_indices;
+  //Data
+  int num_diffuse_textures;
+  int num_specular_textures;
+  MeshData(int n_p, int n_n, int n_uv, int n_t, int n_bt, int n_i, int n_texture, int n_diffuse_texture, int n_specular_texture){
+    num_positions = n_p;
+    num_normals = n_n;
+    num_uvs = n_uv;
+    num_tangents = n_t;
+    num_bitangents = n_bt;
+    num_indices = n_i;
+    num_diffuse_textures = n_diffuse_texture;
+    num_specular_textures = n_specular_texture;
+  }
+  MeshData(){}
+};
+
+
+struct Loader::TextureMesh{
+  int id;
+  char path[100];
+  char type[30];
+};
+float* Loader::readData( int count, FILE*file){
 
   std::unique_ptr<char*>data = std::make_unique<char*>(new char[sizeof(float)*count]);
 
   fread(*data, sizeof(float)*count, 1, file);
   float *float_data = (float*)*data;
-  for (int i = 0; i < count; i++){
-    float v = *float_data;
-    float_data++;
-    v_d.push_back(v);
-  }
 
+  return float_data;
 
 }
-void Loader::readData(std::vector<unsigned int> &v_d, int count, FILE*file){
+unsigned int* Loader::readData(FILE*file, int count){
 
   std::unique_ptr<char*>data = std::make_unique<char*>(new char[sizeof(float)*count]);
   fread(*data, sizeof(unsigned int)*count, 1, file);
   unsigned int *int_data = (unsigned int*)*data;
-  for (int i = 0; i < count; i++){
-    int v = *int_data;
-    int_data++;
-    v_d.push_back(v);
-  }
-
+  return int_data;
 }
 
 float Loader::readFloat(FILE *file){
@@ -38,65 +60,128 @@ int Loader::readInt(FILE *file){
 }
 
 std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<TaskManager> tk){
-  std::vector<Buffer> list_buffer;
+  
   FILE *file = fopen(file_in, "rb");
   std::shared_ptr<Drawable> node_geo = std::make_shared<Drawable>();
-  std::vector<float> v_V;
-  std::vector<float> v_N;
-  std::vector<float> v_UV;
-  std::vector<unsigned int> v_I;
-  std::vector<float> v_Tan;
-  std::vector<float> v_Bitan;
+  std::shared_ptr<Geometry> geo_child = std::make_shared<Geometry>();
+  float * p_pos;
   int num_meshes = 0;
 
-  if (file != NULL){
-    num_meshes = readInt(file);
+ if (file != NULL){
 
-    for (int m = 0; m < num_meshes; m++){
-      std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
-      int i_num_p = readInt(file);
+   std::shared_ptr<Material> mat_child;
+   num_meshes = readInt(file);
+   MeshData m;
 
-      readData(v_V, i_num_p * 3, file);
-      int num_t_n = readInt(file);
-      readData(v_N, num_t_n * 3, file);
-      int num_t_uv = readInt(file);
-      readData(v_UV, num_t_uv * 2, file);
-      int num_t_t = readInt(file);
-      readData(v_Tan, num_t_t * 3, file);
-      int num_t_bt = readInt(file);
-      readData(v_Bitan, num_t_bt * 3, file);
-      int num_i_i = readInt(file);
-      // int num_i_p_face = readInt(file);
-      readData(v_I, num_i_i, file);
-      std::shared_ptr<Geometry> geo_child = std::make_shared<Geometry>();
+   for (int mn = 0; mn < num_meshes; mn++){
 
-      std::shared_ptr<Material> mat_child;
-      mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE, tk);
-      std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
-      txt1->loadTexture("textures/cat.tga");
-      mat_child->setTexture(txt1);
-      geo_child->loadAttributes(v_V, v_N, v_UV, v_I);
-      if (num_meshes != 1){
-        node_geo->setGeometry(geo_child);
-        node_geo->setMaterial(mat_child);
-      }
-      else{
+     fread(&m, sizeof(MeshData), 1, file);
+     const int position_offset = m.num_positions*sizeof(float);
+     const int normal_offset = m.num_normals*sizeof(float);
+     const int uv_offset = m.num_uvs*sizeof(float);
+     const int tangent_offset = m.num_tangents*sizeof(float);
+     const int bitanget_offset = m.num_bitangents*sizeof(float);
+     const int indices_size = m.num_indices*sizeof(unsigned int);
+     const int diffuse_texture_size = m.num_diffuse_textures*sizeof(TextureMesh);
+     const int specular_texture_size = m.num_specular_textures*sizeof(TextureMesh);
+     const int total_size_r = position_offset + normal_offset + uv_offset + tangent_offset +
+     bitanget_offset + indices_size+diffuse_texture_size+specular_texture_size;
+     std::unique_ptr<char[]> d = std::unique_ptr<char[]>(new char[total_size_r]);
+     
+     fread(d.get(), total_size_r, 1, file);
 
-        child->setGeometry(std::make_shared<Geometry>(*geo_child.get()));
-        child->setMaterial(mat_child);
-        node_geo->addChild(child);
-      }
+     p_pos = new float[position_offset];
+    memcpy(p_pos, &d.get()[0], position_offset);
 
-  
+    float * n_pos = new float[normal_offset];
+    memcpy(n_pos, &d.get()[normal_offset], normal_offset);
+
+    float * uv_pos = new float[uv_offset];
+    memcpy(uv_pos, &d.get()[position_offset + normal_offset], uv_offset);
+
+    float * t_pos = new float[tangent_offset];
+    memcpy(t_pos, &d.get()[position_offset + normal_offset + uv_offset], tangent_offset);
+
+    float * bt_pos = new float[bitanget_offset];
+    memcpy(bt_pos, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset], bitanget_offset);
+
+    unsigned int *i_pos = new unsigned int[indices_size];
+    memcpy(i_pos, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset], indices_size);
+
+    geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
+    geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
+    std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
 
 
-    }
+
+     mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE, tk);
+     for (int i = 0; i<m.num_diffuse_textures ; i++){
+       TextureMesh t_t;
+       memcpy(&t_t, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset + indices_size + (i*sizeof(TextureMesh))], sizeof(TextureMesh));
+       std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
+       char tpath[50] = "textures/";
+       strcat(tpath, t_t.path);
+       bool skip = false;
+
+       for (int j= 0; j < mat_child->totalTextures();j++){
+        
+         if (strcmp(mat_child->getTextureAt(j)->getPath(), tpath) == 0){
+           mat_child->addTexture(mat_child->getTextureAt(j),tk);
+           skip = true;
+           break;
+         }
+       }
+       if (!skip){
+     
+         std::shared_ptr<ReadTexture> nt = std::make_shared<ReadTexture>(txt1, tpath, "diffuse");
+         tk->addTask( nt);
+         tk->waitTask(*nt.get());
+         mat_child->addTexture(txt1, tk);
+       }
+       
+     }
+
+     for (int i = 0; i<m.num_specular_textures; i++){
+       TextureMesh t_t;
+       memcpy(&t_t, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset + indices_size + diffuse_texture_size+(i*sizeof(TextureMesh))], sizeof(TextureMesh));
+       char tpath[50] = "textures/";
+       strcat(tpath, t_t.path);
+       std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
+      // tk->addTask(std::make_shared < ReadTexture>(txt1, tpath, "diffuse"));
+       mat_child->addTexture(std::make_shared<Texture>(*std::move(txt1).get()),tk);
+     }
+
+
+
+     if (num_meshes != 0){
+
+       child->setGeometry(std::make_shared<Geometry>(*geo_child.get()));
+       child->setMaterial(mat_child);
+       node_geo->addChild(child);
+     }
+     else{
+       node_geo->setGeometry(geo_child);
+       node_geo->setMaterial(mat_child);
+     }
+   
+   
+   }
     fclose(file);
+  
   }
   else{
 
     printf("Eror to open file .CDK\n");
+    return NULL;
   }
-
   return node_geo;
+  printf("");
+}
+
+std::shared_ptr<Texture> Loader::loadTexture(const char* file_name,char *type, std::shared_ptr<TaskManager>tk){
+  int x, y;
+    char *data;
+  std::shared_ptr<Texture> t = std::make_shared<Texture>();
+  tk->addTask(std::make_unique<ReadTexture>(t,file_name,type));
+  return t;
 }
