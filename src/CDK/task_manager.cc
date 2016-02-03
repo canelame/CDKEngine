@@ -94,7 +94,7 @@ int Task::getId(){
        }
        
        if (is_finish){
-         printf("Task %d finished.\n", t.getId());
+       
          return;
        }
     }
@@ -121,6 +121,7 @@ int Task::getId(){
      dl_ = dl;
      nod_ = n;
      cam_ = cam;
+     //light_scene_ = light_scene;
 	 }
    void UpdateDisplay::runTask(){
      lock();
@@ -130,13 +131,18 @@ int Task::getId(){
 
    void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
 
-    std::vector<Light> lights;
+
     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
+
+    std::shared_ptr<Light> l1 = std::make_shared<Light>();
+    l1->setPosition(vec3(0.0, 0.0, 95.0));
+    l1->setAmbientColor(vec3(1.0, 0.0, 0.0));
+    l1->setDifusseColor(vec3(0.0, 1.0, 0.0));
+    l1->setSpecularColor(vec3(0.0,0.0,0.0));
+    l1->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
     
- 
-     if (node->getParent() == nullptr){
-    //   lights = node->getLigths();
-     }
+    std::vector<std::shared_ptr<Light>> ls;
+    ls.push_back(l1);
 
      if (node->getParent() != nullptr){
        node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
@@ -152,7 +158,7 @@ int Task::getId(){
          dl_->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
          dl_->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
          dl_->add(std::make_shared<UseTextureComman>(t_drawable->material()));
-         dl_->add(std::make_shared<LightsCommand>(lights));
+         dl_->add(std::make_shared<LightsCommand>(ls));
          std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*cam_);
          dl_->add(std::make_shared<SetupCameraCommand>(t_c, t_drawable->worldMat()));
          dl_->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
@@ -174,11 +180,11 @@ int Task::getId(){
 
 
 	 //READ_FILE_TASK
-	 ReadFile::ReadFile(const char* file_name,std::shared_ptr<Material> m){
+	 ReadFile::ReadFile(const char* file_name,std::string &data){
 
 		 name_ = file_name;
    //  out_file = &data_;
-     mat_ = m;
+     data = data_;
      
 	 };
 

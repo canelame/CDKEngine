@@ -26,19 +26,28 @@ void Node::setParent(std::shared_ptr<Node>p){
   data_->parent_ = p;
 }
 void Node::addChild(std::shared_ptr<Node>d){
-  d->data_->parent_ = std::make_shared<Node>(*this);
-  data_->node_list_.push_back(d);
-
+ 
+  
+  if (this != NULL){
+    d->data_->parent_ = std::make_shared<Node>(*this);
+    data_->node_list_.push_back(d);
+  }
   
 }
 void Node::removeChild(unsigned int index){
   if (!data_->node_list_.empty()){
-    if (index >= data_->node_list_.size())return;
+    if (index >= data_->node_list_.size() || data_ == NULL)return;
+    if (this->data_->node_list_[index]->data_ != nullptr){
+      data_->parent_->addChild(data_->node_list_[index]);
+    }
     data_->node_list_.erase(data_->node_list_.begin() + index);
   }
 }
 std::shared_ptr<Node> Node::childAt(int index){
-	return data_->node_list_.at(index);
+  if (index < data_->node_list_.size()){
+    return data_->node_list_.at(index);
+  }
+	
 
 }
 

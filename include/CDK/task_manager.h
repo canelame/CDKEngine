@@ -51,6 +51,7 @@ private:
  std::shared_ptr<Node> nod_;
   Camera * cam_;
 DisplayList* dl_;
+//std::vector<Light> light_scene_;
 };
 #endif
 
@@ -70,7 +71,7 @@ public:
 	* @param file_name The file to read.
 	* @param out_file Returns the content of the file.
 	*/
-	ReadFile(const char* file_name, std::shared_ptr<Material> m);
+	ReadFile(const char* file_name, std::string &dat);
 	/**
 		@brief Execute the task.
 	*/

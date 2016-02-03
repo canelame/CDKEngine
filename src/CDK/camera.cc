@@ -21,14 +21,14 @@ struct Camera::Data{
   std::shared_ptr<DisplayList> dl_copy_;
   std::shared_ptr<UpdateDisplay> last_task;
   bool created_dl = false;
-  const float fps_speed_move = 0.5f;
+  const float fps_speed_move = 0.7f;
 };
 
 Camera::Camera(){
   
   data_ = new Data;
   data_->interfaz_ = new OpenGlInterFaz();
-  data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =100.0;
+  data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =105.0;
   data_->up_.x = 0; 	data_->up_.y = 1.0; 	data_->up_.z = 0;
   data_->front_.x = 0.0; 	data_->front_.y = 0.0; 	data_->front_.z = -100.0;
   setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
@@ -51,7 +51,7 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
 }
 
 void Camera::render(std::shared_ptr<Node>node, TaskManager *tk){
-  //
+  
   std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, this);
 
      tk->addTask(update_task);
@@ -130,52 +130,10 @@ void Camera::FpsCameraUpdate(){
   setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
 }
 
-
-
-
  glm::mat4 Camera::getProyection(){
    return data_->proyection_mat_;
  }
  glm::mat4 Camera::getView(){
    return data_->look_at_mat_;
- }
-
- void Camera::loadNode(std::shared_ptr<Node> node){
-
-   /*
-   Drawable* t_drawable = dynamic_cast<Drawable*>(node.get());
-   if (node->getParent() == nullptr){
-     lights_ = node->getLigths();
-   }
-
-   if (node->getParent() != nullptr){
-     node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
-   }
-   else{
-     node->setWorldMat(node->modelMat());
-   }
-
-   if (t_drawable){
-
-     if (t_drawable->geometry() != nullptr && t_drawable->material() != nullptr){
-
-       data_->dl_cam_.get()->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
-       data_->dl_cam_.get()->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
-       data_->dl_cam_.get()->add(std::make_shared<UseTextureComman>(t_drawable->material()));
-       data_->dl_cam_.get()->add(std::make_shared<LightsCommand>(lights_)) ;
-       std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*this);
-       data_->dl_cam_.get()->add(std::make_shared<SetupCameraCommand>(t_c, t_drawable->worldMat()));
-       data_->dl_cam_.get()->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
-       t_drawable->setDirtyNode(false);
-     }
-   }
-   else{
-    
-   }
-   //hijos
-   for (int i = 0; i < node->size(); i++){
-       loadNode(node->childAt(i));
-   }
-   */
  }
 

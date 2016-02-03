@@ -63,8 +63,8 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
   
   FILE *file = fopen(file_in, "rb");
   std::shared_ptr<Drawable> node_geo = std::make_shared<Drawable>();
-  std::shared_ptr<Geometry> geo_child = std::make_shared<Geometry>();
-  float * p_pos;
+  std::shared_ptr<Geometry> geo_child;
+
   int num_meshes = 0;
 
  if (file != NULL){
@@ -90,11 +90,11 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
      
      fread(d.get(), total_size_r, 1, file);
 
-     p_pos = new float[position_offset];
+     float * p_pos = new float[position_offset];
     memcpy(p_pos, &d.get()[0], position_offset);
 
     float * n_pos = new float[normal_offset];
-    memcpy(n_pos, &d.get()[normal_offset], normal_offset);
+    memcpy(n_pos, &d.get()[position_offset], normal_offset);
 
     float * uv_pos = new float[uv_offset];
     memcpy(uv_pos, &d.get()[position_offset + normal_offset], uv_offset);
@@ -108,13 +108,18 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
     unsigned int *i_pos = new unsigned int[indices_size];
     memcpy(i_pos, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset], indices_size);
 
-    geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
-    geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
+   /* geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
+    geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);*/
     std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
 
 
+    if (m.num_diffuse_textures == 0 && m.num_specular_textures == 0){
+      mat_child = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_, tk);
+    }
+    else{
+      mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE, tk);
+    }
 
-     mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE, tk);
      for (int i = 0; i<m.num_diffuse_textures ; i++){
        TextureMesh t_t;
        memcpy(&t_t, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset + indices_size + (i*sizeof(TextureMesh))], sizeof(TextureMesh));
@@ -122,7 +127,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
        char tpath[50] = "textures/";
        strcat(tpath, t_t.path);
        bool skip = false;
-
+       //Search if the texture is already loaded
        for (int j= 0; j < mat_child->totalTextures();j++){
         
          if (strcmp(mat_child->getTextureAt(j)->getPath(), tpath) == 0){
@@ -149,17 +154,35 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
        std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
       // tk->addTask(std::make_shared < ReadTexture>(txt1, tpath, "diffuse"));
        mat_child->addTexture(std::make_shared<Texture>(*std::move(txt1).get()),tk);
+       bool skip = false;
+       //Search if the texture is alreadyy loaded
+       for (int j = 0; j < mat_child->totalTextures(); j++){
+
+         if (strcmp(mat_child->getTextureAt(j)->getPath(), tpath) == 0){
+           mat_child->addTexture(mat_child->getTextureAt(j), tk);
+           skip = true;
+           break;
+         }
+       }
+       if (!skip){
+
+         std::shared_ptr<ReadTexture> nt = std::make_shared<ReadTexture>(txt1, tpath, "diffuse");
+         tk->addTask(nt);
+         tk->waitTask(*nt.get());
+         mat_child->addTexture(txt1, tk);
+       }
+
      }
-
-
-
-     if (num_meshes != 0){
-
-       child->setGeometry(std::make_shared<Geometry>(*geo_child.get()));
+     geo_child = std::make_shared<Geometry>();
+     geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
+     geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
+     if (num_meshes > 1 ){
+       std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
+       child->setGeometry(geo_child);
        child->setMaterial(mat_child);
        node_geo->addChild(child);
      }
-     else{
+     else if(num_meshes==1 ){
        node_geo->setGeometry(geo_child);
        node_geo->setMaterial(mat_child);
      }

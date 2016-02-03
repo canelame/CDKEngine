@@ -85,7 +85,8 @@ public:
   std::shared_ptr<Texture> getTextureAt(int i);
 
   int getTotalLights();
-
+  void setColor(vec3 color);
+  vec3 getColor();
   Light lightAt(int i);
   //Variables
   bool is_compiled_;

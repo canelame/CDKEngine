@@ -77,7 +77,7 @@ void SetupCameraCommand::runCommand(OpenGlInterFaz &in)const{
 	in.useUniformMat4("u_projection_m", glm::value_ptr(t_cam.get()->getProyection()));
 	in.useUniformMat4("u_view_m", glm::value_ptr(t_cam.get()->getView()));
 	in.useUniformMat4("u_model_m", glm::value_ptr(model_n_));
-  
+
 }
 
 ///////// LOAD_TEXTURE_COMMAND CLASS/////////////////
@@ -191,17 +191,21 @@ void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
     t_mat->is_compiled_ = true;
   }
 	in.useMaterial(t_mat->getProgram());
+  float color[] = {t_mat->getColor().x,t_mat->getColor().y,t_mat->getColor().z};
+
+  in.useUnifor3f("diffuse_color", color);
 
 
 }
 
 
-LightsCommand::LightsCommand(std::vector<Light>l){
+LightsCommand::LightsCommand(std::vector<std::shared_ptr<Light>>l){
   lights_ = l;
+
 }
 
 void LightsCommand::runCommand(OpenGlInterFaz &in)const{
   for (int i = 0; i < lights_.size(); i++){
-    in.sendLight(&lights_[i], i);
+    in.sendLight(lights_[i].get(), i);
   }
 }

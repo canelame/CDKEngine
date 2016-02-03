@@ -54,7 +54,7 @@ std::shared_ptr< Buffer> Geometry::getBuffer(){
 
 void Geometry::createCube(int size) {
 
-	const float cube_vertices[72]{
+	 float cube_vertices[72]{
 		//Cara 0
 		-1 * size, -1 * size, 1 * size,
 			1 * size, -1 * size, 1 * size,
@@ -96,7 +96,7 @@ void Geometry::createCube(int size) {
 			1 * size, -1 * size, -1 * size,
 			-1 * size, -1 * size, -1 * size,
 	};
-	const float uvs_position[48]{
+	 float uvs_position[48]{
 		0, 0,
 			0, 1,
 			1, 1,
@@ -144,7 +144,7 @@ void Geometry::createCube(int size) {
 
 			20, 21, 22, 20, 22, 23, };
 	//END DATA
-	const float normales[72]{
+	 float normales[72]{
 		0, 0, 1,
 			0, 0, 1,
 			0, 0, 1,
@@ -175,24 +175,8 @@ void Geometry::createCube(int size) {
 			0, 0, -1,
 			0, 0, -1
 	};
-	std::vector<float> positions, normals, uvs;
-	std::vector<unsigned int> indices;
-
-	for (int i = 0; i < 72; i++) {
-		positions.push_back(cube_vertices[i]);
-		normals.push_back(normales[i]);
-	}
-
-	for (int i = 0; i < 48; i++) {
-		uvs.push_back(uvs_position[i]);
-	}
-
-	std::vector<unsigned int> index;
-
-	for (int i = 0; i < 36; i++) {
-		indices.push_back(indexes_cube[i]);
-	}
-	
+   geo_buff_->setAttributeSize(72, 72, 48, 0, 0, 36);
+  geo_buff_->loadData(cube_vertices, normales, uvs_position, indexes_cube);
 
 }
 void Geometry::createTriangle(){

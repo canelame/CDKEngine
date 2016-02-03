@@ -75,14 +75,14 @@ private:
 #include "opengl_interfaz.h"
 class LightsCommand : public Command{
 public:
-  LightsCommand(std::vector<Light> geo);
+  LightsCommand(std::vector<std::shared_ptr< Light>> geo);
 
 
   void runCommand(OpenGlInterFaz &in)const;
 
 
 private:
-  mutable std::vector<Light> lights_;
+  mutable std::vector<std::shared_ptr< Light>> lights_;
 
 };
 #endif

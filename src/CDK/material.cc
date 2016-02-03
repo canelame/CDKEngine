@@ -5,6 +5,7 @@
 struct Material::MaterialSettings{
   Light material_lights_[10];
   std::vector< std::shared_ptr<Texture> > texture_;
+  vec3 diffuse_color_;
 };
 
 Material::Material(TYPE t, std::shared_ptr<TaskManager>tk){
@@ -12,23 +13,32 @@ Material::Material(TYPE t, std::shared_ptr<TaskManager>tk){
   interfaz_ = new OpenGlInterFaz();
   material_settings_ = new MaterialSettings;
   is_compiled_ = false;
-  
+  material_settings_->diffuse_color_ = vec3(0.0f, 0.0, 0.0f);
   if (t == 0){
-   std::shared_ptr<ReadFile> read_t = std::make_unique<ReadFile>("shaders/diffuse_v.glsl", std::make_shared<Material>(*this));
-   std::shared_ptr<ReadFile>read_t2 = std::make_unique<ReadFile>("shaders/diffuse_f.glsl", std::make_shared<Material>(*this));
-    tk.get()->addTask(read_t);
-    tk.get()->addTask(read_t2);
-    tk->waitTask(*read_t.get());
-    tk->waitTask(*read_t2.get());
-  
-  }
-  else{
-  /*  std::shared_ptr<ReadFile> read_t = std::make_unique<ReadFile>("shaders/texture_v.glsl", &vertex_data_);
-    tk.get()->addTask(read_t);
-    tk->waitTask(*read_t.get());
-   std::shared_ptr<ReadFile>read_t2 = std::make_unique<ReadFile>("shaders/texture_f.glsl", &fragment_data_);
-    tk.get()->addTask(read_t2);
-    tk->waitTask(*read_t2.get());*/
+    std::stringstream temp_vertex_data;
+    std::stringstream temp_fragment_data;
+    std::string line;
+    printf("Reading file task | %s | \n", "shaders/texture_f.glsl");
+    std::ifstream file_V("shaders/diffuse_f.glsl");
+    if (file_V.is_open()){
+      temp_vertex_data << file_V.rdbuf();
+      file_V.close();
+      line = temp_vertex_data.str();
+      fragment_data_ = line;
+
+    }
+    std::stringstream temp_vertex_data1;
+    std::stringstream temp_fragment_data1;
+    std::ifstream file_V1("shaders/diffuse_v.glsl");
+    if (file_V1.is_open()){
+      temp_vertex_data1 << file_V1.rdbuf();
+      file_V1.close();
+      line = temp_vertex_data1.str();
+      vertex_data_ = line;
+
+    } 
+  }else{
+
     std::stringstream temp_vertex_data;
     std::stringstream temp_fragment_data;
     std::string line;
@@ -49,7 +59,6 @@ Material::Material(TYPE t, std::shared_ptr<TaskManager>tk){
       file_V1.close();
       line = temp_vertex_data1.str();
       vertex_data_ = line;
-
     }
 
     printf("");
@@ -96,9 +105,16 @@ std::shared_ptr<Texture> Material::getTextureAt(int i){
 }
 
 int Material::getTotalLights(){
-  return material_settings_->material_lights_->size();
+  return 10;
 };
 
 Light Material::lightAt(int i){
  return  material_settings_->material_lights_[i];
+}
+void Material::setColor(vec3 color){
+  material_settings_->diffuse_color_ = color;
+}
+
+vec3 Material::getColor(){
+  return material_settings_->diffuse_color_;
 }
