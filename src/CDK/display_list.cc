@@ -9,17 +9,13 @@ void DisplayList::add(Comm_ c){
 	listCommand_.push_back(c);
 }
 void DisplayList::execute(){
-
 	for (int i = 0; i < listCommand_.size(); ++i){
-    
 		listCommand_[i].get()->runCommand(*interfaz_);
 	}
-
 }
 
 void DisplayList::update(Node *d){
   
-
 }
 
 
@@ -66,16 +62,17 @@ void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
 
 ///////// SETUP_CAMERA_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-SetupCameraCommand::SetupCameraCommand(std::shared_ptr<Camera>cam,mat4 m_m){
-	t_cam = std::move(cam);
+SetupCameraCommand::SetupCameraCommand(mat4 cam_proyec,mat4 cam_view,mat4 m_m){
+  proyec_m_ = cam_proyec;
+  view_m_ = cam_view;
 	model_n_=m_m;
 }
 
 
 void SetupCameraCommand::runCommand(OpenGlInterFaz &in)const{
 
-	in.useUniformMat4("u_projection_m", glm::value_ptr(t_cam.get()->getProyection()));
-	in.useUniformMat4("u_view_m", glm::value_ptr(t_cam.get()->getView()));
+	in.useUniformMat4("u_projection_m", glm::value_ptr(proyec_m_));
+	in.useUniformMat4("u_view_m", glm::value_ptr(view_m_));
 	in.useUniformMat4("u_model_m", glm::value_ptr(model_n_));
 
 }
@@ -91,7 +88,7 @@ void LoadTextureCommand::runCommand(OpenGlInterFaz &in)const{
       in.loadTexture(t_mat->getTextureAt(i));
       t_mat->getTextureAt(i)->setLoaded(true);
   }
-
+  t_mat.~shared_ptr();
 }
 std::shared_ptr<Material>  LoadTextureCommand::getMaterial(){
 	return t_mat;
@@ -155,7 +152,7 @@ void UseGeometryCommand::runCommand(OpenGlInterFaz &in)const{
   if (t_geo.get()->getBuffer()->isDirty()){
     in.loadBuffer(t_geo->getBuffer());
     t_geo->getBuffer()->setDirty(false);
-    vao_ = *t_geo.get()->getBuffer()->getVAO();
+    vao_ = *t_geo->getBuffer()->getVAO();
 
   }
   in.useGeometry(*t_geo->getBuffer()->getVAO());

@@ -36,7 +36,7 @@ public:
   
   struct MaterialSettings;
 
-  Material(TYPE t,std::shared_ptr<TaskManager>a =nullptr);
+  Material(TYPE t);
 
   /**
   * @brief This function allows to load own shader.
@@ -97,14 +97,11 @@ private:
   void useMaterial();
   void compileShader(GLuint shader)const;
 
-  unsigned char* image_; 
-  bool is_texture_;
   GLint program_;
-  GLuint vertex_shader_;
-  GLuint fragment_shader_;
-  std::string texture_name_;
-  OpenGlInterFaz *interfaz_;
-  friend OpenGlInterFaz;
+
+
+
+  
 
 
 

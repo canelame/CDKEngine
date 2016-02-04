@@ -127,7 +127,6 @@ int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_dat
   else{ 
     glDeleteShader(data_->shadow_vertex_shader_);
     glDeleteShader(data_->shadow_fragment_shader_);  
-    printf("PROGRAM LINKED");
     return data_->shadow_program_;
   }
 
@@ -200,10 +199,6 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     int w = m->getWidth();
     int h = m->getHeigth();
     unsigned char * d = m->getData();
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-    glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
 									h, 0, GL_RGB, GL_UNSIGNED_BYTE,
                   d);

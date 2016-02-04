@@ -159,8 +159,7 @@ int Task::getId(){
          dl_->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
          dl_->add(std::make_shared<UseTextureComman>(t_drawable->material()));
          dl_->add(std::make_shared<LightsCommand>(ls));
-         std::shared_ptr<Camera> t_c = std::make_shared<Camera>(*cam_);
-         dl_->add(std::make_shared<SetupCameraCommand>(t_c, t_drawable->worldMat()));
+         dl_->add(std::make_shared<SetupCameraCommand>(cam_->getProyection(),cam_->getView(), t_drawable->worldMat()));
          dl_->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
          t_drawable->setDirtyNode(false);
        }

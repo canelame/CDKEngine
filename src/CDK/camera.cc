@@ -21,7 +21,7 @@ struct Camera::Data{
   std::shared_ptr<DisplayList> dl_copy_;
   std::shared_ptr<UpdateDisplay> last_task;
   bool created_dl = false;
-  const float fps_speed_move = 0.7f;
+  const float fps_speed_move = 2.0f;
 };
 
 Camera::Camera(){

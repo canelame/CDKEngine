@@ -35,11 +35,8 @@ void createWindow(){
   
     std::unique_ptr<Loader> loader = std::make_unique<Loader>();
 
-    std::shared_ptr<Drawable> w = loader->loadCDK("meshes/bb1.cdk", task_manager_);
-
-
-
-
+    std::shared_ptr<Drawable> w = loader->loadCDK("meshes/paris.cdk", task_manager_);
+    printf("Loaded\n");
 
     std::shared_ptr<Light> l1 = std::make_shared<Light>();
     l1->setPosition(vec3(0.0, 0.0, 95.0));
@@ -73,7 +70,6 @@ void createWindow(){
 
       Scene.cam->FpsCameraUpdate();
 
-    
       glClearColor(.3f, .2f, .7f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glEnable(GL_DEPTH_TEST);

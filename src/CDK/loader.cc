@@ -114,10 +114,10 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
 
 
     if (m.num_diffuse_textures == 0 && m.num_specular_textures == 0){
-      mat_child = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_, tk);
+      mat_child = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
     }
     else{
-      mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE, tk);
+      mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE);
     }
 
      for (int i = 0; i<m.num_diffuse_textures ; i++){
@@ -126,6 +126,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
        std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
        char tpath[50] = "textures/";
        strcat(tpath, t_t.path);
+       printf("Loading diffuse texture: %s\n",t_t.path );
        bool skip = false;
        //Search if the texture is already loaded
        for (int j= 0; j < mat_child->totalTextures();j++){
@@ -147,10 +148,12 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
      }
 
      for (int i = 0; i<m.num_specular_textures; i++){
+
        TextureMesh t_t;
        memcpy(&t_t, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset + indices_size + diffuse_texture_size+(i*sizeof(TextureMesh))], sizeof(TextureMesh));
        char tpath[50] = "textures/";
        strcat(tpath, t_t.path);
+       printf("Loading specular texture: %s\n", t_t.path);
        std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
       // tk->addTask(std::make_shared < ReadTexture>(txt1, tpath, "diffuse"));
        mat_child->addTexture(std::make_shared<Texture>(*std::move(txt1).get()),tk);
@@ -166,7 +169,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
        }
        if (!skip){
 
-         std::shared_ptr<ReadTexture> nt = std::make_shared<ReadTexture>(txt1, tpath, "diffuse");
+         std::shared_ptr<ReadTexture> nt = std::make_shared<ReadTexture>(txt1, tpath, "specular");
          tk->addTask(nt);
          tk->waitTask(*nt.get());
          mat_child->addTexture(txt1, tk);
@@ -176,6 +179,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
      geo_child = std::make_shared<Geometry>();
      geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
      geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
+     delete(&p_pos[0]);
      if (num_meshes > 1 ){
        std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
        child->setGeometry(geo_child);
@@ -186,7 +190,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<Tas
        node_geo->setGeometry(geo_child);
        node_geo->setMaterial(mat_child);
      }
-   
+    
    
    }
     fclose(file);

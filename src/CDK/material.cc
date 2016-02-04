@@ -8,9 +8,9 @@ struct Material::MaterialSettings{
   vec3 diffuse_color_;
 };
 
-Material::Material(TYPE t, std::shared_ptr<TaskManager>tk){
+Material::Material(TYPE t){
 
-  interfaz_ = new OpenGlInterFaz();
+
   material_settings_ = new MaterialSettings;
   is_compiled_ = false;
   material_settings_->diffuse_color_ = vec3(0.0f, 0.0, 0.0f);
@@ -18,7 +18,7 @@ Material::Material(TYPE t, std::shared_ptr<TaskManager>tk){
     std::stringstream temp_vertex_data;
     std::stringstream temp_fragment_data;
     std::string line;
-    printf("Reading file task | %s | \n", "shaders/texture_f.glsl");
+
     std::ifstream file_V("shaders/diffuse_f.glsl");
     if (file_V.is_open()){
       temp_vertex_data << file_V.rdbuf();
@@ -42,7 +42,7 @@ Material::Material(TYPE t, std::shared_ptr<TaskManager>tk){
     std::stringstream temp_vertex_data;
     std::stringstream temp_fragment_data;
     std::string line;
-    printf("Reading file task | %s | \n", "shaders/texture_f.glsl");
+
     std::ifstream file_V("shaders/texture_f.glsl");
     if (file_V.is_open()){
       temp_vertex_data << file_V.rdbuf();

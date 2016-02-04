@@ -19,7 +19,10 @@ Node::Node(){
 }
 Node::~Node(){}
 std::shared_ptr<Node> Node::getParent(){
-  return data_->parent_;
+  if (data_->parent_ != nullptr) {
+    return data_->parent_;
+  }
+ return nullptr;
 }
 
 void Node::setParent(std::shared_ptr<Node>p){
@@ -38,7 +41,12 @@ void Node::removeChild(unsigned int index){
   if (!data_->node_list_.empty()){
     if (index >= data_->node_list_.size() || data_ == NULL)return;
     if (this->data_->node_list_[index]->data_ != nullptr){
-      data_->parent_->addChild(data_->node_list_[index]);
+      if (data_->parent_ != nullptr){
+        data_->parent_->addChild(data_->node_list_[index]);
+      }else{
+        data_->node_list_[index].~shared_ptr();
+
+      }
     }
     data_->node_list_.erase(data_->node_list_.begin() + index);
   }

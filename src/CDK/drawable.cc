@@ -10,7 +10,6 @@ struct Drawable::Data{
 Drawable::Drawable(){
 	data_ = new Data;
 
-  //Node::Node();
 }
 
 void Drawable::setGeometry(std::shared_ptr<Geometry>geo){
