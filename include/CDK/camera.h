@@ -55,7 +55,7 @@ public:
   @param node Root node
   @param tk TaskManager
   */
-  void render(std::shared_ptr<Node> node,TaskManager*tk);
+  void render(std::shared_ptr<Node> node);
   /**
   @brief Get model cam.
   */

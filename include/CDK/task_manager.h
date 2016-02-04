@@ -124,12 +124,15 @@ private:
 * process at same time.
 * 
 */
+
 class TaskManager {
 	/* Redefinition of types for manage list of task*/
   typedef std::shared_ptr<Task> TaskT_;
   typedef std::deque<TaskT_> TaskListT_;
+  TaskManager() {};
+  static TaskManager* instance_;
 public:
-	TaskManager() {};
+  static TaskManager& instance();
 	~TaskManager();
 	/**
 	* @brief Add task to the list.

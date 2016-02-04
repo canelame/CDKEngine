@@ -26,6 +26,11 @@ std::condition_variable TaskManager::cond_variable_;
 TaskManager::TaskListT_ TaskManager::task_list_; */
 bool stop_;
 //bool TaskManager::stop_;
+TaskManager* TaskManager::instance_ = NULL;
+ TaskManager& TaskManager::instance(){
+   if (instance_ == NULL)instance_ = new TaskManager();
+   return *instance_;
+}
 
 void TaskManager::mainThreadLoop(){
 

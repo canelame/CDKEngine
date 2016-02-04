@@ -1,6 +1,6 @@
 #include "CDK/buffer.h"
 #include <list>
-
+#include "GL\glew.h"
 struct Buffer::Data {
   bool dirty_;
 
@@ -70,9 +70,9 @@ bool Buffer::isDirty(){
   return  data_->dirty_;
 }
 
-GLuint* Buffer::getVAO(){ return &data_->vao_; }
+unsigned int* Buffer::getVAO(){ return &data_->vao_; }
 
-GLuint* Buffer::getVBO(){ return  data_->vbo_; }
+unsigned int* Buffer::getVBO(){ return  data_->vbo_; }
 
 
 

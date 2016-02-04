@@ -15,7 +15,7 @@ class Loader{
 
 public:
 
-  std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in,std::shared_ptr<TaskManager> tk);
+  std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in);
   std::shared_ptr<Texture> loadTexture(const char* file_name, char *type, std::shared_ptr<TaskManager> tk);
  };
 

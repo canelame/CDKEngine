@@ -20,11 +20,11 @@ public:
 	bool processEvents();
 	void swap();
 	void finish();
+	void clearScreen(vec3 color);
   ///Main to rewrite by the user
   static int main(int argc, char **argv);
   ~Window(){};
 private:
   _Window * window_s_;
-	int32 width_ = 800;
-	int32 height_ = 600;
+
 };

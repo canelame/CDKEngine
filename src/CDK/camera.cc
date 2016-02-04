@@ -4,7 +4,7 @@
 #include "CDK/input.h"
 #include "CDK/task_manager.h"
 struct Camera::Data{
-  OpenGlInterFaz *interfaz_;
+
   mat4 proyection_mat_;
   mat4 look_at_mat_;
   vec3 position_;
@@ -27,7 +27,7 @@ struct Camera::Data{
 Camera::Camera(){
   
   data_ = new Data;
-  data_->interfaz_ = new OpenGlInterFaz();
+ 
   data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =105.0;
   data_->up_.x = 0; 	data_->up_.y = 1.0; 	data_->up_.z = 0;
   data_->front_.x = 0.0; 	data_->front_.y = 0.0; 	data_->front_.z = -100.0;
@@ -50,13 +50,13 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
   data_->look_at_mat_ = glm::lookAt(eye, center, up);
 }
 
-void Camera::render(std::shared_ptr<Node>node, TaskManager *tk){
+void Camera::render(std::shared_ptr<Node>node){
   
   std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, this);
 
-     tk->addTask(update_task);
+     TaskManager::instance().addTask(update_task);
      if (data_->last_task.get() != nullptr){
-       tk->waitTask(*data_->last_task.get());
+       TaskManager::instance().waitTask(*data_->last_task.get());
      }
      data_->last_task = update_task;
      data_->dl_cam_->execute();

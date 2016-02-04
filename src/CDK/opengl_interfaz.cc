@@ -199,8 +199,8 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     int w = m->getWidth();
     int h = m->getHeigth();
     unsigned char * d = m->getData();
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w,
-									h, 0, GL_RGB, GL_UNSIGNED_BYTE,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w,
+									h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   d);
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,0);

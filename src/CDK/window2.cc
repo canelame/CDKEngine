@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include "CDK/input.h"
+#include "CDK/task_manager.h"
 
 
 void key_callback(GLFWwindow*window, int key, int scancode , int action, int mods){
@@ -21,18 +22,28 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 
 struct Window::_Window{
   GLFWwindow* main_window_;
+  int32 width_ = 800;
+  int32 height_ = 600;
 };
 Window::Window(){
   window_s_ = new _Window;
 }
-/*int main(int argc, char**argv){ 
-  //Window::main(argc,argv);
-  //return 0;
-}*/
+int main(int argc, char**argv){ 
+	TaskManager::instance().init();
+  Window::main(argc,argv);
+  return 0;
+}
+
+void Window::clearScreen(vec3 color){
+	glClearColor(color.x, color.y, color.z, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+}
+
 bool Window::init(unsigned int width, unsigned int height){
 	
-	width_ = width;
-	height_ = height;
+	window_s_->width_ = width;
+	window_s_->height_ = height;
 	//Init GLFW
   if (!glfwInit()){
     printf("Error glfInit()");
@@ -44,7 +55,7 @@ bool Window::init(unsigned int width, unsigned int height){
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	//Create Window
-  window_s_->main_window_ = glfwCreateWindow(width_, height_, "Default name", nullptr, nullptr);
+  window_s_->main_window_ = glfwCreateWindow(window_s_->width_, window_s_->height_, "Default name", nullptr, nullptr);
 
   if (window_s_->main_window_ == nullptr){
 		printf("Error to create new window.\n");
@@ -64,7 +75,7 @@ bool Window::init(unsigned int width, unsigned int height){
 	printf("Error to init GLEW.\n");
 	return false;
 	}
-  glViewport(0, 0, width_, height_);
+  glViewport(0, 0, window_s_->width_, window_s_->height_);
 	return true;
 	
 }

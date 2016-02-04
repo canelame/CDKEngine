@@ -76,7 +76,7 @@ void Material::setProgram(int value){
   program_ = value;
 }
 
-GLuint Material::getProgram(){
+unsigned int Material::getProgram(){
   return program_; 
 }
 
@@ -89,7 +89,7 @@ std::string Material::getVertexData(){
   return vertex_data_; 
 }
 
-void Material::addTexture(std::shared_ptr<Texture>tx,std::shared_ptr<TaskManager> tk){
+void Material::addTexture(std::shared_ptr<Texture>tx){
 
   material_settings_->texture_.push_back(tx);
 

@@ -48,7 +48,7 @@ public:
   @brief Get current program
   @return program
   */
-  GLuint getProgram();
+  unsigned int getProgram();
   /**
   @brief Set current program
   @param value New program
@@ -59,9 +59,9 @@ public:
   @param txt new texture
   @param tk The current taskManager
   */
-  void addTexture(std::shared_ptr<Texture> txt, std::shared_ptr<TaskManager> tk);
+  void addTexture(std::shared_ptr<Texture> txt);
 
-  GLuint texture(){}
+  unsigned int texture(){}
   ~Material(){};
   /**
   @brief Get current Vertex code
@@ -97,7 +97,7 @@ private:
   void useMaterial();
   void compileShader(GLuint shader)const;
 
-  GLint program_;
+  unsigned int program_;
 
 
 

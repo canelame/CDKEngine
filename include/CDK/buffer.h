@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 #include <list>
-#include "GL\glew.h"
+
 
 /**
 * buffer.h
@@ -69,16 +69,16 @@ public:
   * @brief This function return where the vao is ;
   * @return Where the vao is binding.
   */
-	GLuint* getVAO();
+	unsigned int* getVAO();
   /**
   * @brief Set vao of the buffer
   */
-  void setVAO(GLuint vao);
+  void setVAO(unsigned int vao);
   /**
   * @brief This function return  vbos ;
   * @return Where the vbos is binding.
   */
-	GLuint* getVBO();
+	unsigned int* getVBO();
   /**
   * @brief This function return three vectors, whose are the attributes. ;
   * @return Return three vectors.
