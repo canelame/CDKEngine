@@ -56,7 +56,7 @@ void Camera::render(std::shared_ptr<Node>node){
 
      TaskManager::instance().addTask(update_task);
      if (data_->last_task.get() != nullptr){
-       TaskManager::instance().waitTask(*data_->last_task.get());
+     //  TaskManager::instance().waitTask(*data_->last_task.get());
      }
      data_->last_task = update_task;
      data_->dl_cam_->execute();

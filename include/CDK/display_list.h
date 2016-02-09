@@ -6,10 +6,10 @@
 #include "geometry.h"
 class DrawCommand : public Command{
 public:
-	DrawCommand(std::shared_ptr<Geometry> g);
+	DrawCommand(std::shared_ptr<Buffer> g);
 	void runCommand(OpenGlInterFaz &in)const;
 private:
-  std::shared_ptr<Geometry> t_geo;
+  std::shared_ptr<Buffer> t_geo;
   int indices_size_;
 };
 
@@ -21,11 +21,11 @@ private:
 #include "opengl_interfaz.h"
 class UseGeometryCommand : public Command{
 public:
-	UseGeometryCommand(std::shared_ptr<Geometry>geo);
+	UseGeometryCommand(std::shared_ptr<Buffer>geo);
 	void runCommand(OpenGlInterFaz &in)const;
 private:	
 	
-  std::shared_ptr<Geometry> t_geo;
+  std::shared_ptr<Buffer> t_geo;
   mutable GLuint vao_;
 };
 #endif
@@ -108,6 +108,7 @@ private:
 #include "command.h"
 #include "material.h"
 #include "opengl_interfaz.h"
+
 class LoadTextureCommand : public Command{
 public:
 	LoadTextureCommand(std::shared_ptr<Material>mat);
@@ -127,12 +128,13 @@ private:
 #include "opengl_interfaz.h"
 class UseTextureComman : public Command {
 public:
-	UseTextureComman(std::shared_ptr<Material>mat);
+	UseTextureComman(int pro,std::vector<std::string>textures);
 
 
 	void runCommand(OpenGlInterFaz &in)const;
 private:
-	std::shared_ptr<Material> t_mat;
+  std::vector<std::string> textures_;
+  int program_mat_;
 };
 #endif
 

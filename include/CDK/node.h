@@ -12,14 +12,14 @@ class Drawable;
 class Node  {
   
 public:
-	struct Data;
-  struct Transform;
+
+
 	Node();
  virtual ~Node();
 	void addChild(std::shared_ptr<Node> child);
   void removeChild(unsigned int index);
 	std::shared_ptr<Node> childAt(int index);
-  void addLight(Light t);
+  void addLight(std::shared_ptr<Light> t);
 
 	//Getter and settersç
 	vec3 position();
@@ -45,9 +45,11 @@ public:
 	void combine(std::shared_ptr<Node> c_m);
   void setDirtyNode(bool value);
   bool getDirtyNode();
-  std::vector<Light> getLigths();
+  std::vector<std::shared_ptr<Light>> getLigths();
+  int totalLights();
   
 private:
+  struct Data;
 	Data *data_;
 	
 

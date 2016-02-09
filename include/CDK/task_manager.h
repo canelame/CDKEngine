@@ -51,6 +51,7 @@ private:
  std::shared_ptr<Node> nod_;
   Camera * cam_;
 DisplayList* dl_;
+std::unique_ptr<std::vector<Light>> scene_lights_;
 //std::vector<Light> light_scene_;
 };
 #endif

@@ -139,15 +139,7 @@ int Task::getId(){
 
     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
 
-    std::shared_ptr<Light> l1 = std::make_shared<Light>();
-    l1->setPosition(vec3(0.0, 0.0, 95.0));
-    l1->setAmbientColor(vec3(1.0, 0.0, 0.0));
-    l1->setDifusseColor(vec3(0.0, 1.0, 0.0));
-    l1->setSpecularColor(vec3(0.0,0.0,0.0));
-    l1->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
     
-    std::vector<std::shared_ptr<Light>> ls;
-    ls.push_back(l1);
 
      if (node->getParent() != nullptr){
        node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
@@ -157,15 +149,19 @@ int Task::getId(){
      }
 
      if (t_drawable){
-
+       
        if (t_drawable->geometry() != nullptr && t_drawable->material() != nullptr){
-
-         dl_->add(std::make_shared<UseMaterialCommand>(t_drawable->material()));
-         dl_->add(std::make_shared<UseGeometryCommand>(t_drawable->geometry()));
-         dl_->add(std::make_shared<UseTextureComman>(t_drawable->material()));
-         dl_->add(std::make_shared<LightsCommand>(ls));
+         std::shared_ptr<Buffer> t_geometry_buff = t_drawable->geometry()->getBuffer();
+         std::shared_ptr<Material> t_material = t_drawable->material();
+         dl_->add(std::make_shared<UseMaterialCommand>(t_material));
+         dl_->add(std::make_shared<UseGeometryCommand>(t_geometry_buff));
+         dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), t_material->getTextures()));
+         if (t_drawable->getParent() != NULL && t_drawable->getParent()->totalLights()>0){
+           dl_->add(std::make_shared<LightsCommand>(t_drawable->getLigths()));
+         }
+        // dl_->add(std::make_shared<LightsCommand>(ls));
          dl_->add(std::make_shared<SetupCameraCommand>(cam_->getProyection(),cam_->getView(), t_drawable->worldMat()));
-         dl_->add(std::make_shared<DrawCommand>(t_drawable->geometry()));
+         dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
          t_drawable->setDirtyNode(false);
        }
      }
@@ -178,7 +174,7 @@ int Task::getId(){
        loadNode(node->childAt(i));
      }
      finished_ = true;
-     unlock();
+
    }
 
 

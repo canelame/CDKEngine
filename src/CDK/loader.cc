@@ -1,6 +1,7 @@
 #include "CDK/loader.h"
 #include "CDK/buffer.h"
  #include "CDK/task_manager.h"
+#include "texture_cache.h"
 struct Loader::MeshData{
   int num_positions;
   int num_normals;
@@ -123,7 +124,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      for (int i = 0; i<m.num_diffuse_textures ; i++){
        TextureMesh t_t;
        memcpy(&t_t, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset + indices_size + (i*sizeof(TextureMesh))], sizeof(TextureMesh));
-       std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
+
        char tpath[50] = "textures/";
        strcat(tpath, t_t.path);
        printf("Loading diffuse texture: %s\n",t_t.path );
@@ -131,7 +132,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
        //Search if the texture is already loaded
        for (int j= 0; j < mat_child->totalTextures();j++){
         
-         if (strcmp(mat_child->getTextureAt(j)->getPath(), tpath) == 0){
+         if (strcmp(mat_child->getTextureAt(j), tpath) == 0){
            mat_child->addTexture(mat_child->getTextureAt(j));
            skip = true;
            break;
@@ -139,10 +140,16 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
        }
        if (!skip){
      
-         std::shared_ptr<ReadTexture> nt = std::make_shared<ReadTexture>(txt1, tpath, "diffuse");
-        TaskManager::instance().addTask( nt);
-		TaskManager::instance().waitTask(*nt.get());
-         mat_child->addTexture(txt1);
+         if (TextureCache::instance().textureExists(tpath) == false){
+           std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
+           std::shared_ptr<ReadTexture> nt = std::make_shared<ReadTexture>(txt1, tpath, "diffuse");
+           TaskManager::instance().addTask(nt);
+           TaskManager::instance().waitTask(*nt.get());
+           TextureCache::instance().addTexture(txt1);
+           mat_child->addTexture(tpath);
+
+         }
+
        }
        
      }
@@ -156,12 +163,12 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
        printf("Loading specular texture: %s\n", t_t.path);
        std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
       // tk->addTask(std::make_shared < ReadTexture>(txt1, tpath, "diffuse"));
-       mat_child->addTexture(std::make_shared<Texture>(*std::move(txt1).get()));
+       mat_child->addTexture(tpath);
        bool skip = false;
        //Search if the texture is alreadyy loaded
        for (int j = 0; j < mat_child->totalTextures(); j++){
 
-         if (strcmp(mat_child->getTextureAt(j)->getPath(), tpath) == 0){
+         if (strcmp(mat_child->getTextureAt(j), tpath) == 0){
            mat_child->addTexture(mat_child->getTextureAt(j));
            skip = true;
            break;
@@ -170,9 +177,11 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
        if (!skip){
 
          std::shared_ptr<ReadTexture> nt = std::make_shared<ReadTexture>(txt1, tpath, "specular");
+         if (!TextureCache::instance().textureExists(tpath))
 		 TaskManager::instance().addTask(nt);
 		 TaskManager::instance().waitTask(*nt.get());
-         mat_child->addTexture(txt1);
+     TextureCache::instance().addTexture(txt1);
+         mat_child->addTexture(tpath);
        }
 
      }

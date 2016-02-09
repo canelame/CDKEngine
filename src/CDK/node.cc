@@ -10,7 +10,7 @@ std::vector<std::shared_ptr<Node>> node_list_;
   vec3 scale_;
   mat4 world_transform_;
   mat4 model_mat_;
-  std::vector<Light>lights;
+  std::vector<std::shared_ptr<Light>>lights;
 };
 
 Node::Node(){
@@ -151,10 +151,11 @@ bool Node::getDirtyNode(){
   return data_->dirty_node_;
 }
 
-void Node::addLight(Light l){
+void Node::addLight(std::shared_ptr<Light> l){
   data_->lights.push_back(l);
 }
 
-std::vector<Light> Node::getLigths(){
+std::vector<std::shared_ptr<Light>> Node::getLigths(){
   return data_->lights;
 }
+int Node::totalLights(){ return data_->lights.size(); }

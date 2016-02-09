@@ -46,16 +46,7 @@ void Buffer::setAttributeSize(int p, int n, int uv, int t, int bt, int i){
 void Buffer::init(int size){
 
 }
-std::vector<int>Buffer::getSizes(){
-  std::vector<int> t;
-  t.push_back(data_->num_position_vertex_);
-  t.push_back(data_->num_normal_vertex_);
-  t.push_back(data_->num_uv_vertex_);
-  t.push_back(data_->num_tan_vertex_);
-  t.push_back(data_->num_bitan_vertex_);
-  t.push_back(data_->num_indices_);
-  return t;
-}
+
 void Buffer::loadData(float*positions, float*normals, float*uvs,
   unsigned int* indexes){
   //Reserve vectors.
@@ -69,6 +60,13 @@ void Buffer::loadData(float*positions, float*normals, float*uvs,
 bool Buffer::isDirty(){
   return  data_->dirty_;
 }
+
+int Buffer::vertexSize(){ return  data_->num_position_vertex_; }
+int Buffer::normalSize(){ return data_->num_normal_vertex_; }
+int Buffer::uvSize(){ return data_->num_uv_vertex_; }
+int Buffer::tangentSize(){ return data_->num_tan_vertex_; }
+int Buffer::bitangentSize(){ return data_->num_bitan_vertex_; }
+int Buffer::indiceSize(){ return data_->num_indices_; }
 
 unsigned int* Buffer::getVAO(){ return &data_->vao_; }
 

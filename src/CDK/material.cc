@@ -4,7 +4,7 @@
 
 struct Material::MaterialSettings{
   Light material_lights_[10];
-  std::vector< std::shared_ptr<Texture> > texture_;
+  std::vector<std::string > texture_;
   vec3 diffuse_color_;
 };
 
@@ -89,9 +89,9 @@ std::string Material::getVertexData(){
   return vertex_data_; 
 }
 
-void Material::addTexture(std::shared_ptr<Texture>tx){
+void Material::addTexture(const char *name){
 
-  material_settings_->texture_.push_back(tx);
+  material_settings_->texture_.push_back(name);
 
 }
 int Material::totalTextures(){
@@ -99,9 +99,11 @@ int Material::totalTextures(){
 }
 
 
-
-std::shared_ptr<Texture> Material::getTextureAt(int i){ 
-  return material_settings_->texture_.at(i); 
+std::vector<std::string> Material::getTextures(){
+  return material_settings_->texture_;
+}
+const char* Material::getTextureAt(int i){ 
+  return material_settings_->texture_.at(i).c_str(); 
 }
 
 int Material::getTotalLights(){

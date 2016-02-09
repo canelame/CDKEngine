@@ -7,7 +7,7 @@ struct Texture::Data{
   unsigned char* image_;  
   int w, h;
   int comp;
-  char path[30];
+  char path[100];
   char type[30];
 };
 Texture::Texture(){ 

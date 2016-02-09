@@ -23,13 +23,13 @@ OpenGlInterFaz::OpenGlInterFaz(){
 
 void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
 
-  std::vector<int>sizes = buff->getSizes();
-  GLint postion_size = sizes[0] * sizeof(float)*3;
-  GLint normal_size = sizes[1] * sizeof(float)*3;
-  GLint uv_size = sizes[2] * sizeof(float)*2;
-  GLint tan_size = sizes[3]*sizeof(float)*3;
-  GLint bitan_size = sizes[4] * sizeof(float)*3;
-  GLint index_size = sizes[5] * sizeof(unsigned int);
+
+  GLint postion_size =buff->vertexSize() * sizeof(float)*3;
+  GLint normal_size = buff->normalSize() * sizeof(float)*3;
+  GLint uv_size = buff->uvSize() * sizeof(float)*2;
+  GLint tan_size = buff->tangentSize()*sizeof(float)*3;
+  GLint bitan_size = buff->bitangentSize() * sizeof(float)*3;
+  GLint index_size = buff->indiceSize() * sizeof(unsigned int);
 
   data_->shadow_attrib = buff->getAttributesT();
   data_->shadow_index = std::make_shared<unsigned int*>(buff->getIndexesT());
@@ -208,12 +208,12 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     
 }
 
-void OpenGlInterFaz::useTexture(int pro,std::shared_ptr<Texture>m,int n_text,std::string u_name){
+void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int texture_id){
   glActiveTexture(GL_TEXTURE0 + n_text);
 
   int tex_i = glGetUniformLocation(pro,u_name.c_str());
-  
-  glBindTexture(GL_TEXTURE_2D, m->getID());
+  GLuint i = texture_id;
+  glBindTexture(GL_TEXTURE_2D, i);
 }
 
 void OpenGlInterFaz::sendLight( Light *light, int num_light){

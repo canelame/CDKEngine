@@ -59,7 +59,8 @@ public:
   @param txt new texture
   @param tk The current taskManager
   */
-  void addTexture(std::shared_ptr<Texture> txt);
+  void addTexture(const char*name);
+  std::vector<std::string> getTextures();
 
   unsigned int texture(){}
   ~Material(){};
@@ -82,7 +83,7 @@ public:
   @Brief Return the texture placed at i
   @return Texture of material on index i
   */
-  std::shared_ptr<Texture> getTextureAt(int i);
+const char* getTextureAt(int i);
 
   int getTotalLights();
   void setColor(vec3 color);

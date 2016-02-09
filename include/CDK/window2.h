@@ -8,8 +8,7 @@
 #include "input.h"
 class Window{
 public:
-   struct _Window;
-   
+  struct _Window;
    Window();
    /**
    @brief init window
@@ -25,6 +24,7 @@ public:
   static int main(int argc, char **argv);
   ~Window(){};
 private:
+
   _Window * window_s_;
 
 };

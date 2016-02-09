@@ -30,7 +30,7 @@ public:
   void useUnifor3f(const char *name, const float *data);
   void useUniformUi(const char *name,int value);
 	void loadTexture(std::shared_ptr<Texture> m);
-  void useTexture(int pro,std::shared_ptr<Texture>m,int n_text,std::string u_name);
+  void useTexture(int pro,int n_text,std::string u_name,int texture_id);
   void drawGeometry(unsigned int indices);
   void sendLight( Light *light, int num_light);
   ~OpenGlInterFaz(){};

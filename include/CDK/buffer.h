@@ -89,7 +89,6 @@ public:
   * @return Indices list.
   */
   unsigned int* getIndexesT();
-  std::vector<int>getSizes();
   /**
   * @brief This function is used to call opengl to use the geometry, and return the instance of
   opengl_interfaz.
@@ -97,10 +96,35 @@ public:
   */
 	;
   /**
-  * @brief This function is used to call opengl to draw the geomtry, and return the instance of
-  opengl_interfaz.
-  * @return A pointer to opengl_interfaz.
+  * @brief.
+  * @return .
   */
+  int vertexSize();
+  /**
+  * @brief.
+  * @return .
+  */
+  int normalSize();
+  /**
+  * @brief.
+  * @return .
+  */
+  int uvSize();
+  /**
+  * @brief.
+  * @return .
+  */
+  int tangentSize();
+  /**
+  * @brief.
+  * @return .
+  */
+  int bitangentSize();
+  /**
+  * @brief.
+  * @return .
+  */
+  int indiceSize();
 	friend class OpenGlInterFaz;
 private:
   Data *data_;

@@ -1,4 +1,5 @@
 #include "CDK/display_list.h"
+#include "texture_cache.h"
 
 DisplayList::DisplayList(){
 	interfaz_ = new OpenGlInterFaz();
@@ -28,32 +29,34 @@ int DisplayList::size(){
 }
 ///////// USE_TEXTURE_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-UseTextureComman::UseTextureComman(std::shared_ptr<Material>mat){
-	t_mat = mat;
+UseTextureComman::UseTextureComman(int pro,std::vector<std::string>textures){
+  textures_ = textures;
+  program_mat_ = pro;
 }
 
 
 void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
   int num_diffuse_t = 1;
   int num_specular_t = 1;
-  for (int i = 0; i < t_mat->totalTextures(); i++){ 
-    if (!t_mat->getTextureAt(i)->getLoaded()){
-      in.loadTexture(t_mat->getTextureAt(i));
-      t_mat->getTextureAt(i)->setLoaded(true);
+  for (int i = 0; i < textures_.size(); i++){ 
+    if (!TextureCache::instance().getTexture(textures_[i].c_str())->getLoaded()){
+      in.loadTexture(TextureCache::instance().getTexture(textures_[i].c_str()));
+      TextureCache::instance().getTexture(textures_[i].c_str())->setLoaded(true);
     }
     std::string type;
-    std::string type_name = t_mat->getTextureAt(i)->getType();
+    std::string type_name = TextureCache::instance().getTexture(textures_[i].c_str())->getType();
     std::stringstream ssn;
     if (type_name == "diffuse"){
       type = "u_diffuse_texture";
       ssn << num_diffuse_t;
       num_diffuse_t++;
-      in.useTexture(t_mat->getProgram(), t_mat->getTextureAt(i), i, (type+ssn.str()));
+      in.useTexture(program_mat_, i, (type + ssn.str()), TextureCache::instance().getTexture(textures_[i].c_str())->getID());
+     
     }else  if (type_name == "specular"){
         type = "u_specular_texture";
         ssn << num_specular_t;
         num_specular_t++;
-        in.useTexture(t_mat->getProgram(), t_mat->getTextureAt(i), i,(type+ssn.str()) );
+        in.useTexture(program_mat_, i, (type + ssn.str()), TextureCache::instance().getTexture(textures_[i].c_str())->getID());
     }
 
   }
@@ -85,10 +88,10 @@ LoadTextureCommand::LoadTextureCommand(std::shared_ptr<Material>mat){
 
 void LoadTextureCommand::runCommand(OpenGlInterFaz &in)const{
   for (int i = 0; i < t_mat->totalTextures(); i++){
-      in.loadTexture(t_mat->getTextureAt(i));
-      t_mat->getTextureAt(i)->setLoaded(true);
+      in.loadTexture(TextureCache::instance().getTexture(t_mat->getTextureAt(i)));
+      TextureCache::instance().getTexture(t_mat->getTextureAt(i))->setLoaded(true);
   }
-  t_mat.~shared_ptr();
+
 }
 std::shared_ptr<Material>  LoadTextureCommand::getMaterial(){
 	return t_mat;
@@ -141,7 +144,7 @@ void SetModelMatrixCommand::runCommand(OpenGlInterFaz &in)const{
 }
 ///////// USE_GEOMETRY CLASS/////////////////
 ////////////////////////////////////////////
-UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Geometry>geo){
+UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Buffer>geo){
 
 		t_geo = geo;
 
@@ -149,24 +152,24 @@ UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Geometry>geo){
 
 
 void UseGeometryCommand::runCommand(OpenGlInterFaz &in)const{
-  if (t_geo.get()->getBuffer()->isDirty()){
-    in.loadBuffer(t_geo->getBuffer());
-    t_geo->getBuffer()->setDirty(false);
-    vao_ = *t_geo->getBuffer()->getVAO();
+  if (t_geo->isDirty()){
+    in.loadBuffer(t_geo);
+    t_geo->setDirty(false);
+    vao_ = *t_geo->getVAO();
 
   }
-  in.useGeometry(*t_geo->getBuffer()->getVAO());
+  in.useGeometry(*t_geo->getVAO());
 
 
 }
 
 ///////// DRAW_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-DrawCommand::DrawCommand(std::shared_ptr<Geometry>g){
+DrawCommand::DrawCommand(std::shared_ptr<Buffer>g){
 	
 		t_geo = g;
 
-    indices_size_ = t_geo.get()->getBuffer()->getSizes()[5];
+    indices_size_ = t_geo->indiceSize();
 
 }
 

@@ -4,7 +4,7 @@
 #include "CDK/input.h"
 #include "CDK/task_manager.h"
 
-
+#include "texture_cache.h"
 void key_callback(GLFWwindow*window, int key, int scancode , int action, int mods){
  
   if (action == GLFW_PRESS){
@@ -30,6 +30,7 @@ Window::Window(){
 }
 int main(int argc, char**argv){ 
 	TaskManager::instance().init();
+  TextureCache::instance().init();
   Window::main(argc,argv);
   return 0;
 }
