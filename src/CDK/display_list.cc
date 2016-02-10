@@ -1,8 +1,10 @@
 #include "CDK/display_list.h"
 #include "CDK/texture_cache.h"
 
+
 DisplayList::DisplayList(){
 	interfaz_ = new OpenGlInterFaz();
+
 }
 DisplayList::~DisplayList(){
 }
@@ -66,19 +68,29 @@ void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
 
 ///////// SETUP_CAMERA_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-SetupCameraCommand::SetupCameraCommand(mat4 cam_proyec,mat4 cam_view,mat4 m_m){
-  proyec_m_ = cam_proyec;
-  view_m_ = cam_view;
-	model_n_=m_m;
+SetupCameraCommand::SetupCameraCommand(){
+
 }
 
 
 void SetupCameraCommand::runCommand(OpenGlInterFaz &in)const{
 
-	in.useUniformMat4("u_projection_m", glm::value_ptr(proyec_m_));
-	in.useUniformMat4("u_view_m", glm::value_ptr(view_m_));
-	in.useUniformMat4("u_model_m", glm::value_ptr(model_n_));
 
+  in.loadCamera();
+}
+///////// USE_CAMERA_COMMAND CLASS/////////////////
+////////////////////////////////////////////
+UseCameraCommand::UseCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_m){
+  proyec_m_ = cam_proyec;
+  view_m_ = cam_view;
+  model_n_ = m_m;
+}
+
+
+void UseCameraCommand::runCommand(OpenGlInterFaz &in)const{
+
+
+  in.useCamera(proyec_m_,model_n_,view_m_);
 }
 
 ///////// LOAD_TEXTURE_COMMAND CLASS/////////////////
@@ -179,9 +191,9 @@ void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
     t_mat->is_compiled_ = true;
   }
 	in.useMaterial(t_mat->getProgram());
-  float color[] = {t_mat->getColor().x,t_mat->getColor().y,t_mat->getColor().z};
+/*  float color[] = {t_mat->getColor().x,t_mat->getColor().y,t_mat->getColor().z};
 
-  in.useUnifor3f("diffuse_color", color);
+  in.useUnifor3f("diffuse_color", color);*/
 
 
 }
@@ -194,6 +206,9 @@ LightsCommand::LightsCommand(std::vector<std::shared_ptr<Light>>l){
 
 void LightsCommand::runCommand(OpenGlInterFaz &in)const{
   for (int i = 0; i < lights_.size(); i++){
-    in.sendLight(lights_[i].get(), i);
+    if (!lights_[i]->getLoaded()){
+      in.loadLight(i);
+    }
+    in.sendLight(lights_[i].get());
   }
 }

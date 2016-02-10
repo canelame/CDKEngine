@@ -9,11 +9,13 @@ struct Light::Data{
   vec3 ambient_color_;
   float sh_;
   LightType l_type;
+  bool loaded;
 };
 Light::Light(){
   data_ = new Data;
   data_->l_type = T_DIRECTION_LIGHT;
   data_->sh_ = 32.0f;
+  data_->loaded = false;
 }
 Light::~Light(){
 
@@ -69,4 +71,11 @@ float Light::getShinenes(){
 
 Light::LightType Light::getType(){
   return data_->l_type;
+}
+void Light::setLoaded(bool value){
+  data_->loaded = value;
+}
+
+bool Light::getLoaded(){
+  return data_->loaded;
 }

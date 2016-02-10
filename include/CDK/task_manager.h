@@ -56,7 +56,7 @@ public:
 	*	@brief Constructor of the task UpdateDisplay
 	* @param dl The display list to update
 	*/
-  UpdateDisplay(DisplayList *dl,std::shared_ptr<Node> n,Camera*cam);
+  UpdateDisplay(DisplayList *dl,std::shared_ptr<Node> n,mat4 proyection_m,  mat4 view_m,bool loaded);
 	/**
 	* @brief Execute the task
 	*/
@@ -64,9 +64,12 @@ public:
   void loadNode(std::shared_ptr<Node>node );
 private:
  std::shared_ptr<Node> nod_;
-  Camera * cam_;
-DisplayList* dl_;
-std::vector<std::shared_ptr<Light> > scene_lights_;
+	DisplayList* dl_;
+  mat4 proyex_mat_;
+  mat4 model_mat_;
+  mat4 view_mat_;
+  bool cam_loaded_;
+  std::vector<std::shared_ptr<Light> > scene_lights_;
 //std::vector<Light> light_scene_;
 };
 #endif

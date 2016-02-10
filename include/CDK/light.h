@@ -87,6 +87,16 @@ public:
   @return Current light type
   */
   LightType getType();
+  /**
+  @brief Set true or false if the light has been loaded into GPU
+  @param value New value for loaded state
+  */
+  void setLoaded(bool value);
+  /**
+  @brief Get true or false if the light has been loaded into GPU
+  @return value Get value for loaded state
+  */
+  bool getLoaded();
 private:
   struct Data;
   Data *data_;

@@ -36,6 +36,8 @@ public:
   @return program created.
   */
   int loadMaterial(const char*vertex_data, const char*fragment_data);
+
+
   /**
   @brief Compile shader passed as parameter
   @param shader Shader to compile
@@ -68,10 +70,20 @@ public:
   /**
   @brief
   */
-  void sendLight( Light *light, int num_light);
+  void loadLight(int num_light);
+  /**
+  */
+  void sendLight( Light *light);
   /**
   @brief
   */
+  /**
+  */
+  void loadCamera();
+
+
+  void useCamera(mat4 proyection, mat4 model, mat4 view);
+
   ~OpenGlInterFaz(){};
 
   friend class DisplayList;
@@ -82,6 +94,7 @@ private:
   friend class Buffer;
   friend class Camera;
   friend class Material;
+ 
 
 };
 

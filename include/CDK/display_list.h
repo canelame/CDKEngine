@@ -138,15 +138,29 @@ private:
 #include "opengl_interfaz.h"
 class SetupCameraCommand : public Command {
 public:
-  SetupCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_mm);
+  SetupCameraCommand();
+  void runCommand(OpenGlInterFaz &in)const;
+private:
+
+};
+#endif
+/// USE CAMERA COMMAND CLASS
+#ifndef __H_USE_CAM_COMMAND__
+#define __H_USE_CAM_COMMAND__
+#include "command.h"
+#include "camera.h"
+#include "opengl_interfaz.h"
+class UseCameraCommand : public Command {
+public:
+  UseCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_mm);
   void runCommand(OpenGlInterFaz &in)const;
 private:
   mat4 proyec_m_;
   mat4 view_m_;
   mat4 model_n_;
+  
 };
 #endif
-
 ///USE MATERIAL COMMAND CLASS
 #ifndef __H_USE_MATERIAL_COMMAND__
 #define __H_USE_MATERIAL_COMMAND__
@@ -223,8 +237,11 @@ public:
   */
   void clear();
 private:
+
 	OpenGlInterFaz *interfaz_;
+
 	List listCommand_;
+
 };
 
 

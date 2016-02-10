@@ -73,6 +73,8 @@ public:
   */
   mat4 getView();
 
+  void setLoaded(bool value);
+  bool getLoaded();
 private:
   struct Data;
   ///Internal Data

@@ -22,6 +22,7 @@ struct Camera::Data{
   std::shared_ptr<UpdateDisplay> last_task;
   bool created_dl = false;
   const float fps_speed_move = 2.0f;
+  bool loaded=false;
 };
 
 Camera::Camera(){
@@ -52,11 +53,11 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
 
 void Camera::render(std::shared_ptr<Node>node){
   
-  std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, this);
+  std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, data_->proyection_mat_,data_->look_at_mat_,data_->loaded);
 
      TaskManager::instance().addTask(update_task);
      if (data_->last_task.get() != nullptr){
-     //  TaskManager::instance().waitTask(*data_->last_task.get());
+       TaskManager::instance().waitTask(*data_->last_task.get());
      }
      data_->last_task = update_task;
      data_->dl_cam_->execute();
@@ -137,3 +138,10 @@ void Camera::FpsCameraUpdate(){
    return data_->look_at_mat_;
  }
 
+ void Camera::setLoaded(bool value){
+   data_->loaded = value;
+ }
+
+ bool Camera::getLoaded(){
+   return data_->loaded;
+ }

@@ -122,10 +122,12 @@ int Task::getId(){
 	 /////////////////////////////////////////////////////
 
 	 //UPDATE_DISPLAY_LIST_TASK
-	 UpdateDisplay::UpdateDisplay(DisplayList*dl,std::shared_ptr<Node> n,Camera *cam){
+   UpdateDisplay::UpdateDisplay(DisplayList*dl, std::shared_ptr<Node> n, mat4 proyection_m ,mat4 view_m,bool loaded){
      dl_ = dl;
      nod_ = n;
-     cam_ = cam;
+     proyex_mat_ = proyection_m;
+     cam_loaded_ = loaded;
+     view_mat_=view_m;
    
 	 }
    void UpdateDisplay::runTask(){
@@ -156,9 +158,10 @@ int Task::getId(){
          std::shared_ptr<Material> t_material = t_drawable->material();
          dl_->add(std::make_shared<UseMaterialCommand>(t_material));
          dl_->add(std::make_shared<UseGeometryCommand>(t_geometry_buff));
-         dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), t_material->getTextures()));
+        dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), t_material->getTextures()));
          dl_->add(std::make_shared<LightsCommand>(scene_lights_));
-         dl_->add(std::make_shared<SetupCameraCommand>(cam_->getProyection(),cam_->getView(), t_drawable->worldMat()));
+         if (!cam_loaded_) dl_->add(std::make_shared<SetupCameraCommand>());
+         dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, t_drawable->worldMat()));
          dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
          t_drawable->setDirtyNode(false);
        }
