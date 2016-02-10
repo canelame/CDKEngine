@@ -1,4 +1,12 @@
+/**
+@author Alejandro Canela Mendez
+ESAT 2016.
+*/
+///////////////////////////////////////// THIS PART OF FILE , MANAGE DIFERENT CLASSES OF TYPE COMMANDS, THAT REPRESENTS THE ///////////////////////////////////////////// 
+///////////////////////////////////////// DISPLAY LIST TASK. ONLY PROGRAM PORPOUSE. NOT FOR THE USER OF LIBRARY             /////////////////////////////////////////////
 
+
+///DRAW COMMAND CLASS
 #ifndef __H_DRAW_COMMAND__
 #define __H_DRAW_COMMAND__
 #include "command.h"
@@ -12,8 +20,8 @@ private:
   std::shared_ptr<Buffer> t_geo;
   int indices_size_;
 };
-
 #endif
+///USE GEOMETRY COMMAND CLASS
 #ifndef __H_USE_GEO_COMMAND__
 #define __H_USE_GEO_COMMAND__
 #include "command.h"
@@ -30,20 +38,7 @@ private:
 };
 #endif
 
-#ifndef __H_SETUP_MODEL_COMMAND__
-#define __H_SETUP_MODEL_COMMAND__
-#include "command.h"
-#include "geometry.h"
-#include "opengl_interfaz.h"
-class SetModelMatrixCommand : public Command{
-public:
-	SetModelMatrixCommand(std::shared_ptr<Geometry>geo);
-	void runCommand(OpenGlInterFaz &in)const;
-private:
-
-  std::shared_ptr<Geometry> t_geo;
-};
-#endif
+///LOAD GEOMTRY COMMAND CLASS
 
 #ifndef __H_LOAD_GEO_COMMAND__
 #define __H_LOAD_GEO_COMMAND__
@@ -66,7 +61,7 @@ private:
 };
 #endif
 
-
+///USE LIGHT COMMAND CLASS
 #ifndef __H_LIGHTS_COMMAND__
 #define __H_LIGHTS_COMMAND__  
 #include "command.h"
@@ -86,7 +81,7 @@ private:
 
 };
 #endif
-
+///LOAD MATERIAL COMMMAND CLASS
 #ifndef __H_LOAD_MAT_COMMAND__
 #define __H_LOAD_MAT_COMMAND__
 #include "command.h"
@@ -102,7 +97,7 @@ private:
 
 };
 #endif
-
+///LOAD TEXTURE COMMAND CLASS
 #ifndef __H_LOAD_TEXTURE_COMMAND__
 #define __H_LOAD_TEXTURE_COMMAND__
 #include "command.h"
@@ -120,7 +115,7 @@ private:
 
 };
 #endif
-
+//USE TEXTURE COMMAND CLASS
 #ifndef __H_USE_TEXTURE_COMMAND__
 #define __H_USE_TEXTURE_COMMAND__
 #include "command.h"
@@ -129,15 +124,13 @@ private:
 class UseTextureComman : public Command {
 public:
 	UseTextureComman(int pro,std::vector<std::string>textures);
-
-
 	void runCommand(OpenGlInterFaz &in)const;
 private:
   std::vector<std::string> textures_;
   int program_mat_;
 };
 #endif
-
+/// SETUP CAMERA COMMAND CLASS
 #ifndef __H_SETUP_CAM_COMMAND__
 #define __H_SETUP_CAM_COMMAND__
 #include "command.h"
@@ -147,15 +140,14 @@ class SetupCameraCommand : public Command {
 public:
   SetupCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_mm);
   void runCommand(OpenGlInterFaz &in)const;
- // std::shared_ptr<Camera> getCam(){ return t_cam; }
-
 private:
   mat4 proyec_m_;
   mat4 view_m_;
- mat4 model_n_;
+  mat4 model_n_;
 };
 #endif
 
+///USE MATERIAL COMMAND CLASS
 #ifndef __H_USE_MATERIAL_COMMAND__
 #define __H_USE_MATERIAL_COMMAND__
 #include "command.h"
@@ -173,14 +165,16 @@ private:
 };
 #endif
 
+/////////////////////////////////////////////////// END OF DISPLAY LIST TASK HEADER //////////////////////////////
+
+
+/////////////////////////////////////////////////// START DISPLAY CLASS///////////////////////////////////////////
 #ifndef __H_LISTCOMMAND__
 #define __H_LISTCOMMAND__
 
 #include "command.h"
 #include <memory>
 #include <vector>
-
-
 
 /**
 * command.h

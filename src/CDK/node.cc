@@ -29,7 +29,10 @@ void Node::setParent(std::shared_ptr<Node>p){
   data_->parent_ = p;
 }
 void Node::addChild(std::shared_ptr<Node>d){
- 
+  if (d == NULL){
+    printf("Error:Geometry empty\n");
+    return;
+  }
   
   if (this != NULL){
     d->data_->parent_ = std::make_shared<Node>(*this);
@@ -60,6 +63,7 @@ std::shared_ptr<Node> Node::childAt(int index){
 }
 
 void Node::setPosition(vec3 &data){
+  if (this == NULL)return;
   data_->position_ = data;
   calculateModel();
 }
@@ -106,20 +110,6 @@ vec3 Node::scale(){
 	return data_->scale_;
 }
 
-void Node::combine(std::shared_ptr<Node> c_v){
-  mat4 temp_mat_o;
-  if (c_v != nullptr){
-    temp_mat_o = glm::rotate(temp_mat_o, c_v->data_->rotation_.x, vec3(1.0, 0.0, 0.0));
-    temp_mat_o = glm::rotate(temp_mat_o, c_v->data_->rotation_.y, vec3(0.0, 1.0, 0.0));
-    temp_mat_o = glm::rotate(temp_mat_o, c_v->data_->rotation_.z, vec3(0.0, 0.0, 1.0));
-    temp_mat_o = glm::scale(temp_mat_o, c_v->data_->scale_);
-    temp_mat_o = glm::translate(temp_mat_o, c_v->data_->position_);
-
-    data_->world_transform_ *= temp_mat_o;
-  }
- 
-  
-}
 
 mat4 Node::modelMat(){
 	return data_->model_mat_;

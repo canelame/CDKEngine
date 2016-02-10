@@ -1,12 +1,10 @@
-#include "texture_cache.h"
+#include "CDK/texture_cache.h"
 #include "CDK/texture.h"
 
 TextureCache* TextureCache::instance_ = NULL;
 
 
-void TextureCache::init(){
 
-}
 
 TextureCache& TextureCache::instance(){
   if (instance_ == NULL)instance_ = new TextureCache();

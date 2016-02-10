@@ -8,7 +8,6 @@ struct Buffer::Data {
   std::shared_ptr<float *>normals;
   std::shared_ptr<float * > uvs;
   std::shared_ptr<unsigned int*> indices;
-
   std::unique_ptr<char[]> data;
 
   int num_position_vertex_;
@@ -18,7 +17,6 @@ struct Buffer::Data {
   int num_bitan_vertex_;
   int num_indices_;
 
-  OpenGlInterFaz *interface_;
   GLuint vao_;
   GLuint vbo_[4]; //0 positions, 1 normals, 2 uvs,3 indexes;
 };
@@ -43,9 +41,7 @@ void Buffer::setAttributeSize(int p, int n, int uv, int t, int bt, int i){
   data_->num_bitan_vertex_ = bt;
   data_->num_indices_ = i;
 }
-void Buffer::init(int size){
-
-}
+void Buffer::init(int size){}
 
 void Buffer::loadData(float*positions, float*normals, float*uvs,
   unsigned int* indexes){
@@ -57,19 +53,14 @@ void Buffer::loadData(float*positions, float*normals, float*uvs,
   data_->dirty_ = true;
 }
 
-bool Buffer::isDirty(){
-  return  data_->dirty_;
-}
-
+bool Buffer::isDirty(){ return  data_->dirty_; }
 int Buffer::vertexSize(){ return  data_->num_position_vertex_; }
 int Buffer::normalSize(){ return data_->num_normal_vertex_; }
 int Buffer::uvSize(){ return data_->num_uv_vertex_; }
 int Buffer::tangentSize(){ return data_->num_tan_vertex_; }
 int Buffer::bitangentSize(){ return data_->num_bitan_vertex_; }
 int Buffer::indiceSize(){ return data_->num_indices_; }
-
 unsigned int* Buffer::getVAO(){ return &data_->vao_; }
-
 unsigned int* Buffer::getVBO(){ return  data_->vbo_; }
 
 

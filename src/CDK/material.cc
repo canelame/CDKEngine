@@ -106,9 +106,6 @@ const char* Material::getTextureAt(int i){
   return material_settings_->texture_.at(i).c_str(); 
 }
 
-int Material::getTotalLights(){
-  return 10;
-};
 
 Light Material::lightAt(int i){
  return  material_settings_->material_lights_[i];

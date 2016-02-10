@@ -30,15 +30,7 @@ public:
   @param Get 
   */
   mat4 getModel();
-  /**
-  * @brief This fucntion allows to load obj files. You can load several shapes from the file
-  * using this funciton. You must call create(), after loading values
-  * @param name File name.
-  */
- 
-  void loadObjFile(const char* name);
 
-  void loadCdkFormat(const char* name,bool assimp);
 
   void createTriangle();
   /**
@@ -63,12 +55,10 @@ public:
   */
 
   void createCube(int size);
-  int numMes();
-private:
 
-  bool loaded_ = false;
-  mutable bool used_ = false;
-  std::shared_ptr<Buffer> geo_buff_;
+private:
+  struct Data;
+  Data *data_;
 
 
 

@@ -12,11 +12,9 @@
 * @author Alejandro Canela Mendez
 * @brief This class represents a buffer.
 */
-class OpenGlInterFaz;
 class Buffer{
 
 public:
-  struct Data;
 
   Buffer(float*positions, float*normals, float*uvs,
     unsigned int* indexes);
@@ -47,7 +45,13 @@ public:
     unsigned int* indexes);
 
   /**
-  
+  @brief Set the size of the different atributtes of the mesh
+  @`param p Total vertex position
+  @param n Total  normals
+  @param uv Total uvs
+  @param t Total tangents
+  @param bt Total bitangents
+  @param i Total indices
   */
   void setAttributeSize(int p, int n, int uv, int t, int bt, int i);
   /**
@@ -96,37 +100,38 @@ public:
   */
 	;
   /**
-  * @brief.
-  * @return .
+  * @brief Return the total number of mesh vertex
+  * @return total vertex
   */
   int vertexSize();
   /**
-  * @brief.
+  * @brief Return number of normals
   * @return .
   */
   int normalSize();
   /**
-  * @brief.
-  * @return .
+  * @brief Return number of uvs
+  * @return total number of uvs
   */
   int uvSize();
   /**
-  * @brief.
-  * @return .
+  * @brief Return number of tangents
+  * @return The total number of tangents
   */
   int tangentSize();
   /**
-  * @brief.
-  * @return .
+  * @brief Return total of mesh bitangents
+  * @return number of bitangents
   */
   int bitangentSize();
   /**
-  * @brief.
-  * @return .
+  * @brief Return total of mesh indices
+  * @return number of inideces
   */
   int indiceSize();
-	friend class OpenGlInterFaz;
+
 private:
+  struct Data;
   Data *data_;
   
 };

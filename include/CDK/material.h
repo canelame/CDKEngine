@@ -83,9 +83,8 @@ public:
   @Brief Return the texture placed at i
   @return Texture of material on index i
   */
-const char* getTextureAt(int i);
+  const char* getTextureAt(int i);
 
-  int getTotalLights();
   void setColor(vec3 color);
   vec3 getColor();
   Light lightAt(int i);

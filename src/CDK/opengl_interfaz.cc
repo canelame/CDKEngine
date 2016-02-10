@@ -217,34 +217,42 @@ void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int textur
 }
 
 void OpenGlInterFaz::sendLight( Light *light, int num_light){
+  vec3 position = light->getPosition();
+  vec3 diffuse_c = light->getDiffuseColor();
+  vec3 specular_c = light->getSpecularColor();
+  vec3 ambient_c = light->getDiffuseColor();
+  float shin = light->getShinenes();
+  int type = light->getType();
   int l_pos = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].position").c_str() );
   if (l_pos >= 0){
-    glUniform3f(data_->shadow_program_, light->getDirection().x, light->getDirection().y, light->getDirection().z);
+    glUniform3f(l_pos, position.x, position.y, position.z);
   }
-
+   
   int l_ac = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].ambient_color").c_str());
   if (l_ac >= 0){
-    glUniform3f(data_->shadow_program_, light->getAmbientColor().x, light->getAmbientColor().y, light->getAmbientColor().z);
-  }
-
-  int l_dc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].diffuse_color").c_str());
-  if (l_dc >= 0){
-    glUniform3f(data_->shadow_program_, light->getDiffuseColor().x, light->getDiffuseColor().y, light->getDiffuseColor().z);
+    glUniform3f(l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
   }
 
   int l_sc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].specular_color").c_str());
   if (l_sc >= 0){
-    glUniform3f(data_->shadow_program_, light->getSpecularColor().x, light->getSpecularColor().y, light->getSpecularColor().z);
+    glUniform3f(l_sc, specular_c.x, specular_c.y, specular_c.z);
   }
+
+  int l_dc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].diffuse_color").c_str());
+  if (l_dc >= 0){
+    glUniform3f(l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
+  }
+
+
 
   int l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
   if (l_sh >= 0){
-    glUniform1f(data_->shadow_program_, light->getShinenes());
+    glUniform1f(l_sh, shin);
   }
 
   int l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
   if (l_t >= 0){
-    glUniform1ui(data_->shadow_program_, light->getType());
+    glUniform1i(l_t, type);
   }
 
 

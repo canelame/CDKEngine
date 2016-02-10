@@ -126,10 +126,11 @@ int Task::getId(){
      dl_ = dl;
      nod_ = n;
      cam_ = cam;
-     //light_scene_ = light_scene;
+   
 	 }
    void UpdateDisplay::runTask(){
      lock();
+     scene_lights_ = nod_->getLigths();
      loadNode(nod_);
      unlock();
    }
@@ -156,10 +157,7 @@ int Task::getId(){
          dl_->add(std::make_shared<UseMaterialCommand>(t_material));
          dl_->add(std::make_shared<UseGeometryCommand>(t_geometry_buff));
          dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), t_material->getTextures()));
-         if (t_drawable->getParent() != NULL && t_drawable->getParent()->totalLights()>0){
-           dl_->add(std::make_shared<LightsCommand>(t_drawable->getLigths()));
-         }
-        // dl_->add(std::make_shared<LightsCommand>(ls));
+         dl_->add(std::make_shared<LightsCommand>(scene_lights_));
          dl_->add(std::make_shared<SetupCameraCommand>(cam_->getProyection(),cam_->getView(), t_drawable->worldMat()));
          dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
          t_drawable->setDirtyNode(false);

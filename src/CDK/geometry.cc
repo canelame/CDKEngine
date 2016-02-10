@@ -5,8 +5,15 @@
 #include "glm/gtc/type_ptr.hpp"
 //Assimp include
 
+struct Geometry::Data{
+  bool loaded_ = false;
+  mutable bool used_ = false;
+  std::shared_ptr<Buffer> geo_buff_;
+
+};
 Geometry::Geometry(){
-	geo_buff_ = std::make_unique<Buffer>();
+  data_ = new Data;
+	data_->geo_buff_ = std::make_unique<Buffer>();
 
 }
 glm::mat4 Geometry::getModel(){
@@ -14,42 +21,15 @@ glm::mat4 Geometry::getModel(){
   return model;
 }
 
-
-
-void Geometry::loadObjFile(const char*file){
-  /*Load whit tinyobj
-
-  std::string err = tinyobj::LoadObj(shapes_, materials_, file);
-  
-  printf(err.c_str());
-  if (shapes_.size() == 1)
-  {
-	  geo_buff_.get()->loadData(shapes_[0].mesh.positions, shapes_[0].mesh.normals, shapes_[0].mesh.texcoords,
-								shapes_[0].mesh.indices);
-
-  }
-  loaded_ = true;*/
-
-  //Load whit asssimp
- 
-}
-int Geometry::numMes(){
-	return 0;
-}
-
-void Geometry::loadCdkFormat(const char* file_in,bool assimp){
-  
-}
-
 void Geometry::loadAttributes(float*positions, float*normals, float*uvs,
   unsigned int* indexes){
 
-  geo_buff_->loadData(positions, normals, uvs, indexes);
+  data_->geo_buff_->loadData(positions, normals, uvs, indexes);
 }
 
 
 std::shared_ptr< Buffer> Geometry::getBuffer(){
-	return    geo_buff_;
+  return    data_->geo_buff_;
 }
 
 void Geometry::createCube(int size) {
@@ -175,8 +155,8 @@ void Geometry::createCube(int size) {
 			0, 0, -1,
 			0, 0, -1
 	};
-   geo_buff_->setAttributeSize(72, 72, 48, 0, 0, 36);
-  geo_buff_->loadData(cube_vertices, normales, uvs_position, indexes_cube);
+   data_->geo_buff_->setAttributeSize(72, 72, 48, 0, 0, 36);
+   data_->geo_buff_->loadData(cube_vertices, normales, uvs_position, indexes_cube);
 
 }
 void Geometry::createTriangle(){
@@ -212,8 +192,8 @@ void Geometry::createTriangle(){
       0, 0, 1,
       0, 0, 1,
   };
-  geo_buff_->setAttributeSize(12, 12, 8, 0, 0, 6);
-  geo_buff_->loadData(quadVertices, 0, quad_uv, indices_quad);
+  data_->geo_buff_->setAttributeSize(12, 12, 8, 0, 0, 6);
+  data_->geo_buff_->loadData(quadVertices, 0, quad_uv, indices_quad);
 
 
 }

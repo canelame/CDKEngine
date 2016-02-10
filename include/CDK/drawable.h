@@ -5,10 +5,16 @@
 #include "CDK\material.h"
 #include "CDK\geometry.h"
 #include "node.h"
+
+/**
+@author Alejandro Canela Mendez
+*ESAT 2016
+*Drawable class
+*/
 class Drawable :public Node {
   
 public:
-	struct Data;
+
 	Drawable();
 
   /**
@@ -33,6 +39,7 @@ public:
 	void setMaterial(std::shared_ptr<Material>);
 
 private:
+  struct Data;
 	Data *data_;
 
 };

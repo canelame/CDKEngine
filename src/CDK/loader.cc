@@ -1,7 +1,7 @@
 #include "CDK/loader.h"
 #include "CDK/buffer.h"
  #include "CDK/task_manager.h"
-#include "texture_cache.h"
+#include "CDK/texture_cache.h"
 struct Loader::MeshData{
   int num_positions;
   int num_normals;
@@ -49,16 +49,8 @@ unsigned int* Loader::readData(FILE*file, int count){
   return int_data;
 }
 
-float Loader::readFloat(FILE *file){
-  float temp = 0;
-  fread((void*)&temp, sizeof(float), 1, file);
-  return temp;
-}
-int Loader::readInt(FILE *file){
-  int temp = 0;
-  fread((void*)&temp, sizeof(const int), 1, file);
-  return temp;
-}
+
+
 
 std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
   
@@ -71,7 +63,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
  if (file != NULL){
 
    std::shared_ptr<Material> mat_child;
-   num_meshes = readInt(file);
+   fread((void*)&num_meshes, sizeof(const int), 1, file);
    MeshData m;
 
    for (int mn = 0; mn < num_meshes; mn++){

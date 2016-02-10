@@ -15,9 +15,9 @@ in vec4 o_world_position;
 in vec3 o_cam_pos;
 
 uniform sampler2D u_diffuse_texture1;
-uniform sampler2D u_diffuse_texture2;
+uniform sampler2D u_diffuse_texture2; 
 
-uniform sampler2D u_specular_texture1;
+uniform sampler2D u_specular_texture1; 
 uniform sampler2D u_specular_texture2;
 
 uniform Light lights[10];
@@ -28,15 +28,9 @@ vec3 computePointLight(Light l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir);
 
 void main(){
 	vec3 view = normalize(o_cam_pos-o_world_position.xyz);
-/*	Light default_light;//Textu lights
-	default_light.position = vec3(0.0,10.0,-200.0);
-	default_light.ambient_color =vec3(1.0,1.0,1.0);
-	default_light.specular_color =vec3(1.0,1.0,1.0);
-	default_light.diffuse_color = vec3(0.0,1.0,0.0);
-	default_light.sh =32.0f;
-	*/
+
 	
-	color.xyz = vec3(1.0,1.0,1.0f)*vec3(texture(u_diffuse_texture1,o_uv));
+	//color.xyz = vec3(1.0,1.0,1.0f)*vec3(texture(u_diffuse_texture1,o_uv));
 	//color.xyz =computeDirectionLight(default_light,o_normal,view);
 
 	for(int i=0;i<10;i++){

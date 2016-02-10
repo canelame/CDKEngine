@@ -19,10 +19,13 @@ class Camera
 {
 
 public:
-
-  struct Data;
   Camera();
   ~Camera(){};
+  /**
+  @brief This function allow to user control camera as a fps game. 
+  * To use it only call this function in your update funtion.
+  */
+  void FpsCameraUpdate();
   /**
   * @brief This function allow us to set the perspective projection matrix.
   * @param fov Field of view cam. Should be 45.0f
@@ -31,7 +34,6 @@ public:
   * @param far Far point of the camera.
 
   */
-  void FpsCameraUpdate();
   void setPerspective(float fov, float aspect, float near, float far);
   /**
   * @brief This function allow us to set up the view projection matrix.
@@ -59,33 +61,28 @@ public:
   /**
   @brief Get model cam.
   */
-  glm::mat4 getModel(vec3 position, vec3 rotation, vec3 scale);
+  mat4 getModel(vec3 position, vec3 rotation, vec3 scale);
   /**
   @brief Get proyection matrix of the camera
   @return proyection matrix
   */
-  glm::mat4 getProyection();
+  mat4 getProyection();
   /**
   @brief Get view matrix cam
   @return View matrix
   */
-  glm::mat4 getView();
+  mat4 getView();
 
-  /**
-  * @brief Runs the command 
-  */
-
-  friend class OpenGlInterFaz;
 private:
+  struct Data;
+  ///Internal Data
+  Data *data_;
   /**
   @brief Load node and puts into the display list.
   @param node Root node
   */
   void loadNode(std::shared_ptr<Node> node);
-  ///Internal Data
-  Data *data_;
-  //Used to load lights of the scene
-  std::vector<Light> lights_;
+
 };
 
 #endif

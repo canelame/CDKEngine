@@ -12,14 +12,29 @@ public:
 	* @brief Virtual methor, had to be reimplemented in each class that its derived of Task.
 	*/
 	Task();
+  /**
+  @brief
+  */
   virtual void runTask()=0;
 	virtual ~Task();
 	bool getLocked();
+  /**
+  @brief
+  */
 	void lock();
+  /**
+  @brief
+  */
 	void unlock();
+  /**
+  @brief
+  */
   void setId(int32 id);
   int getId();
-   bool finished_=false;
+  /**
+  @brief
+  */
+  bool finished_=false;
 private:
   int32 id_;
 	mutable	bool is_locked_;
@@ -51,7 +66,7 @@ private:
  std::shared_ptr<Node> nod_;
   Camera * cam_;
 DisplayList* dl_;
-std::unique_ptr<std::vector<Light>> scene_lights_;
+std::vector<std::shared_ptr<Light> > scene_lights_;
 //std::vector<Light> light_scene_;
 };
 #endif
@@ -132,6 +147,15 @@ class TaskManager {
   typedef std::deque<TaskT_> TaskListT_;
   TaskManager() {};
   static TaskManager* instance_;
+  //Needed variables to manage the threads
+  void mainThreadLoop();
+  std::mutex mutex_;
+  std::condition_variable cond_variable_;
+  bool stop_;
+  int num_cores_;
+  std::vector<std::thread> list_thread_;
+
+  TaskListT_ task_list_;
 public:
   static TaskManager& instance();
 	~TaskManager();
@@ -148,30 +172,8 @@ public:
   unsigned int totalTasks();
   unsigned int runingTasks();
   std::vector<TaskT_> run_tasks_list_;
-private:
-	//Needed variables to manage the threads
-	 void mainThreadLoop();
-  std::mutex mutex_;
-  std::condition_variable cond_variable_;
-  bool stop_;
-	int num_cores_;
-	std::vector<std::thread> list_thread_;
-
-	 TaskListT_ task_list_;
 
 };
 
-
-#endif
-
-#ifndef __H_TASK_HANDLE__
-#define __H_TASK_HANDLE__
-
-class TaskHandle{
-
-
-  int id_;
-
-};
 
 #endif

@@ -1,5 +1,5 @@
 #include "CDK/display_list.h"
-#include "texture_cache.h"
+#include "CDK/texture_cache.h"
 
 DisplayList::DisplayList(){
 	interfaz_ = new OpenGlInterFaz();
@@ -39,24 +39,25 @@ void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
   int num_diffuse_t = 1;
   int num_specular_t = 1;
   for (int i = 0; i < textures_.size(); i++){ 
-    if (!TextureCache::instance().getTexture(textures_[i].c_str())->getLoaded()){
-      in.loadTexture(TextureCache::instance().getTexture(textures_[i].c_str()));
-      TextureCache::instance().getTexture(textures_[i].c_str())->setLoaded(true);
+    std::shared_ptr<Texture> current_texture = TextureCache::instance().getTexture(textures_[i].c_str());
+    if (!current_texture->getLoaded()){
+      in.loadTexture(current_texture);
+      current_texture->setLoaded(true);
     }
     std::string type;
-    std::string type_name = TextureCache::instance().getTexture(textures_[i].c_str())->getType();
+    std::string type_name = current_texture->getType();
     std::stringstream ssn;
     if (type_name == "diffuse"){
       type = "u_diffuse_texture";
       ssn << num_diffuse_t;
       num_diffuse_t++;
-      in.useTexture(program_mat_, i, (type + ssn.str()), TextureCache::instance().getTexture(textures_[i].c_str())->getID());
+      in.useTexture(program_mat_, i, (type + ssn.str()), current_texture->getID());
      
     }else  if (type_name == "specular"){
         type = "u_specular_texture";
         ssn << num_specular_t;
         num_specular_t++;
-        in.useTexture(program_mat_, i, (type + ssn.str()), TextureCache::instance().getTexture(textures_[i].c_str())->getID());
+        in.useTexture(program_mat_, i, (type + ssn.str()), current_texture->getID());
     }
 
   }
@@ -128,20 +129,7 @@ bool LoadGeometryCommand::deleted(){
 void LoadGeometryCommand::shouldDelete(bool v){
 	delete_ = v;
 }
-///////// SET_MODEL_COMMAND CLASS/////////////////
-////////////////////////////////////////////
 
-SetModelMatrixCommand::SetModelMatrixCommand(std::shared_ptr<Geometry>geo){
-
-		t_geo = geo;
-
-}
-void SetModelMatrixCommand::runCommand(OpenGlInterFaz &in)const{
-
-
-	in.useUniformMat4("u_model_m", glm::value_ptr(t_geo.get()->getModel()));
-
-}
 ///////// USE_GEOMETRY CLASS/////////////////
 ////////////////////////////////////////////
 UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Buffer>geo){
