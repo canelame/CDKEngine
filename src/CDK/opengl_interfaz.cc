@@ -305,6 +305,6 @@ void OpenGlInterFaz::sendLight( Light *light){
   if (data_->l_t >= 0){
     glUniform1i(data_->l_t, type);
   }
-  light->setLoaded(true);
+
 
 }

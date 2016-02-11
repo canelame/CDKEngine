@@ -94,7 +94,10 @@ void Node::setScale(const float* data){
 	data_->scale_.z = data[2];
   calculateModel();
 }
-
+void Node::setScale(vec3 &data){
+  data_->scale_ = data;
+  calculateModel();
+}
 int Node::size(){
 	return data_->node_list_.size();
 }

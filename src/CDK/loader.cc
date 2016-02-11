@@ -101,8 +101,6 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
     unsigned int *i_pos = new unsigned int[indices_size];
     memcpy(i_pos, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset], indices_size);
 
-   /* geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
-    geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);*/
     std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
 
 
@@ -212,4 +210,9 @@ std::shared_ptr<Texture> Loader::loadTexture(const char* file_name,char *type, s
   std::shared_ptr<Texture> t = std::make_shared<Texture>();
   tk->addTask(std::make_unique<ReadTexture>(t,file_name,type));
   return t;
+}
+
+std::shared_ptr<Drawable> Loader::createCube(int size) {
+   std::shared_ptr<Drawable> cube = loadCDK("meshes/cube.cdk");
+   return cube;
 }

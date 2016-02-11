@@ -102,6 +102,7 @@ public:
   @param data New scale whit pointer of floats
   */
 	void setScale(const float* data);
+  void setScale(vec3 &data);
   /**
   @brief Get current poarent of node
   @return shared_ptr of parent if exists

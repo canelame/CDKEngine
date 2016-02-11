@@ -169,9 +169,10 @@ private:
 #include "opengl_interfaz.h"
 class UseMaterialCommand : public Command{
 public:
-	UseMaterialCommand(std::shared_ptr<Material> mat);
+	UseMaterialCommand(std::shared_ptr<Material> mat,std::vector<std::shared_ptr<Light>>lights);
 	void runCommand(OpenGlInterFaz &in)const;
 private:
+  std::vector<std::shared_ptr<Light>> lights_;
   std::shared_ptr<Material> t_mat;
   mutable const char* v_data;
   mutable const char* f_data;

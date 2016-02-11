@@ -54,7 +54,7 @@ public:
   * @brief This functions not must be here.
   */
 
-  void createCube(int size);
+
 
 private:
   struct Data;

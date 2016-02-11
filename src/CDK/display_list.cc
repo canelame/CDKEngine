@@ -76,7 +76,6 @@ SetupCameraCommand::SetupCameraCommand(){
 void SetupCameraCommand::runCommand(OpenGlInterFaz &in)const{
 
 
-  in.loadCamera();
 }
 ///////// USE_CAMERA_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
@@ -181,12 +180,18 @@ void DrawCommand::runCommand(OpenGlInterFaz &in)const{
 
 ///////// USE_MATERIAL_COMMAND CLASS/////////
 ////////////////////////////////////////////
-UseMaterialCommand::UseMaterialCommand(std::shared_ptr<Material> mat){
+UseMaterialCommand::UseMaterialCommand(std::shared_ptr<Material> mat,std::vector<std::shared_ptr<Light>>lights){
 	t_mat = mat;
+  lights_ = lights;
+
 }
 
 void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
   if (!t_mat->is_compiled_){
+    for (int i = 0; i < lights_.size(); i++){
+      in.loadLight(i);
+    }
+    in.loadCamera();
    t_mat->setProgram( in.loadMaterial( t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str()));
     t_mat->is_compiled_ = true;
   }
@@ -206,9 +211,8 @@ LightsCommand::LightsCommand(std::vector<std::shared_ptr<Light>>l){
 
 void LightsCommand::runCommand(OpenGlInterFaz &in)const{
   for (int i = 0; i < lights_.size(); i++){
-    if (!lights_[i]->getLoaded()){
-      in.loadLight(i);
-    }
     in.sendLight(lights_[i].get());
+
   }
+  
 }
