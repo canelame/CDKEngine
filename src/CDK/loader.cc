@@ -83,7 +83,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      
      fread(d.get(), total_size_r, 1, file);
 
-     float * p_pos = new float[position_offset];
+    float * p_pos = new float[position_offset];
     memcpy(p_pos, &d.get()[0], position_offset);
 
     float * n_pos = new float[normal_offset];
@@ -100,7 +100,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
 
     unsigned int *i_pos = new unsigned int[indices_size];
     memcpy(i_pos, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset], indices_size);
-
+    
     std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
 
 
@@ -178,22 +178,24 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      geo_child = std::make_shared<Geometry>();
      geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
      geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
- 
+     
      if (num_meshes > 1 ){
        std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
-       child->setGeometry(geo_child);
-       child->setMaterial(mat_child);
+       child->setGeometry(*geo_child.get());
+       child->setMaterial(*mat_child.get());
        node_geo->addChild(child);
      }
      else if(num_meshes==1 ){
-       node_geo->setGeometry(geo_child);
-       node_geo->setMaterial(mat_child);
+       std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
+       child->setGeometry(*geo_child.get());
+       child->setMaterial(*mat_child.get());
+       node_geo->addChild(child);
      }
 
    
    }
     fclose(file);
-  
+    printf("File loaded.\n");
   }
   else{
 

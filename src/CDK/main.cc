@@ -27,16 +27,10 @@ int Window::main(int argc, char** argv){
   Scene.cam->setPerspective(45, 800.0 / 600.0, 0.1, 100000.0);
   //Create Root
   Scene.root = std::make_shared<Node>();
-  std::unique_ptr<Loader> loader = std::make_unique<Loader>();
+  std::shared_ptr<Loader> loader = std::make_shared<Loader>();
 
-  std::shared_ptr<Drawable> w = std::make_shared<Drawable>();
-  std::shared_ptr<Drawable> w1 =  loader->loadCDK("meshes/cc.cdk");
- 
-  std::shared_ptr<Material> mater = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
-  std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
-  geo->createTriangle();
-  w1->setGeometry(geo);
-  w1->setMaterial(mater);
+
+
 
   //Create Camera
 
@@ -44,25 +38,32 @@ int Window::main(int argc, char** argv){
   l1->setPosition(vec3(0.0,0.0,95.0));
   l1->setAmbientColor(vec3(1.0, 1.0, 1.0));
   l1->setSpecularColor(vec3(1.0,1.0,1.0));
-  l1->setDifusseColor(vec3(1.0,1.0,0.0));
+  l1->setDifusseColor(vec3(1.0,1.0,1.0));
   l1->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
   std::shared_ptr<Light> l2 = std::make_shared<Light>();
-  l2->setPosition(vec3(0.0, 0.0, -200.0));
-  l2->setAmbientColor(vec3(1.0, 0.0, 0.0));
-  l2->setSpecularColor(vec3(0.0, 1.0, 1.0));
-  l2->setDifusseColor(vec3(0.0, 0.0, 0.0));
-  l2->setTypeLight(Light::LightType::T_POINT_LIGHT);
+  l2->setPosition(vec3(0.0, 30.0, 0.0));
+  l2->setAmbientColor(vec3(1.0, 1.0, 1.0));
+  l2->setSpecularColor(vec3(0.5, 0.0, 1.0));
+  l2->setDifusseColor(vec3(1.0, 1.0, 1.0));
+  l2->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
 
   Scene.root->addLight(l1);
- // Scene.root->addLight(l2);
+  Scene.root->addLight(l2);
+  std::shared_ptr<Drawable> w = std::make_shared<Drawable>();
+  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/cyb.cdk");
 
-  w1->setPosition(vec3(0.0, 0.0, 95.0));
-//  w1->setScale(vec3(100, 100, 100));
+  std::shared_ptr<Material> mater = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
+  std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
+  geo->createTriangle();
+  w->setGeometry(*geo.get());
+  w->setMaterial(*mater.get());
+  w->setPosition(vec3(0.0, 0.0, 0.0));
+  w->setScale(vec3(100, 100, 100));
 
- 
-  Scene.root.get()->addChild(w1);
+  Scene.root->setPosition(vec3(0.0,0.0,90.0));
+  Scene.root.get()->addChild(w);
 //  Scene.root.get()->addChild(std::move(w));
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();

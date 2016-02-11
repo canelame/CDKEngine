@@ -31,12 +31,12 @@ public:
   *@brief Set geometry to drawable
   * @param  Update the display list.
   */
-	void setGeometry(std::shared_ptr<Geometry>);
+	void setGeometry(const Geometry&geo);
   /**
   *@brief Set material to drawable
   * @param  Update the display list.
   */
-	void setMaterial(std::shared_ptr<Material>);
+	void setMaterial(const Material&mat);
 
 private:
   struct Data;

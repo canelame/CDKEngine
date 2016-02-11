@@ -80,10 +80,13 @@ public:
   /**
   */
   void loadCamera();
-
+  /**
+  */
 
   void useCamera(mat4 proyection, mat4 model, mat4 view);
-
+  /**
+  */
+  void createFrameBuffer();
   ~OpenGlInterFaz(){};
 
   friend class DisplayList;

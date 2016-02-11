@@ -16,10 +16,7 @@ Geometry::Geometry(){
 	data_->geo_buff_ = std::make_shared<Buffer>();
 
 }
-glm::mat4 Geometry::getModel(){
-  mat4 model;
-  return model;
-}
+
 
 void Geometry::loadAttributes(float*positions, float*normals, float*uvs,
   unsigned int* indexes){
