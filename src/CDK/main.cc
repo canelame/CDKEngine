@@ -52,19 +52,19 @@ int Window::main(int argc, char** argv){
   Scene.root->addLight(l1);
   Scene.root->addLight(l2);
   std::shared_ptr<Drawable> w = std::make_shared<Drawable>();
-  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/cyb.cdk");
+  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/milen.cdk");
 
   std::shared_ptr<Material> mater = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
   std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
-  geo->createTriangle();
-  w->setGeometry(*geo.get());
-  w->setMaterial(*mater.get());
-  w->setPosition(vec3(0.0, 0.0, 0.0));
-  w->setScale(vec3(100, 100, 100));
+  geo->createQuad();
+  w->setGeometry(*&geo);
+  w->setMaterial(*&mater);
+ w->setPosition(vec3(0.0, 0.0, 0.0));
+  w->setScale(vec3(10, 10, 10));
 
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
-  Scene.root.get()->addChild(w);
-//  Scene.root.get()->addChild(std::move(w));
+  Scene.root.get()->addChild(w1);
+  Scene.root.get()->addChild(std::move(w));
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();
     if (Input::pressSpace()){

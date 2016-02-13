@@ -78,30 +78,15 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      const int diffuse_texture_size = m.num_diffuse_textures*sizeof(TextureMesh);
      const int specular_texture_size = m.num_specular_textures*sizeof(TextureMesh);
      const int total_size_r = position_offset + normal_offset + uv_offset + tangent_offset +
-     bitanget_offset + indices_size+diffuse_texture_size+specular_texture_size;
+       bitanget_offset + indices_size;
+     const int texture_total_size =diffuse_texture_size + specular_texture_size;
      std::unique_ptr<char[]> d = std::unique_ptr<char[]>(new char[total_size_r]);
+     std::unique_ptr<char[]> d_texture = std::unique_ptr<char[]>(new char[texture_total_size]);
      
      fread(d.get(), total_size_r, 1, file);
-
-    float * p_pos = new float[position_offset];
-    memcpy(p_pos, &d.get()[0], position_offset);
-
-    float * n_pos = new float[normal_offset];
-    memcpy(n_pos, &d.get()[position_offset], normal_offset);
-
-    float * uv_pos = new float[uv_offset];
-    memcpy(uv_pos, &d.get()[position_offset + normal_offset], uv_offset);
-
-    float * t_pos = new float[tangent_offset];
-    memcpy(t_pos, &d.get()[position_offset + normal_offset + uv_offset], tangent_offset);
-
-    float * bt_pos = new float[bitanget_offset];
-    memcpy(bt_pos, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset], bitanget_offset);
-
-    unsigned int *i_pos = new unsigned int[indices_size];
-    memcpy(i_pos, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset], indices_size);
+     fread(d_texture.get(), texture_total_size, 1, file);
     
-    std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
+     std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
 
 
     if (m.num_diffuse_textures == 0 && m.num_specular_textures == 0){
@@ -113,7 +98,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
    
      for (int i = 0; i<m.num_diffuse_textures ; i++){
        TextureMesh t_t;
-       memcpy(&t_t, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset + indices_size + (i*sizeof(TextureMesh))], sizeof(TextureMesh));
+       memcpy(&t_t, &d_texture.get()[(i*sizeof(TextureMesh))], sizeof(TextureMesh));
 
        char tpath[50] = "textures/";
        strcat(tpath, t_t.path);
@@ -147,7 +132,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      for (int i = 0; i<m.num_specular_textures; i++){
 
        TextureMesh t_t;
-       memcpy(&t_t, &d.get()[position_offset + normal_offset + uv_offset + tangent_offset + bitanget_offset + indices_size + diffuse_texture_size+(i*sizeof(TextureMesh))], sizeof(TextureMesh));
+       memcpy(&t_t, &d_texture.get()[ diffuse_texture_size+(i*sizeof(TextureMesh))], sizeof(TextureMesh));
        char tpath[50] = "textures/";
        strcat(tpath, t_t.path);
        printf("Loading specular texture: %s\n", t_t.path);
@@ -177,18 +162,18 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      }
      geo_child = std::make_shared<Geometry>();
      geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
-     geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
-     
+   //  geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
+     geo_child->getBuffer()->loadData(std::move(d));
      if (num_meshes > 1 ){
        std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
-       child->setGeometry(*geo_child.get());
-       child->setMaterial(*mat_child.get());
+       child->setGeometry(geo_child);
+       child->setMaterial(mat_child);
        node_geo->addChild(child);
      }
      else if(num_meshes==1 ){
        std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
-       child->setGeometry(*geo_child.get());
-       child->setMaterial(*mat_child.get());
+       child->setGeometry(geo_child);
+       child->setMaterial(mat_child);
        node_geo->addChild(child);
      }
 
@@ -214,7 +199,3 @@ std::shared_ptr<Texture> Loader::loadTexture(const char* file_name,char *type, s
   return t;
 }
 
-std::shared_ptr<Drawable> Loader::createCube(int size) {
-   std::shared_ptr<Drawable> cube = loadCDK("meshes/cube.cdk");
-   return cube;
-}

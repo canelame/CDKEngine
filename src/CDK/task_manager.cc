@@ -49,7 +49,7 @@ void TaskManager::mainThreadLoop(){
 
 
       run_tasks_list_.push_back(t);
-      t->runTask();
+          t->runTask();
    }
     else if(stop_){
       break;

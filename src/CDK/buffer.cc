@@ -1,6 +1,7 @@
 #include "CDK/buffer.h"
 #include <list>
 #include "GL\glew.h"
+#include "CDK/types.h"
 struct Buffer::Data {
   bool dirty_;
 
@@ -8,7 +9,7 @@ struct Buffer::Data {
   std::shared_ptr<float *>normals;
   std::shared_ptr<float * > uvs;
   std::shared_ptr<unsigned int*> indices;
-  //std::unique_ptr<char[]> data;
+  std::unique_ptr<char[]> data;
 
   int num_position_vertex_;
   int num_normal_vertex_;
@@ -20,7 +21,11 @@ struct Buffer::Data {
   GLuint vao_;
   GLuint vbo_[4]; //0 positions, 1 normals, 2 uvs,3 indexes;
 };
+void Buffer::loadData(std::unique_ptr<char[]>buffer_data){
+  data_->data = std::move(buffer_data);
 
+
+}
 
 Buffer::Buffer(float*positions, float*normals, float*uvs,
   unsigned int* indexes){
@@ -43,14 +48,15 @@ void Buffer::setAttributeSize(int p, int n, int uv, int t, int bt, int i){
 }
 void Buffer::init(int size){}
 
-void Buffer::loadData(float*positions, float*normals, float*uvs,
-  unsigned int* indexes){
+void Buffer::loadData(std::shared_ptr<float*>positions, std::shared_ptr<float*>normals, std::shared_ptr<float*>uvs,
+  std::shared_ptr<uint32*> indexes){
   //Reserve vectors.
-  data_->positions = std::make_shared<float*>(positions);
-  data_->normals = std::make_shared<float*>(normals);
-  data_->uvs = std::make_shared<float*>(uvs);
-  data_->indices = std::make_shared<unsigned int*>(indexes);
+  data_->positions =positions;
+  data_->normals = normals;
+  data_->uvs = uvs;
+  data_->indices =indexes;
   data_->dirty_ = true;
+
 }
 
 bool Buffer::isDirty(){ return  data_->dirty_; }
@@ -72,7 +78,9 @@ std::vector<float*> Buffer::getAttributesT(){
   temp.push_back(*data_->uvs.get());
   return temp;
 }
-
+char* Buffer::getData(){
+  return data_->data.get();
+}
 unsigned int * Buffer::getIndexesT(){
   return  *data_->indices.get();
 }

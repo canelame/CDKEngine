@@ -151,7 +151,7 @@ UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Buffer>geo){
 
 
 void UseGeometryCommand::runCommand(OpenGlInterFaz &in)const{
-  if (t_geo->isDirty()){
+  if (t_geo->isDirty() && t_geo!=nullptr){
     in.loadBuffer(t_geo);
     t_geo->setDirty(false);
     vao_ = *t_geo->getVAO();

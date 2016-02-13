@@ -32,21 +32,13 @@ OpenGlInterFaz::OpenGlInterFaz(){
 void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
 
 
-  GLint postion_size =buff->vertexSize() * sizeof(float)*3;
-  GLint normal_size = buff->normalSize() * sizeof(float)*3;
-  GLint uv_size = buff->uvSize() * sizeof(float)*2;
-  GLint tan_size = buff->tangentSize()*sizeof(float)*3;
-  GLint bitan_size = buff->bitangentSize() * sizeof(float)*3;
+  GLint position_size =buff->vertexSize() * sizeof(float);
+  GLint normal_size = buff->normalSize() * sizeof(float);
+  GLint uv_size = buff->uvSize() * sizeof(float);
+  GLint tan_size = buff->tangentSize()*sizeof(float);
+  GLint bitan_size = buff->bitangentSize() * sizeof(float);
   GLint index_size = buff->indiceSize() * sizeof(unsigned int);
-  std::vector<float*> shadow_attrib;
-  std::vector<unsigned int > shadow_index_;
-  std::shared_ptr<unsigned int *>shadow_index;
-  shadow_attrib = buff->getAttributesT();
-  shadow_index = std::make_shared<unsigned int*>(buff->getIndexesT());
-  float *temp_p = shadow_attrib[0];
-  float *temp_n = shadow_attrib[1];
-  float *temp_uv = shadow_attrib[2];
-  unsigned int *il = buff->getIndexesT();
+
 
   glGenVertexArrays(1, &data_->shadow_vao_);
   glGenBuffers(1, &data_->shadow_vbo_v_);
@@ -55,37 +47,26 @@ void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
   glBindVertexArray(data_->shadow_vao_);
   glBindBuffer(GL_ARRAY_BUFFER, data_->shadow_vbo_v_);
 
-  glBufferData(GL_ARRAY_BUFFER, postion_size+normal_size+uv_size, NULL, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, position_size+normal_size+uv_size, NULL, GL_STATIC_DRAW);
  
     //Load positions
-  if (temp_p != NULL){
-     glBufferSubData(GL_ARRAY_BUFFER, 0, postion_size, &temp_p[0]);
 
-  }
+     glBufferSubData(GL_ARRAY_BUFFER, 0, position_size, &buff->getData()[0]);
+
   //Load normals
-  if (temp_n != NULL){
-    glBufferSubData(GL_ARRAY_BUFFER, postion_size,normal_size, &temp_n[0]);
-    
-  }
-
-  if (temp_uv != NULL){
-    glBufferSubData(GL_ARRAY_BUFFER, postion_size+normal_size, uv_size, &temp_uv[0]);
-
-  }
-
-		
-  if (shadow_index != nullptr){
-  
+     int a = strlen(buff->getData());
+    glBufferSubData(GL_ARRAY_BUFFER, position_size, normal_size, &buff->getData()[position_size]);
+    glBufferSubData(GL_ARRAY_BUFFER, position_size+normal_size, uv_size, &buff->getData()[position_size+normal_size]);  
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data_->shadow_vbo_i_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, &il[0], GL_STATIC_DRAW);
-  }
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, &buff->getData()[position_size + normal_size+uv_size+tan_size+bitan_size], GL_STATIC_DRAW);
+  
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),0);
     glEnableVertexAttribArray(0);
   
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void*)postion_size);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void*)position_size);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(postion_size+normal_size));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(position_size+normal_size));
     glEnableVertexAttribArray(2);
 
 	  glBindVertexArray(0);	
@@ -145,7 +126,7 @@ int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_dat
 void OpenGlInterFaz::drawGeometry(unsigned int indices){
  // printf("Draw elements: %d indices\n",shadow_index_.size());
 	glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)0);
-	glBindVertexArray(0);
+
 }
 
 void OpenGlInterFaz::compileShader(GLuint shader){

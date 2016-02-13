@@ -41,8 +41,8 @@ public:
   * @param uv Uv attributes.
   * @index Index values for each vertex.
   */
-  void loadAttributes(float*positions, float*normals, float*uvs,
-   uint32* indexes);
+  void loadAttributes(std::shared_ptr<float*>loatpositions, std::shared_ptr<float*>normals, std::shared_ptr<float*>uvs,
+    std::shared_ptr<uint32*> indexes);
   /**
   @brief Get geometry buffer
   @return Buffer
@@ -54,7 +54,8 @@ public:
   * @brief This functions not must be here.
   */
 
-
+  void createCube();
+  void createQuad();
 
 private:
   struct Data;

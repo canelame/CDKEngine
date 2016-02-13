@@ -41,8 +41,8 @@ public:
   */
 
 
-  void loadData(float*positions, float*normals, float*uvs,
-    unsigned int* indexes);
+  void loadData(std::shared_ptr<float*>loatpositions, std::shared_ptr<float*>normals, std::shared_ptr<float*>uvs,
+    std::shared_ptr<unsigned int*> indexes);
 
   /**
   @brief Set the size of the different atributtes of the mesh
@@ -130,6 +130,8 @@ public:
   */
   int indiceSize();
 
+  void loadData(std::unique_ptr<char[]>buffer_data);
+  char* getData();
 private:
   struct Data;
   Data *data_;

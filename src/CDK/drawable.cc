@@ -1,6 +1,6 @@
 #include "CDK/drawable.h"
 struct Drawable::Data{
-	std::shared_ptr<Geometry> drawable_geometry_;
+  std::shared_ptr<Geometry> drawable_geometry_ ;
 	std::shared_ptr<Material> drawable_material_;
 
 };
@@ -8,16 +8,16 @@ struct Drawable::Data{
 
 
 Drawable::Drawable(){
-
+  data_ = new Data;
 
 }
 
-void Drawable::setGeometry(const Geometry&geo){
-	data_->drawable_geometry_=std::make_shared<Geometry>(geo);
+void Drawable::setGeometry( std::shared_ptr<Geometry> geo){
+	data_->drawable_geometry_=std::move(geo);
   
 }
-void Drawable::setMaterial(const Material&mat){
-	data_->drawable_material_=std::make_shared<Material>(mat);
+void Drawable::setMaterial( std::shared_ptr<Material>mat){
+	data_->drawable_material_=mat;
 }
 
 
