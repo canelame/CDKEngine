@@ -201,6 +201,7 @@ void Geometry::createCube(){
   memcpy(&t_buff.get()[192 * sizeof(float)], &indexes_cube[0], 36 * sizeof(unsigned int));
   data_->geo_buff_->setAttributeSize(72, 72, 48, 0, 0, 36);
   data_->geo_buff_->loadData(std::move(t_buff));
+  
 }
 
 void Geometry::createQuad(){

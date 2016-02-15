@@ -63,6 +63,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
  if (file != NULL){
 
    std::shared_ptr<Material> mat_child;
+   std::shared_ptr<Material::MaterialSettings> mat_settings;
    fread((void*)&num_meshes, sizeof(const int), 1, file);
    MeshData m;
 
@@ -96,6 +97,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
       mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE);
     }
    
+    mat_settings = std::make_shared<Material::MaterialSettings>();
      for (int i = 0; i<m.num_diffuse_textures ; i++){
        TextureMesh t_t;
        memcpy(&t_t, &d_texture.get()[(i*sizeof(TextureMesh))], sizeof(TextureMesh));
@@ -104,11 +106,12 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
        strcat(tpath, t_t.path);
        printf("Loading diffuse texture: %s\n",t_t.path );
        bool skip = false;
+       
        //Search if the texture is already loaded
-       for (int j= 0; j < mat_child->totalTextures();j++){
+       for (int j = 0; j < mat_settings->totalTextures(); j++){
         
-         if (strcmp(mat_child->getTextureAt(j), tpath) == 0){
-           mat_child->addTexture(mat_child->getTextureAt(j));
+         if (strcmp(mat_settings->getTextureAt(j).c_str(), tpath) == 0){
+           mat_settings->addTexture(mat_settings->getTextureAt(j).c_str());
            skip = true;
            break;
          }
@@ -121,7 +124,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
            TaskManager::instance().addTask(nt);
            TaskManager::instance().waitTask(*nt.get());
            TextureCache::instance().addTexture(txt1);
-           mat_child->addTexture(tpath);
+           mat_settings->addTexture(tpath);
 
          }
 
@@ -138,13 +141,13 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
        printf("Loading specular texture: %s\n", t_t.path);
        std::shared_ptr<Texture> txt1 = std::make_shared<Texture>();
       // tk->addTask(std::make_shared < ReadTexture>(txt1, tpath, "diffuse"));
-       mat_child->addTexture(tpath);
+       mat_settings->addTexture(tpath);
        bool skip = false;
        //Search if the texture is alreadyy loaded
-       for (int j = 0; j < mat_child->totalTextures(); j++){
+       for (int j = 0; j < mat_settings->totalTextures(); j++){
 
-         if (strcmp(mat_child->getTextureAt(j), tpath) == 0){
-           mat_child->addTexture(mat_child->getTextureAt(j));
+         if (strcmp(mat_settings->getTextureAt(j).c_str(), tpath) == 0){
+           mat_settings->addTexture(mat_settings->getTextureAt(j).c_str());
            skip = true;
            break;
          }
@@ -156,7 +159,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
 		 TaskManager::instance().addTask(nt);
 		 TaskManager::instance().waitTask(*nt.get());
      TextureCache::instance().addTexture(txt1);
-         mat_child->addTexture(tpath);
+         mat_settings->addTexture(tpath);
        }
 
      }
@@ -167,14 +170,15 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      if (num_meshes > 1 ){
        std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
        child->setGeometry(geo_child);
+       mat_child->setMaterialSettings(mat_settings);
        child->setMaterial(mat_child);
        node_geo->addChild(child);
      }
      else if(num_meshes==1 ){
        std::shared_ptr<Drawable> child = std::make_shared<Drawable>();
-       child->setGeometry(geo_child);
-       child->setMaterial(mat_child);
-       node_geo->addChild(child);
+       node_geo->setGeometry(geo_child);
+       mat_child->setMaterialSettings(mat_settings);
+       node_geo->setMaterial(mat_child);
      }
 
    
@@ -190,7 +194,9 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
   return node_geo;
   printf("");
 }
-
+void Material::setMaterialSettings(std::shared_ptr<Material::MaterialSettings> mat_s){
+  mat_settings_ = mat_s;
+}
 std::shared_ptr<Texture> Loader::loadTexture(const char* file_name,char *type, std::shared_ptr<TaskManager>tk){
   int x, y;
     char *data;

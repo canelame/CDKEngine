@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include "CDK/input.h"
 #include "CDK/task_manager.h"
+#include "ImGui\imgui.h"
+#include "ImGui\imgui_impl_glfw_gl3.h"
+#include "CDK/gui_interface.h"
 
 void key_callback(GLFWwindow*window, int key, int scancode , int action, int mods){
  
@@ -64,6 +67,7 @@ bool Window::init(unsigned int width, unsigned int height){
 
   //Set ViewPort
 
+  ImGui_ImplGlfwGL3_Init(window_s_->main_window_, true);
  
   glfwMakeContextCurrent(window_s_->main_window_);
   glfwSetKeyCallback(window_s_->main_window_, key_callback);
@@ -82,7 +86,8 @@ bool Window::init(unsigned int width, unsigned int height){
 
 bool Window::processEvents(){
   glfwPollEvents();
-  
+
+  ImGui_ImplGlfwGL3_NewFrame();
   
   return true; 
 }

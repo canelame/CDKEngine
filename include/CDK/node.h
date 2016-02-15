@@ -18,7 +18,7 @@ class Node  {
   
 public:
 
-
+  bool selected;//USE for GUI
 	Node();
   virtual ~Node();
   /**
@@ -143,7 +143,16 @@ public:
   @return Total lights
   */
   int totalLights();
-  
+  /**
+  @breif Set name node
+  @param char* name
+  */
+  void setName( const char*name);
+  /**
+  @brief Get node name
+  @return name Name of the node
+  */
+ const char* getName();
 private:
   struct Data;
 	Data *data_;

@@ -1,0 +1,345 @@
+# 
+# Wavefront material file
+# Converted by the DEEP Exploration  Deep Exploration 5.5 5.5.3.2642 Release
+# Right Hemisphere, LTD
+# http://www.righthemisphere.com/
+# 
+
+newmtl BLIGHT_L01
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd blight1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl BODY_H01
+Ka 0.576471 0.94902 0.501961
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd camaro77.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl BODY_H02
+Ka 0.576471 0.952941 0.505882
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd keyhole1.png
+map_bump 
+bump 
+map_opacity keyhole1.png
+map_d keyhole1.png
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl BODY_H03
+Ka 0.498039 0.498039 0.498039
+Kd 0.498039 0.498039 0.498039
+Ks 1 1 1
+illum 2
+Ns 36.7583
+d 0.43
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Explorer_Default
+Ka 0.117647 0.117647 0.117647
+Kd 0.752941 0.752941 0.752941
+Ks 0.752941 0.752941 0.752941
+illum 2
+Ns 8
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl BREAK03_H_01
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd camaro77.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl BREAK12_H_01
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd camaro77.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl TLIGHT_L01
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+d 0.34
+map_Kd tlight1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl TLIGHT_L02
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+d 0.35
+map_Kd hlight1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL0_H_m01
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 78.7932
+map_Kd rims1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL0_H_m02
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tireside.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL0_H_m03
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tread1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL0_H_m021
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tireside.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL0_H_m022
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tread1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL0_H_m031
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd rims1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL2_H_m01
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tireside.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL2_H_m02
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd rims1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL2_H_m03
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tread1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL3_H_m01
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tireside.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL3_H_m02
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd tread1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl WHL3_H_m03
+Ka 0.498039 0.498039 0.498039
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 675.588
+map_Kd rims1.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 

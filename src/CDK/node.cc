@@ -11,6 +11,8 @@ std::vector<std::shared_ptr<Node>> node_list_;
   mat4 world_transform_;
   mat4 model_mat_;
   std::vector<std::shared_ptr<Light>>lights;
+  std::string name_;
+
 };
 
 Node::Node(){
@@ -86,6 +88,12 @@ void Node::setRotation(const float* data){
   calculateModel();
 }
 
+void Node::setName(const char* name){ data_->name_ = name; }
+const char * Node::getName(){
+  if (this->data_ != nullptr){
+    return data_->name_.c_str();
+  }
+}
 
 
 void Node::setScale(const float* data){

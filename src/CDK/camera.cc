@@ -3,6 +3,7 @@
 #include "CDK/display_list.h"
 #include "CDK/input.h"
 #include "CDK/task_manager.h"
+#include "CDK/gui_interface.h"
 struct Camera::Data{
 
   mat4 proyection_mat_;
@@ -63,11 +64,13 @@ void Camera::render(std::shared_ptr<Node>node){
      data_->dl_cam_->execute();
      data_->dl_cam_->clear();
      data_->dl_cam_.swap(data_->dl_copy_);
+     GuInterface::instance().draw(node);
 
  
 }
 void Camera::FpsCameraUpdate(){
   //KEyboard
+
   vec3 current_position = data_->position_;
   if (Input::instance().pressKeyA() == true){
     vec3 temp_vector;

@@ -94,7 +94,7 @@ public:
 	std::shared_ptr<Material>  getMaterial();
 private:
 	std::shared_ptr<Material> t_mat;
-
+ // Material &mat;
 };
 #endif
 ///LOAD TEXTURE COMMAND CLASS
@@ -106,11 +106,11 @@ private:
 
 class LoadTextureCommand : public Command{
 public:
-	LoadTextureCommand(std::shared_ptr<Material>mat);
+	LoadTextureCommand(std::shared_ptr<Material::MaterialSettings>mat);
 	void runCommand(OpenGlInterFaz &in)const;
-	std::shared_ptr<Material>  getMaterial();
+  std::shared_ptr<Material::MaterialSettings   >  getMaterial();
 private:
-	 std::shared_ptr<Material> t_mat;
+  std::shared_ptr<Material::MaterialSettings > t_mat;
 	 bool delete_ = false;
 
 };
@@ -123,10 +123,10 @@ private:
 #include "opengl_interfaz.h"
 class UseTextureComman : public Command {
 public:
-	UseTextureComman(int pro,std::vector<std::string>textures);
+	UseTextureComman(int pro,Material::MaterialSettings &mat_sett);
 	void runCommand(OpenGlInterFaz &in)const;
 private:
-  std::vector<std::string> textures_;
+  std::shared_ptr<Material::MaterialSettings> mat_t;
   int program_mat_;
 };
 #endif
@@ -176,6 +176,7 @@ private:
   std::shared_ptr<Material> t_mat;
   mutable const char* v_data;
   mutable const char* f_data;
+  Material *mat_;
 
 };
 #endif

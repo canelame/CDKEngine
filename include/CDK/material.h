@@ -34,8 +34,6 @@ public:
   
  /// @brief Material Setting Struct 
   
-  struct MaterialSettings;
-
   Material(TYPE t);
 
   /**
@@ -54,13 +52,7 @@ public:
   @param value New program
   */
   void setProgram(int value);
-  /**
-  @brief add a texture to material
-  @param txt new texture
-  @param tk The current taskManager
-  */
-  void addTexture(const char*name);
-  std::vector<std::string> getTextures();
+
 
   unsigned int texture(){}
   ~Material(){};
@@ -69,21 +61,13 @@ public:
   @return Vertex shader code
   */
   std::string getVertexData();
-  /**
-  @brief Get total textures of the material
-  @return Total num texutures
-  */
-  int totalTextures();
+
   /**
   @brief Get the fragment glsl code
   @returnm Code glsl of fragment shader
   */
   std::string getFragmentData();
-  /**
-  @Brief Return the texture placed at i
-  @return Texture of material on index i
-  */
-  const char* getTextureAt(int i);
+
 
   void setColor(vec3 color);
   vec3 getColor();
@@ -92,16 +76,56 @@ public:
   bool is_compiled_;
   std::string vertex_data_;
   std::string fragment_data_;
+  
+  class MaterialSettings{
+  public:
+    MaterialSettings();
+    ~MaterialSettings();
+    /**
+    @brief add a texture to material
+    @param txt new texture
+    @param tk The current taskManager
+    */
+    void addTexture(const char*name);
+    /**
+    @Brief Return the texture placed at i
+    @return Texture of material on index i
+    */
+
+    std::string getTextureAt(int index);
+    /**
+    @brief Get total textures of the material
+    @return Total num texutures
+    */
+    float getShinenes();
+    void setShinenes(float value);
+    int totalTextures();
+
+    void setDiffuseColor(vec3);
+    void setSpecularColor(vec3);
+    void setAmbientColor(vec3);
+
+    vec3 getAmbientColor();
+    vec3 getSpecularColor();
+    vec3 getAmbienColor();
+  
+  private:
+    struct Data;
+    Data *data_;
+  };
+  void setMaterialSettings(std::shared_ptr<Material::MaterialSettings> mat_s);
+  MaterialSettings& getMaterialSettings();
 private:
-  MaterialSettings *material_settings_;
+  std::shared_ptr<MaterialSettings> mat_settings_;
   void useMaterial();
   void compileShader(GLuint shader)const;
-
+  float getShinenes();
+  void setShinenes(float value);
   unsigned int program_;
 
 
 
-  
+
 
 
 

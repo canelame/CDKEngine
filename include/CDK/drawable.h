@@ -38,6 +38,7 @@ public:
   */
 	void setMaterial(const std::shared_ptr<Material>mat);
 
+  
 private:
   struct Data;
 	Data *data_;

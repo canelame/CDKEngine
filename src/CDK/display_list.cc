@@ -31,8 +31,8 @@ int DisplayList::size(){
 }
 ///////// USE_TEXTURE_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-UseTextureComman::UseTextureComman(int pro,std::vector<std::string>textures){
-  textures_ = textures;
+UseTextureComman::UseTextureComman(int pro,Material::MaterialSettings& mats){
+  mat_t = std::make_shared<Material::MaterialSettings>(mats);
   program_mat_ = pro;
 }
 
@@ -40,8 +40,8 @@ UseTextureComman::UseTextureComman(int pro,std::vector<std::string>textures){
 void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
   int num_diffuse_t = 1;
   int num_specular_t = 1;
-  for (int i = 0; i < textures_.size(); i++){ 
-    std::shared_ptr<Texture> current_texture = TextureCache::instance().getTexture(textures_[i].c_str());
+  for (int i = 0; i < mat_t->totalTextures(); i++){ 
+    std::shared_ptr<Texture> current_texture = TextureCache::instance().getTexture(mat_t->getTextureAt(i).c_str());
     if (!current_texture->getLoaded()){
       in.loadTexture(current_texture);
       current_texture->setLoaded(true);
@@ -94,18 +94,18 @@ void UseCameraCommand::runCommand(OpenGlInterFaz &in)const{
 
 ///////// LOAD_TEXTURE_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-LoadTextureCommand::LoadTextureCommand(std::shared_ptr<Material>mat){
+LoadTextureCommand::LoadTextureCommand(std::shared_ptr<Material::MaterialSettings>mat){
 	t_mat = mat;
 }
 
 void LoadTextureCommand::runCommand(OpenGlInterFaz &in)const{
   for (int i = 0; i < t_mat->totalTextures(); i++){
-      in.loadTexture(TextureCache::instance().getTexture(t_mat->getTextureAt(i)));
-      TextureCache::instance().getTexture(t_mat->getTextureAt(i))->setLoaded(true);
+      in.loadTexture(TextureCache::instance().getTexture(t_mat->getTextureAt(i).c_str()));
+      TextureCache::instance().getTexture(t_mat->getTextureAt(i).c_str())->setLoaded(true);
   }
 
 }
-std::shared_ptr<Material>  LoadTextureCommand::getMaterial(){
+std::shared_ptr<Material::MaterialSettings >  LoadTextureCommand::getMaterial(){
 	return t_mat;
 }
 
@@ -113,6 +113,7 @@ std::shared_ptr<Material>  LoadTextureCommand::getMaterial(){
 ////////////////////////////////////////////
 LoadMaterialCommand::LoadMaterialCommand(std::shared_ptr<Material> mat){
 	t_mat = mat;
+
 }
 void LoadMaterialCommand::runCommand(OpenGlInterFaz &in)const{
 	in.loadMaterial(t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str());
@@ -184,6 +185,7 @@ UseMaterialCommand::UseMaterialCommand(std::shared_ptr<Material> mat,std::vector
 	t_mat = mat;
   lights_ = lights;
 
+
 }
 
 void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
@@ -195,7 +197,7 @@ void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
    t_mat->setProgram( in.loadMaterial( t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str()));
     t_mat->is_compiled_ = true;
   }
-	in.useMaterial(t_mat->getProgram());
+	in.useMaterial(t_mat->getProgram(),t_mat->getMaterialSettings());
 /*  float color[] = {t_mat->getColor().x,t_mat->getColor().y,t_mat->getColor().z};
 
   in.useUnifor3f("diffuse_color", color);*/
