@@ -88,7 +88,8 @@ void Node::setRotation(const float* data){
   calculateModel();
 }
 
-void Node::setName(const char* name){ data_->name_ = name; }
+void Node::setName(const char* name){ 
+  if(this !=nullptr)data_->name_ = name; }
 const char * Node::getName(){
   if (this->data_ != nullptr){
     return data_->name_.c_str();

@@ -107,7 +107,7 @@ public:
 
     vec3 getAmbientColor();
     vec3 getSpecularColor();
-    vec3 getAmbienColor();
+    vec3 getDiffuseColor();
   
   private:
     struct Data;

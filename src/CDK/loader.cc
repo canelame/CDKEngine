@@ -94,6 +94,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
       mat_child = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
     }
     else{
+
       mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE);
     }
    
@@ -165,7 +166,6 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
      }
      geo_child = std::make_shared<Geometry>();
      geo_child->getBuffer()->setAttributeSize(m.num_positions, m.num_normals, m.num_uvs, m.num_tangents, m.num_bitangents, m.num_indices);
-   //  geo_child->loadAttributes((&p_pos[0]), &n_pos[0], &uv_pos[0], &i_pos[0]);
      geo_child->getBuffer()->loadData(std::move(d));
      if (num_meshes > 1 ){
        std::shared_ptr<Drawable> child = std::make_shared<Drawable>();

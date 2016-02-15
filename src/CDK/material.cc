@@ -124,12 +124,12 @@ void Material::MaterialSettings::setSpecularColor(vec3 spe_color){
 void Material::MaterialSettings::setAmbientColor(vec3 amb_color){
   data_->ambient_color = amb_color;
 }
-vec3 Material::MaterialSettings::getAmbientColor(){
+vec3 Material::MaterialSettings::getDiffuseColor(){
   return data_->diffuse_color;
 }
 vec3 Material::MaterialSettings::getSpecularColor(){
   return data_->specular_color;
 }
-vec3 Material::MaterialSettings::getAmbienColor(){
+vec3 Material::MaterialSettings::getAmbientColor(){
   return data_->ambient_color;
 }

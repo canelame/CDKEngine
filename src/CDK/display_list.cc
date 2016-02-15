@@ -190,14 +190,16 @@ UseMaterialCommand::UseMaterialCommand(std::shared_ptr<Material> mat,std::vector
 
 void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
   if (!t_mat->is_compiled_){
-    for (int i = 0; i < lights_.size(); i++){
-      in.loadLight(i);
-    }
-    in.loadCamera();
+
    t_mat->setProgram( in.loadMaterial( t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str()));
+   for (int i = 0; i < lights_.size(); i++){
+   //  in.loadLight(i);
+   }
+   in.loadCamera();
     t_mat->is_compiled_ = true;
   }
 	in.useMaterial(t_mat->getProgram(),t_mat->getMaterialSettings());
+
 /*  float color[] = {t_mat->getColor().x,t_mat->getColor().y,t_mat->getColor().z};
 
   in.useUnifor3f("diffuse_color", color);*/
