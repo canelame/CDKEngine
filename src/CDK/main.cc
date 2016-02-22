@@ -45,7 +45,7 @@ int Window::main(int argc, char** argv){
   l2->setPosition(vec3(0.0, -30.0, 0.0));
   l2->setAmbientColor(vec3(1.0, 1.0, 1.0));
   l2->setSpecularColor(vec3(1.0, 0.0, 0.0));
-  l2->setDifusseColor(vec3(1.0, 1.0, 1.0));
+  l2->setDifusseColor(vec3(1.0, 0.0, 1.0));
   l2->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
 
