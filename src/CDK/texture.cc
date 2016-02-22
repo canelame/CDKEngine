@@ -19,7 +19,12 @@ void Texture::loadTexture(const char*file,const char type[30]){
 
     memcpy(&data_->path[0], &file[0], strlen(file)); data_->path[strlen(file)] = '\0';
     memcpy(&data_->type[0], &type[0], strlen(type)); data_->type[strlen(type)] = '\0';
-    data_->image_ = stbi_load(file, &data_->w, &data_->h, &data_->comp, STBI_rgb_alpha);
+    if (file == ""){
+      data_->image_ = NULL;
+    }
+    else{
+      data_->image_ = stbi_load(file, &data_->w, &data_->h, &data_->comp, STBI_rgb_alpha);
+    }
     if (data_->image_ == nullptr){
       printf("Failed to load texture\n ");
     }

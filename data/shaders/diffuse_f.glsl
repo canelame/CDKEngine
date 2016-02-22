@@ -36,6 +36,8 @@ void main(){
 		}else if(lights_d[i].type==2){
 			
 			color.xyz+=computeDirectionLight(lights_d[i],o_normal_d,view);
+		}else{
+		color = vec4(1.0,0.0,0.0,1.0);
 		}
 		
 	}

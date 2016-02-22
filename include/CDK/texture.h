@@ -16,7 +16,7 @@ public:
   /**
   @brief Load texture data
   @param file Texture name
-  @param type of texture, can be: specular or diffuse
+  @param type of texture, can be: specular or diffuse or fb(FrameBuffer)
   */
   void loadTexture(const char *file,const char type[30]);
   /**

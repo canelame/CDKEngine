@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "texture.h"
 #include <memory>
 #include <vector>
 #include "light.h"
@@ -73,6 +72,7 @@ public:
   };
 
   Material(TYPE t);
+  Material(){}
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
@@ -91,7 +91,6 @@ public:
   void setProgram(int value);
 
 
-  unsigned int texture(){}
   ~Material(){};
   /**
   @brief Get current Vertex code
@@ -112,7 +111,7 @@ public:
   std::string vertex_data_;
   std::string fragment_data_;
 private:
-  MaterialSettings *material_settings_;
+
   void useMaterial();
   void compileShader(GLuint shader)const;
 

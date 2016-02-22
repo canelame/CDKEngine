@@ -179,7 +179,22 @@ private:
 
 };
 #endif
+//////////////////////////////////
+#ifndef __H_USE_FRAME_BUFFER__
+#define __H_USE_FRAME_BUFFER__
+#include "command.h"
+#include "frame_buffer.h"
+#include "opengl_interfaz.h"
+class UseFrameBuffer : public Command{
+public:
+  UseFrameBuffer();
+  void runCommand(OpenGlInterFaz &in)const;
+private:
+  std::shared_ptr<FrameBuffer> frame_buff_;
 
+
+};
+#endif
 /////////////////////////////////////////////////// END OF DISPLAY LIST TASK HEADER //////////////////////////////
 
 

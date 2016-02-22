@@ -6,64 +6,44 @@
 Material::Material(TYPE t){
 
 
-  material_settings_ = new MaterialSettings;
+  
   is_compiled_ = false;
-  material_settings_->diffuse_color_ = vec3(0.0f, 0.0, 0.0f);
+
   if (t == 0){
-    std::stringstream temp_vertex_data;
-    std::stringstream temp_fragment_data;
-    std::string line;
 
-    std::ifstream file_V("shaders/diffuse_f.glsl");
-    if (file_V.is_open()){
-      temp_vertex_data << file_V.rdbuf();
-      file_V.close();
-      line = temp_vertex_data.str();
-      fragment_data_ = line;
+    loadShader("shaders/diffuse_f.glsl", "shaders/diffuse_v.glsl");
 
-    }
-    std::stringstream temp_vertex_data1;
-    std::stringstream temp_fragment_data1;
-    std::ifstream file_V1("shaders/diffuse_v.glsl");
-    if (file_V1.is_open()){
-      temp_vertex_data1 << file_V1.rdbuf();
-      file_V1.close();
-      line = temp_vertex_data1.str();
-      vertex_data_ = line;
-
-    } 
   }else{
 
-    std::stringstream temp_vertex_data;
-    std::stringstream temp_fragment_data;
-    std::string line;
+    loadShader("shaders/texture_f.glsl", "shaders/texture_v.glsl");
 
-    std::ifstream file_V("shaders/texture_f.glsl");
-    if (file_V.is_open()){
-      temp_vertex_data << file_V.rdbuf();
-      file_V.close();
-      line = temp_vertex_data.str();
-      fragment_data_ = line;
-
-    }
-    std::stringstream temp_vertex_data1;
-    std::stringstream temp_fragment_data1;
-    std::ifstream file_V1("shaders/texture_v.glsl");
-    if (file_V1.is_open()){
-      temp_vertex_data1 << file_V1.rdbuf();
-      file_V1.close();
-      line = temp_vertex_data1.str();
-      vertex_data_ = line;
-    }
-
-    printf("");
   }
 ;}
 
 void Material::loadShader(const char *vertex_file, const char* fragment_file){
+  std::stringstream temp_vertex_data;
+  std::stringstream temp_fragment_data;
+  std::string line;
 
-  vertex_data_ = vertex_file;
-  fragment_data_ = fragment_file;
+  std::ifstream file_V(vertex_file);
+  if (file_V.is_open()){
+    temp_vertex_data << file_V.rdbuf();
+    file_V.close();
+    line = temp_vertex_data.str();
+    fragment_data_ = line;
+
+  }
+  std::stringstream temp_vertex_data1;
+  std::stringstream temp_fragment_data1;
+  std::ifstream file_V1(fragment_file);
+  if (file_V1.is_open()){
+    temp_vertex_data1 << file_V1.rdbuf();
+    file_V1.close();
+    line = temp_vertex_data1.str();
+    vertex_data_ = line;
+  }
+
+
 }
 
 
