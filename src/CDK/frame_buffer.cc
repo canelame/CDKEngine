@@ -1,11 +1,38 @@
 #include "CDK/frame_buffer.h"
 #include "GL/glew.h"
 #include "CDK/texture.h"
-FrameBuffer::FrameBuffer(){}
-FrameBuffer::~FrameBuffer(){}
+#include "CDK/material.h"
 
 struct FrameBuffer::Data{
-  GLuint program_framebuffer_;
   GLuint id_framebuffer_;
-  std::unique_ptr<Texture> texture_framebuffer_;
+  std::shared_ptr<Geometry> render_quad_;
+  std::shared_ptr<Texture> texture_;
+  std::shared_ptr<Material> material_;
+  GLuint texture_frame_buffer_id;
+  bool loaded = false;
 };
+
+FrameBuffer::FrameBuffer(){
+  data_->material_ = std::make_shared<Material>();
+  data_->render_quad_ = std::shared_ptr<Geometry>();
+  data_->render_quad_->createQuad();
+}
+void FrameBuffer::initFrameBuffer(){
+  
+}
+bool FrameBuffer::isLoaded(){
+  return data_->loaded;
+}
+
+void FrameBuffer::setLoaded(bool value){
+  data_->loaded = value;
+}
+
+Texture& FrameBuffer::getTexture(){
+  if (data_->texture_ != nullptr){
+    return *data_->texture_.get();
+  }
+}
+void FrameBuffer::setId(int val){
+  data_->id_framebuffer_ = val;
+}

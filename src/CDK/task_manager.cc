@@ -1,5 +1,5 @@
 #include "CDK/task_manager.h"
-
+#include "CDK/texture.h"
 Task::Task(){
 	id_ = 0;
 	is_locked_ = false;

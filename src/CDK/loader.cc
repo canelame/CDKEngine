@@ -2,6 +2,7 @@
 #include "CDK/buffer.h"
  #include "CDK/task_manager.h"
 #include "CDK/texture_cache.h"
+#include "CDK/texture.h"
 struct Loader::MeshData{
   int num_positions;
   int num_normals;

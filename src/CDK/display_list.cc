@@ -1,5 +1,6 @@
 #include "CDK/display_list.h"
 #include "CDK/texture_cache.h"
+#include "CDK/texture.h"
 
 
 DisplayList::DisplayList(){
@@ -197,10 +198,6 @@ void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
     t_mat->is_compiled_ = true;
   }
   in.useMaterial(*t_mat.get(),mat_set_->ambient_color_,mat_set_->diffuse_color_,mat_set_->specular_color_);
-/*  float color[] = {t_mat->getColor().x,t_mat->getColor().y,t_mat->getColor().z};
-
-  in.useUnifor3f("diffuse_color", color);*/
-
 
 }
 
@@ -216,4 +213,15 @@ void LightsCommand::runCommand(OpenGlInterFaz &in)const{
 
   }
   
+}
+/////////////////////////FRAMEBUFFER///////////////////////
+UseFrameBuffer::UseFrameBuffer(){
+
+}
+void UseFrameBuffer::runCommand(OpenGlInterFaz &in)const{
+  if (!frame_buff_->isLoaded()){
+    frame_buff_->getTexture().loadTexture("", "fb");
+    in.createFrameBuffer(*frame_buff_.get());
+    frame_buff_->setLoaded(true);
+  }
 }

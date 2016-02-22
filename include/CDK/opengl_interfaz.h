@@ -8,7 +8,7 @@
 #include <memory>
 #include "CDK/buffer.h"
 #include "CDK/material.h"
-
+#include "frame_buffer.h"
 class OpenGlInterFaz{
 public:
 
@@ -86,7 +86,7 @@ public:
   void useCamera(mat4 proyection, mat4 model, mat4 view);
   /**
   */
-  void createFrameBuffer();
+  void createFrameBuffer(FrameBuffer &fb);
   ~OpenGlInterFaz(){};
 
   friend class DisplayList;
