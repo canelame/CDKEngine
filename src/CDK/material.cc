@@ -2,23 +2,13 @@
 
 #include "CDK/task_manager.h"
 
-struct Material::MaterialSettings::Data{
 
-  std::vector<std::string > texture_;
-  vec3 diffuse_color;
-  vec3 ambient_color;
-  vec3 specular_color;
-  float sh = 32.0f;//default;
-};
-float Material::MaterialSettings::getShinenes(){
-  return data_->sh;
-}
-void Material::MaterialSettings::setShinenes(float value){
- data_->sh=value;
-}
 Material::Material(TYPE t){
-  mat_settings_ = std::make_shared<MaterialSettings>();
+
+
+  material_settings_ = new MaterialSettings;
   is_compiled_ = false;
+  material_settings_->diffuse_color_ = vec3(0.0f, 0.0, 0.0f);
   if (t == 0){
     std::stringstream temp_vertex_data;
     std::stringstream temp_fragment_data;
@@ -85,9 +75,7 @@ unsigned int Material::getProgram(){
   return program_; 
 }
 
-Material::MaterialSettings& Material::getMaterialSettings(){
-  return *mat_settings_.get();
-}
+
 
 std::string Material::getFragmentData(){ 
   return fragment_data_;
@@ -98,38 +86,18 @@ std::string Material::getVertexData(){
 
 void Material::MaterialSettings::addTexture(const char *name){
 
-  data_->texture_.push_back(name);
+  texture_.push_back(name);
 
 }
 int Material::MaterialSettings::totalTextures(){
-  return data_->texture_.size();
+  return texture_.size();
 }
 
 
-std::string Material::MaterialSettings::getTextureAt(int index){
-  return data_->texture_[index];
+std::vector<std::string> Material::MaterialSettings::getTextures(){
+  return texture_;
+}
+const char* Material::MaterialSettings::getTextureAt(int i){
+  return texture_.at(i).c_str(); 
 }
 
-Material::MaterialSettings::MaterialSettings(){
-  data_ = new Data;
-}
-Material::MaterialSettings::~MaterialSettings(){}
-
-void Material::MaterialSettings::setDiffuseColor(vec3 diff_color){
-  data_->diffuse_color = diff_color;
-}
-void Material::MaterialSettings::setSpecularColor(vec3 spe_color){
-  data_->specular_color = spe_color;
-}
-void Material::MaterialSettings::setAmbientColor(vec3 amb_color){
-  data_->ambient_color = amb_color;
-}
-vec3 Material::MaterialSettings::getDiffuseColor(){
-  return data_->diffuse_color;
-}
-vec3 Material::MaterialSettings::getSpecularColor(){
-  return data_->specular_color;
-}
-vec3 Material::MaterialSettings::getAmbientColor(){
-  return data_->ambient_color;
-}

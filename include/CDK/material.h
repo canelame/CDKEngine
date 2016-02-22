@@ -29,13 +29,50 @@ public:
 
   enum TYPE_SHADER {
     FRAGMENT_SHADER = 0,
-    VERTEX_FRAGMENT
+    VERTEX_FRAGMENT 
   };
   
  /// @brief Material Setting Struct 
   
-  Material(TYPE t);
+  class MaterialSettings{
+  public:
+    std::vector<std::string > texture_;
+    vec3 diffuse_color_;
+    vec3 specular_color_;
+    vec3 ambient_color_;
+    vec3 sh_;
 
+    MaterialSettings( ){     
+        ambient_color_ = vec3(1.0);
+        specular_color_ = vec3(1.0);
+        diffuse_color_ = vec3(1.0);
+    }
+    /**
+    @Brief Return the texture placed at i
+    @return Texture of material on index i
+    */
+    const char* getTextureAt(int i);
+    /**
+    @brief Get total textures of the material
+    @return Total num texutures
+    */
+    int totalTextures();
+    /**
+    @brief add a texture to material
+    @param txt new texture
+    @param tk The current taskManager
+    */
+    void addTexture(const char*name);
+    std::vector<std::string> getTextures();
+    void setDiffuseColor(vec3 value){ diffuse_color_ = value; }
+    void setSpecularColor(vec3 value){ specular_color_ = value; }
+    void setAmbientColor(vec3 value){ ambient_color_ = value; }
+    vec3 getDiffuseColor(){ return diffuse_color_; }
+    vec3 getSpecularColor(){ return specular_color_; }
+    vec3 getAmbientColor(){ return ambient_color_; }
+  };
+
+  Material(TYPE t);
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
@@ -69,63 +106,21 @@ public:
   std::string getFragmentData();
 
 
-  void setColor(vec3 color);
-  vec3 getColor();
   Light lightAt(int i);
   //Variables
   bool is_compiled_;
   std::string vertex_data_;
   std::string fragment_data_;
-  
-  class MaterialSettings{
-  public:
-    MaterialSettings();
-    ~MaterialSettings();
-    /**
-    @brief add a texture to material
-    @param txt new texture
-    @param tk The current taskManager
-    */
-    void addTexture(const char*name);
-    /**
-    @Brief Return the texture placed at i
-    @return Texture of material on index i
-    */
-
-    std::string getTextureAt(int index);
-    /**
-    @brief Get total textures of the material
-    @return Total num texutures
-    */
-    float getShinenes();
-    void setShinenes(float value);
-    int totalTextures();
-
-    void setDiffuseColor(vec3);
-    void setSpecularColor(vec3);
-    void setAmbientColor(vec3);
-
-    vec3 getAmbientColor();
-    vec3 getSpecularColor();
-    vec3 getDiffuseColor();
-  
-  private:
-    struct Data;
-    Data *data_;
-  };
-  void setMaterialSettings(std::shared_ptr<Material::MaterialSettings> mat_s);
-  MaterialSettings& getMaterialSettings();
 private:
-  std::shared_ptr<MaterialSettings> mat_settings_;
+  MaterialSettings *material_settings_;
   void useMaterial();
   void compileShader(GLuint shader)const;
-  float getShinenes();
-  void setShinenes(float value);
+
   unsigned int program_;
 
 
 
-
+  
 
 
 

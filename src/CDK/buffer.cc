@@ -5,12 +5,7 @@
 struct Buffer::Data {
   bool dirty_;
 
-  std::shared_ptr<float *>positions;
-  std::shared_ptr<float *>normals;
-  std::shared_ptr<float * > uvs;
-  std::shared_ptr<unsigned int*> indices;
   std::unique_ptr<char[]> data;
-
   int num_position_vertex_;
   int num_normal_vertex_;
   int num_uv_vertex_;
@@ -19,7 +14,6 @@ struct Buffer::Data {
   int num_indices_;
 
   GLuint vao_;
-  GLuint vbo_[4]; //0 positions, 1 normals, 2 uvs,3 indexes;
 };
 void Buffer::loadData(std::unique_ptr<char[]>buffer_data){
   data_->data = std::move(buffer_data);
@@ -51,10 +45,7 @@ void Buffer::init(int size){}
 void Buffer::loadData(std::shared_ptr<float*>positions, std::shared_ptr<float*>normals, std::shared_ptr<float*>uvs,
   std::shared_ptr<uint32*> indexes){
   //Reserve vectors.
-  data_->positions =positions;
-  data_->normals = normals;
-  data_->uvs = uvs;
-  data_->indices =indexes;
+
   data_->dirty_ = true;
 
 }
@@ -67,23 +58,19 @@ int Buffer::tangentSize(){ return data_->num_tan_vertex_; }
 int Buffer::bitangentSize(){ return data_->num_bitan_vertex_; }
 int Buffer::indiceSize(){ return data_->num_indices_; }
 unsigned int* Buffer::getVAO(){ return &data_->vao_; }
-unsigned int* Buffer::getVBO(){ return  data_->vbo_; }
+
 
 
 
 std::vector<float*> Buffer::getAttributesT(){
   std::vector<float*> temp;
-  temp.push_back(*data_->positions.get());
-  temp.push_back(*data_->normals.get());
-  temp.push_back(*data_->uvs.get());
+
   return temp;
 }
 char* Buffer::getData(){
   return data_->data.get();
 }
-unsigned int * Buffer::getIndexesT(){
-  return  *data_->indices.get();
-}
+
 void Buffer::setDirty(bool d){ data_->dirty_ = d; }
 
 

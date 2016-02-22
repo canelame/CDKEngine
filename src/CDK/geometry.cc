@@ -26,7 +26,9 @@ void Geometry::loadAttributes(std::shared_ptr<float*>positions, std::shared_ptr<
 
 
 std::shared_ptr< Buffer> Geometry::getBuffer(){
-  return    data_->geo_buff_;
+  if (this != NULL){
+    return    data_->geo_buff_;
+  }
 }
 
 
@@ -201,7 +203,6 @@ void Geometry::createCube(){
   memcpy(&t_buff.get()[192 * sizeof(float)], &indexes_cube[0], 36 * sizeof(unsigned int));
   data_->geo_buff_->setAttributeSize(72, 72, 48, 0, 0, 36);
   data_->geo_buff_->loadData(std::move(t_buff));
-  
 }
 
 void Geometry::createQuad(){

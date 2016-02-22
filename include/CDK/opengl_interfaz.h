@@ -27,7 +27,7 @@ public:
   @brief Use a specific material
   @param Program of the material to use
   */
-  void useMaterial(int mat_program,Material::MaterialSettings& mat_s);
+  void useMaterial(Material &mat, vec3 color_amb, vec3 color_diff, vec3 color_spe);
   /**
   @brief Load material shader .
   @param mat Current material pointer.

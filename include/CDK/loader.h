@@ -11,6 +11,7 @@ class TaskManager;
 class Loader{
   friend class Texture;
   struct MeshData;
+  struct ColorData;
   struct TextureMesh;
   /**
   @brief Read float data from cdk file

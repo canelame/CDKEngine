@@ -37,8 +37,8 @@ public:
   * @param  Update the display list.
   */
 	void setMaterial(const std::shared_ptr<Material>mat);
-
-  
+  void setMaterialSettings(std::shared_ptr<Material::MaterialSettings>mat_s);
+  std::shared_ptr<Material::MaterialSettings>  getMaterialSettings();
 private:
   struct Data;
 	Data *data_;
