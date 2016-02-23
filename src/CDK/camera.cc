@@ -60,6 +60,8 @@ void Camera::render(std::shared_ptr<Node>node){
      if (data_->last_task.get() != nullptr){
        TaskManager::instance().waitTask(*data_->last_task.get());
      }
+     std::shared_ptr<FrameBuffer> frame_buff = std::shared_ptr<FrameBuffer>();
+
      data_->last_task = update_task;
      data_->dl_cam_->execute();
      data_->dl_cam_->clear();

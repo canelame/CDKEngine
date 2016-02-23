@@ -87,6 +87,12 @@ public:
   /**
   */
   void createFrameBuffer(FrameBuffer &fb);
+  /**
+  */
+  void renderFrameBuffer(FrameBuffer &fb);
+  /**
+  */
+  void bindFrameBuffer(int fb_id);
   ~OpenGlInterFaz(){};
 
   friend class DisplayList;

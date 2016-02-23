@@ -225,6 +225,10 @@ void OpenGlInterFaz::loadCamera(){
 
 }
 
+void OpenGlInterFaz::bindFrameBuffer(int fb_id){
+  glBindFramebuffer(GL_FRAMEBUFFER,fb_id);
+}
+
 void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
   
 
@@ -264,13 +268,21 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    int w = m->getWidth();
-    int h = m->getHeigth();
-    unsigned char * d = m->getData();
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w,
-									h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                  d);
-    glGenerateMipmap(GL_TEXTURE_2D);
+    if (m->getType() == "fb"){
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024,
+        768, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        NULL);
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else{
+      int w = m->getWidth();
+      int h = m->getHeigth();
+      unsigned char * d = m->getData();
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w,
+        h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        d);
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
     glBindTexture(GL_TEXTURE_2D,0);
 		m->setID(data_->shadow_texture_);
     
@@ -323,6 +335,14 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
+  glUseProgram(fb.)
+  glBindVertexArray(fb.getId());
+  glBindTexture(GL_TEXTURE_2D, fb.getTexture().getID());
+  glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT, 0);
+  glBindVertexArray(0);
 }
 void OpenGlInterFaz::sendLight( Light *light,int num_light){
   vec3 position = light->getPosition();

@@ -220,8 +220,12 @@ UseFrameBuffer::UseFrameBuffer(){
 }
 void UseFrameBuffer::runCommand(OpenGlInterFaz &in)const{
   if (!frame_buff_->isLoaded()){
-    frame_buff_->getTexture().loadTexture("", "fb");
     in.createFrameBuffer(*frame_buff_.get());
     frame_buff_->setLoaded(true);
+  }
+  else{
+    in.bindFrameBuffer(frame_buff_->getId());
+    in.renderFrameBuffer(*frame_buff_.get());
+    in.bindFrameBuffer(0);
   }
 }

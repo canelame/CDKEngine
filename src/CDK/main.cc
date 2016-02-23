@@ -9,6 +9,7 @@
 #include "CDK/loader.h"
 #include "glm\glm.hpp"
 #include "CDK/texture.h"
+#
 
 struct {
 	std::shared_ptr<Node> root;
@@ -72,6 +73,8 @@ int Window::main(int argc, char** argv){
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
   Scene.root.get()->addChild(w);
  Scene.root.get()->addChild(w1);
+
+
 
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();
