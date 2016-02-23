@@ -73,7 +73,7 @@ public:
   void loadLight(int num_light);
   /**
   */
-  void sendLight( Light *light);
+  void sendLight( Light *light,int num_light);
   /**
   @brief
   */

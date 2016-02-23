@@ -209,7 +209,7 @@ LightsCommand::LightsCommand(std::vector<std::shared_ptr<Light>>l){
 
 void LightsCommand::runCommand(OpenGlInterFaz &in)const{
   for (int i = 0; i < lights_.size(); i++){
-    in.sendLight(lights_[i].get());
+    in.sendLight(lights_[i].get(),i);
 
   }
   

@@ -70,7 +70,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
 
  if (file != NULL){
 
-   std::shared_ptr<Material>  mat_child = std::make_shared<Material>(Material::TYPE::DIFFUSE_TEXTURE);
+   std::shared_ptr<Material>  mat_child = std::make_shared<Material>(0);
    fread((void*)&num_meshes, sizeof(const int), 1, file);
    MeshData m;
    std::shared_ptr<Material::MaterialSettings> mat_sett;
@@ -99,7 +99,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
 
 
     if (m.num_diffuse_textures == 0 && m.num_specular_textures == 0){
-      mat_child = std::make_shared<Material>(Material::TYPE::ONNLY_DIFFUSE_);
+      mat_child = std::make_shared<Material>(1);
     }
     else{
   

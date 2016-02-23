@@ -13,7 +13,7 @@ struct FrameBuffer::Data{
 };
 
 FrameBuffer::FrameBuffer(){
-  data_->material_ = std::make_shared<Material>();
+  data_->material_ = std::make_shared<Material>(0);
   data_->render_quad_ = std::shared_ptr<Geometry>();
   data_->render_quad_->createQuad();
 }

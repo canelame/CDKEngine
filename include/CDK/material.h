@@ -21,10 +21,7 @@ class ReadTexture;
 class Material {
 
 public:
-  enum TYPE{
-    ONNLY_DIFFUSE_ = 0,
-    DIFFUSE_TEXTURE
-  };
+
 
   enum TYPE_SHADER {
     FRAGMENT_SHADER = 0,
@@ -71,8 +68,7 @@ public:
     vec3 getAmbientColor(){ return ambient_color_; }
   };
 
-  Material(TYPE t);
-  Material(){}
+  Material(int v);
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
@@ -107,7 +103,7 @@ public:
 
   Light lightAt(int i);
   //Variables
-  bool is_compiled_;
+  bool is_compiled_=false;
   std::string vertex_data_;
   std::string fragment_data_;
 private:

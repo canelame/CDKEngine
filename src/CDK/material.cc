@@ -3,22 +3,14 @@
 #include "CDK/task_manager.h"
 
 
-Material::Material(TYPE t){
-
-
-  
-  is_compiled_ = false;
-
-  if (t == 0){
-
-    loadShader("shaders/diffuse_f.glsl", "shaders/diffuse_v.glsl");
-
-  }else{
-
+Material::Material(int v){
+  if (v == 0){
     loadShader("shaders/texture_f.glsl", "shaders/texture_v.glsl");
-
   }
-;}
+  else{
+    loadShader("shaders/diffuse_f.glsl", "shaders/diffuse_v.glsl");
+  }
+}
 
 void Material::loadShader(const char *vertex_file, const char* fragment_file){
   std::stringstream temp_vertex_data;
@@ -42,8 +34,6 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
     line = temp_vertex_data1.str();
     vertex_data_ = line;
   }
-
-
 }
 
 
@@ -64,6 +54,8 @@ std::string Material::getVertexData(){
   return vertex_data_; 
 }
 
+
+//////////////////MATERIAL SETTINGS//////////////////////
 void Material::MaterialSettings::addTexture(const char *name){
 
   texture_.push_back(name);

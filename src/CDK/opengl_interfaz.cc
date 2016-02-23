@@ -2,6 +2,16 @@
 #include "CDK/display_list.h"
 #include "CDK/material.h"
 #include "CDK/texture.h"
+
+struct LightUniforms{
+
+  GLint l_pos = -1;
+  GLint l_ac = -1;
+  GLint l_sc = -1;
+  GLint l_dc = -1;
+  GLint l_sh = -1;
+  GLint l_t = -1;
+};
 struct OpenGlInterFaz::Data{
    GLuint shadow_texture_;
 
@@ -9,7 +19,6 @@ struct OpenGlInterFaz::Data{
   GLuint shadow_vao_;
   GLuint shadow_vbo_v_;
   GLuint shadow_vbo_i_;
-
   //For materials
   GLuint shadow_program_;
   GLuint shadow_vertex_shader_;
@@ -17,33 +26,19 @@ struct OpenGlInterFaz::Data{
   GLint mat_d = -1;
   GLint mat_s = -1;
   GLint mat_a = -1;
-
-  //For lights
-  GLint l_pos=-1;
-  GLint l_ac = -1;
-  GLint l_sc = -1;
-  GLint l_dc = -1;
-  GLint l_sh = -1;
-  GLint l_t = -1;
+  //Lights
+  LightUniforms u_lights[10];
+  //Camera
   GLint proyec_pos = -1;
   GLint model_pos = -1;
   GLint view_pos = -1;
   //\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-      //For materials
-  GLuint shadow_program_d_;
-  GLuint shadow_vertex_shader_d_;
-  GLuint shadow_fragment_shader_d_;
+
   GLint mat_d_d = -1;
   GLint mat_s_d = -1;
   GLint mat_a_d = -1;
+  LightUniforms u_lights_d[10];
 
-  //For lights
-  GLint l_pos_d = -1;
-  GLint l_ac_d = -1;
-  GLint l_sc_d = -1;
-  GLint l_dc_d = -1;
-  GLint l_sh_d = -1;
-  GLint l_t_d = -1;
   GLint proyec_pos_d = -1;
   GLint model_pos_d = -1;
   GLint view_pos_d = -1;
@@ -160,13 +155,13 @@ int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_dat
     if (data_->mat_s<0)data_->mat_s = glGetUniformLocation(data_->shadow_program_, "u_material_specular");
     if (data_->mat_a<0)data_->mat_a = glGetUniformLocation(data_->shadow_program_, "u_material_ambient");
     //DIFFUSE UNIFORMS
-    if (data_->proyec_pos<0)data_->proyec_pos_d = glGetUniformLocation(data_->shadow_program_, "u_projection_m_d");
-    if (data_->model_pos<0)data_->model_pos_d = glGetUniformLocation(data_->shadow_program_, "u_model_m_d");
-    if (data_->view_pos<0)data_->view_pos_d = glGetUniformLocation(data_->shadow_program_, "u_view_m_d");
+    if (data_->proyec_pos_d<0)data_->proyec_pos_d = glGetUniformLocation(data_->shadow_program_, "u_projection_m_d");
+    if (data_->model_pos_d<0)data_->model_pos_d = glGetUniformLocation(data_->shadow_program_, "u_model_m_d");
+    if (data_->view_pos_d<0)data_->view_pos_d = glGetUniformLocation(data_->shadow_program_, "u_view_m_d");
 
-    if (data_->mat_d<0)data_->mat_d_d = glGetUniformLocation(data_->shadow_program_, "u_material_diff_d");
-    if (data_->mat_s<0)data_->mat_s_d = glGetUniformLocation(data_->shadow_program_, "u_material_specular_d");
-    if (data_->mat_a<0)data_->mat_a_d = glGetUniformLocation(data_->shadow_program_, "u_material_ambient_d");
+    if (data_->mat_d_d<0)data_->mat_d_d = glGetUniformLocation(data_->shadow_program_, "u_material_diff_d");
+    if (data_->mat_s_d<0)data_->mat_s_d = glGetUniformLocation(data_->shadow_program_, "u_material_specular_d");
+    if (data_->mat_a_d<0)data_->mat_a_d = glGetUniformLocation(data_->shadow_program_, "u_material_ambient_d");
     return data_->shadow_program_;
   }
 
@@ -252,12 +247,12 @@ void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
   }
 
 
-  if (data_->model_pos >= 0){
+  if (data_->model_pos_d >= 0){
     glUniformMatrix4fv(data_->model_pos_d, 1, GL_FALSE, glm::value_ptr(model));
   }
 
 
-  if (data_->view_pos >= 0){
+  if (data_->view_pos_d >= 0){
     glUniformMatrix4fv(data_->view_pos_d, 1, GL_FALSE, glm::value_ptr(view));
   }
 
@@ -290,19 +285,19 @@ void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int textur
 }
 
 void OpenGlInterFaz::loadLight(int num_light){
-  if (data_->l_pos<0)data_->l_pos = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].position").c_str());
-  if (data_->l_ac<0)data_->l_ac = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].ambient_color").c_str());
-  if (data_->l_sc<0)data_->l_sc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].specular_color").c_str());
-  if (data_->l_dc<0)data_->l_dc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].diffuse_color").c_str());
-  if (data_->l_sh<0)data_->l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
-  if (data_->l_t<0)data_->l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
+  if (data_->u_lights[num_light].l_pos<0)data_->u_lights[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].position").c_str());
+  if (data_->u_lights[num_light].l_ac<0)data_->u_lights[num_light].l_ac = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].ambient_color").c_str());
+  if (data_->u_lights[num_light].l_sc<0)data_->u_lights[num_light].l_sc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].specular_color").c_str());
+  if (data_->u_lights[num_light].l_dc<0)data_->u_lights[num_light].l_dc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].diffuse_color").c_str());
+  if (data_->u_lights[num_light].l_sh<0)data_->u_lights[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
+  if (data_->u_lights[num_light].l_t<0)data_->u_lights[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
   //DIFFUSE
-  if (data_->l_pos<0)data_->l_pos = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].position").c_str());
-  if (data_->l_ac<0)data_->l_ac = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].ambient_color").c_str());
-  if (data_->l_sc<0)data_->l_sc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].specular_color").c_str());
-  if (data_->l_dc<0)data_->l_dc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].diffuse_color").c_str());
-  if (data_->l_sh<0)data_->l_sh = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].sh").c_str());
-  if (data_->l_t<0)data_->l_t = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].type").c_str());
+  if (data_->u_lights_d[num_light].l_pos<0)data_->u_lights_d[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].position").c_str());
+  if (data_->u_lights_d[num_light].l_ac<0)data_->u_lights_d[num_light].l_ac = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].ambient_color").c_str());
+  if (data_->u_lights_d[num_light].l_sc<0)data_->u_lights_d[num_light].l_sc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].specular_color").c_str());
+  if (data_->u_lights_d[num_light].l_dc<0)data_->u_lights_d[num_light].l_dc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].diffuse_color").c_str());
+  if (data_->u_lights_d[num_light].l_sh<0)data_->u_lights_d[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].sh").c_str());
+  if (data_->u_lights_d[num_light].l_t<0)data_->u_lights_d[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].type").c_str());
 }
 void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 
@@ -329,7 +324,7 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-void OpenGlInterFaz::sendLight( Light *light){
+void OpenGlInterFaz::sendLight( Light *light,int num_light){
   vec3 position = light->getPosition();
   vec3 diffuse_c = light->getDiffuseColor();
   vec3 specular_c = light->getSpecularColor();
@@ -337,65 +332,65 @@ void OpenGlInterFaz::sendLight( Light *light){
   float shin = light->getShinenes();
   int type = light->getType();
  
-   if (data_->l_pos >= 0){
-     glUniform3f(data_->l_pos, position.x, position.y, position.z);
+  if (data_->u_lights[num_light].l_pos >= 0){
+    glUniform3f(data_->u_lights[num_light].l_pos, position.x, position.y, position.z);
   }
    
    
-  if (data_->l_ac >= 0){
-    glUniform3f(data_->l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
+  if (data_->u_lights[num_light].l_ac >= 0){
+    glUniform3f(data_->u_lights[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
   }
 
   
-  if (data_->l_sc >= 0){
+  if (data_->u_lights[num_light].l_sc >= 0){
 
-  glUniform3f(data_->l_sc, specular_c.x, specular_c.y, specular_c.z);
+    glUniform3f(data_->u_lights[num_light].l_sc, specular_c.x, specular_c.y, specular_c.z);
   }
 
   
-  if (data_->l_dc >= 0){
-    glUniform3f(data_->l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
+  if (data_->u_lights[num_light].l_dc >= 0){
+    glUniform3f(data_->u_lights[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
   }
 
  
-  if (data_->l_sh >= 0){
-    glUniform1f(data_->l_sh, shin);
+  if (data_->u_lights[num_light].l_sh >= 0){
+    glUniform1f(data_->u_lights[num_light].l_sh, shin);
   }
 
  
-  if (data_->l_t >= 0){
-    glUniform1i(data_->l_t, type);
+  if (data_->u_lights[num_light].l_t >= 0){
+    glUniform1i(data_->u_lights[num_light].l_t, type);
   }
 
   //DIFFUSE
-  if (data_->l_pos_d >= 0){
-    glUniform3f(data_->l_pos_d, position.x, position.y, position.z);
+  if (data_->u_lights_d[num_light].l_pos >= 0){
+    glUniform3f(data_->u_lights_d[num_light].l_pos, position.x, position.y, position.z);
   }
 
 
-  if (data_->l_ac_d >= 0){
-    glUniform3f(data_->l_ac_d, ambient_c.x, ambient_c.y, ambient_c.z);
+  if (data_->u_lights_d[num_light].l_ac >= 0){
+    glUniform3f(data_->u_lights_d[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
   }
 
 
-  if (data_->l_sc_d >= 0){
+  if (data_->u_lights_d[num_light].l_sc >= 0){
 
-    glUniform3f(data_->l_sc_d, specular_c.x, specular_c.y, specular_c.z);
+    glUniform3f(data_->u_lights_d[num_light].l_sc, specular_c.x, specular_c.y, specular_c.z);
   }
 
 
-  if (data_->l_dc_d >= 0){
-    glUniform3f(data_->l_dc_d, diffuse_c.x, diffuse_c.y, diffuse_c.z);
+  if (data_->u_lights_d[num_light].l_dc >= 0){
+    glUniform3f(data_->u_lights_d[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
   }
 
 
-  if (data_->l_sh_d >= 0){
-    glUniform1f(data_->l_sh_d, shin);
+  if (data_->u_lights_d[num_light].l_sh >= 0){
+    glUniform1f(data_->u_lights_d[num_light].l_sh, shin);
   }
 
 
-  if (data_->l_t_d >= 0){
-    glUniform1i(data_->l_t_d, type);
+  if (data_->u_lights_d[num_light].l_t >= 0){
+    glUniform1i(data_->u_lights_d[num_light].l_t, type);
   }
 
 }
