@@ -14,6 +14,7 @@ public:
   bool isLoaded();
   void setLoaded(bool loaded);
   void setId(int id);
+  int getId();
   Texture& getTexture();
 
 private:

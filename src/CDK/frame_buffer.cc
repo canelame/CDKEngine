@@ -14,7 +14,10 @@ struct FrameBuffer::Data{
 
 FrameBuffer::FrameBuffer(){
   data_->material_ = std::make_shared<Material>(0);
+  data_->material_->loadShader("pp_f.glsl", "pp_v.glsl");
   data_->render_quad_ = std::shared_ptr<Geometry>();
+  data_->texture_ = std::make_shared<Texture>();
+  data_->texture_->loadTexture("", "fb");
   data_->render_quad_->createQuad();
 }
 void FrameBuffer::initFrameBuffer(){
@@ -35,4 +38,7 @@ Texture& FrameBuffer::getTexture(){
 }
 void FrameBuffer::setId(int val){
   data_->id_framebuffer_ = val;
+}
+int FrameBuffer::getId(){
+  return data_->id_framebuffer_;
 }
