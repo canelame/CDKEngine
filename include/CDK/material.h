@@ -101,7 +101,7 @@ public:
   std::string getFragmentData();
 
 
-  Light lightAt(int i);
+
   //Variables
   bool is_compiled_=false;
   std::string vertex_data_;
