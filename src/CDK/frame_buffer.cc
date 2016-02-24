@@ -20,6 +20,9 @@ FrameBuffer::FrameBuffer(){
   data_->texture_->loadTexture("", "fb");
   data_->render_quad_->createQuad();
 }
+int FrameBuffer::getProgram(){
+  return data_->material_->getProgram();
+}
 void FrameBuffer::initFrameBuffer(){
   
 }

@@ -261,6 +261,7 @@ void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
   }
 
 }
+#include "CDK/engine_manager.h"
 void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 
     
@@ -269,8 +270,8 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     if (m->getType() == "fb"){
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024,
-        768, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, EngineManager::instance().width(),
+        EngineManager::instance().height(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
         NULL);
       glGenerateMipmap(GL_TEXTURE_2D);
     }
@@ -338,7 +339,7 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 }
 
 void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
-  glUseProgram(fb.)
+  glUseProgram(fb.getProgram());
   glBindVertexArray(fb.getId());
   glBindTexture(GL_TEXTURE_2D, fb.getTexture().getID());
   glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT, 0);

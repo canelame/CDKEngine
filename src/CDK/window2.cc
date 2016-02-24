@@ -6,6 +6,7 @@
 #include "ImGui\imgui.h"
 #include "ImGui\imgui_impl_glfw_gl3.h"
 #include "CDK/gui_interface.h"
+#include "CDK/engine_manager.h"
 
 void key_callback(GLFWwindow*window, int key, int scancode , int action, int mods){
  
@@ -32,7 +33,7 @@ Window::Window(){
 }
 int main(int argc, char**argv){ 
 	TaskManager::instance().init();
-  
+  EngineManager::instance().init();
   Window::main(argc,argv);
   return 0;
 }
@@ -47,6 +48,7 @@ bool Window::init(unsigned int width, unsigned int height){
 	
 	window_s_->width_ = width;
 	window_s_->height_ = height;
+  EngineManager::instance().setWidth(width); EngineManager::instance().setHeight(height);
 	//Init GLFW
   if (!glfwInit()){
     printf("Error glfInit()");

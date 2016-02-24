@@ -16,6 +16,7 @@ public:
   void setId(int id);
   int getId();
   Texture& getTexture();
+  int getProgram();
 
 private:
   struct Data;
