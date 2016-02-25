@@ -4,19 +4,24 @@
 #include "CDK/geometry.h"
 
 class Texture;
+class Material;
 class FrameBuffer{
 
 public:
   FrameBuffer();
-  ~FrameBuffer();
+  ~FrameBuffer(){};
   FrameBuffer(const FrameBuffer&);
   void initFrameBuffer();
   bool isLoaded();
   void setLoaded(bool loaded);
   void setId(int id);
   int getId();
-  Texture& getTexture();
+  Material& getMaterial();
+  std::shared_ptr<Texture> getTexture();
+  std::shared_ptr<Buffer> getQuad();
   int getProgram();
+  void begin();
+  void end();
 
 private:
   struct Data;

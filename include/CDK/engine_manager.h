@@ -1,4 +1,4 @@
-
+#include "frame_buffer.h"
 
 class EngineManager{
 public:
@@ -22,15 +22,15 @@ void setWidth(int w);
 void setHeight(int h);
 /**
 */
-void setRenderTarget(int rt);
+void setRenderTarget(FrameBuffer *fb);
 /**
 */
-int getRenderTarget();
+FrameBuffer* getRenderTarget();
 private:
   EngineManager(){};
   int width_;
   int height_;
-  int current_render_target_;
+ FrameBuffer* current_render_target_=nullptr;
  static EngineManager * instance_;
 
 };

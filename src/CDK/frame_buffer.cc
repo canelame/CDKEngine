@@ -2,6 +2,8 @@
 #include "GL/glew.h"
 #include "CDK/texture.h"
 #include "CDK/material.h"
+#include "CDK/engine_manager.h"
+
 
 struct FrameBuffer::Data{
   GLuint id_framebuffer_;
@@ -13,9 +15,10 @@ struct FrameBuffer::Data{
 };
 
 FrameBuffer::FrameBuffer(){
+  data_ = new Data;
   data_->material_ = std::make_shared<Material>(0);
-  data_->material_->loadShader("pp_f.glsl", "pp_v.glsl");
-  data_->render_quad_ = std::shared_ptr<Geometry>();
+  data_->material_->loadShader("shaders/pp_f.glsl", "shaders/pp_v.glsl");
+  data_->render_quad_ = std::make_shared<Geometry>();
   data_->texture_ = std::make_shared<Texture>();
   data_->texture_->loadTexture("", "fb");
   data_->render_quad_->createQuad();
@@ -34,9 +37,9 @@ void FrameBuffer::setLoaded(bool value){
   data_->loaded = value;
 }
 
-Texture& FrameBuffer::getTexture(){
+std::shared_ptr<Texture> FrameBuffer::getTexture(){
   if (data_->texture_ != nullptr){
-    return *data_->texture_.get();
+    return data_->texture_;
   }
 }
 void FrameBuffer::setId(int val){
@@ -44,4 +47,19 @@ void FrameBuffer::setId(int val){
 }
 int FrameBuffer::getId(){
   return data_->id_framebuffer_;
+}
+
+void FrameBuffer::begin(){
+  EngineManager::instance().setRenderTarget(this);
+}
+
+void FrameBuffer::end(){
+  EngineManager::instance().setRenderTarget(nullptr);
+}
+Material& FrameBuffer::getMaterial(){
+  return *data_->material_.get();
+}
+
+std::shared_ptr<Buffer> FrameBuffer::getQuad(){
+  return data_->render_quad_->getBuffer();
 }

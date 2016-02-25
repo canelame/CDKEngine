@@ -2,7 +2,7 @@
 
 EngineManager* EngineManager::instance_ = nullptr;
 EngineManager& EngineManager::instance(){
-  if (instance_ == nullptr){
+  if (instance_ == NULL){
     instance_ = new EngineManager();
   }
   return *instance_;
@@ -29,6 +29,10 @@ void EngineManager::setHeight(int h){
   height_ = h;
 }
 
-void EngineManager::setRenderTarget(int rt){
-  current_render_target_ = rt;
+void EngineManager::setRenderTarget(FrameBuffer*fb){
+  current_render_target_ = fb;
+}
+
+FrameBuffer* EngineManager::getRenderTarget(){
+  return current_render_target_;
 }

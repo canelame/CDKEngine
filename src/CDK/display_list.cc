@@ -1,7 +1,7 @@
 #include "CDK/display_list.h"
 #include "CDK/texture_cache.h"
 #include "CDK/texture.h"
-
+#include "CDK/engine_manager.h"
 
 DisplayList::DisplayList(){
 	interfaz_ = new OpenGlInterFaz();
@@ -13,13 +13,27 @@ void DisplayList::add(Comm_ c){
 	listCommand_.push_back(c);
 }
 void DisplayList::execute(){
+
+  bool render_target_changed = false;
+  FrameBuffer * t_fb = EngineManager::instance().getRenderTarget();
+  if ( t_fb != nullptr){
+    listCommand_.push_back(std::make_shared<UseFrameBuffer>(EngineManager::instance().getRenderTarget()));
+    render_target_changed = true;
+    interfaz_->bindFrameBuffer(t_fb->getId());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+  }
+
+  
+
 	for (int i = 0; i < listCommand_.size(); ++i){
 		listCommand_[i].get()->runCommand(*interfaz_);
 	}
-}
 
-void DisplayList::update(Node *d){
-  
+  if (render_target_changed){
+    interfaz_->bindFrameBuffer(0);
+    interfaz_->renderFrameBuffer(*t_fb);
+  }
 }
 
 
@@ -67,17 +81,7 @@ void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
 
 }
 
-///////// SETUP_CAMERA_COMMAND CLASS/////////////////
-////////////////////////////////////////////
-SetupCameraCommand::SetupCameraCommand(){
 
-}
-
-
-void SetupCameraCommand::runCommand(OpenGlInterFaz &in)const{
-
-
-}
 ///////// USE_CAMERA_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
 UseCameraCommand::UseCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_m){
@@ -215,17 +219,13 @@ void LightsCommand::runCommand(OpenGlInterFaz &in)const{
   
 }
 /////////////////////////FRAMEBUFFER///////////////////////
-UseFrameBuffer::UseFrameBuffer(){
-
+UseFrameBuffer::UseFrameBuffer(FrameBuffer *fb){
+  frame_buff_ = fb;
 }
 void UseFrameBuffer::runCommand(OpenGlInterFaz &in)const{
   if (!frame_buff_->isLoaded()){
-    in.createFrameBuffer(*frame_buff_.get());
+    in.createFrameBuffer(*frame_buff_);
     frame_buff_->setLoaded(true);
   }
-  else{
-    in.bindFrameBuffer(frame_buff_->getId());
-    in.renderFrameBuffer(*frame_buff_.get());
-    in.bindFrameBuffer(0);
-  }
+
 }

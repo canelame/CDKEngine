@@ -72,14 +72,13 @@ int Window::main(int argc, char** argv){
  // w1->setMaterialSettings(mat_s);
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
   Scene.root.get()->addChild(w);
- Scene.root.get()->addChild(w1);
-
-
+  Scene.root.get()->addChild(w1);
+  std::shared_ptr<FrameBuffer>render_to_text = std::make_shared<FrameBuffer>();
 
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();
-
     window->clearScreen(vec3(0.3, 0.2, 0.1));
+    render_to_text->begin();
     Scene.cam->render(Scene.root);
     window->swap();
 
