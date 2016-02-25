@@ -261,6 +261,7 @@ void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
   }
 
 }
+#include "CDK/engine_manager.h"
 void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 
     
@@ -268,10 +269,10 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    if (m->getType() == "fb"){
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1024,
-        768, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-        NULL);
+    if (strcmp(m->getType(), "fb")==0){
+      
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, EngineManager::instance().width(),
+        EngineManager::instance().height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glGenerateMipmap(GL_TEXTURE_2D);
     }
     else{
@@ -314,8 +315,10 @@ void OpenGlInterFaz::loadLight(int num_light){
 void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 
   //Create Program for frameBuffer
-  GLuint t_program = glCreateProgram();
-
+  Material &mat = fb.getMaterial();
+  mat.setProgram(loadMaterial(mat.getVertexData().c_str(), mat.getFragmentData().c_str()));
+  loadBuffer(fb.getQuad());
+  loadTexture(fb.getTexture());
 
   //Create FramebBuffer
   glGenFramebuffers(1, &data_->shadow_frame_buffer);
@@ -323,10 +326,10 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 
   glGenRenderbuffers(1, &data_->shadow_fbo_);
   glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, EngineManager::instance().width(),EngineManager::instance().height());
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
   //Load texture TODO
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb.getTexture().getID(),0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb.getTexture()->getID(),0);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 
     printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
@@ -338,9 +341,9 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 }
 
 void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
-  glUseProgram(fb.)
-  glBindVertexArray(fb.getId());
-  glBindTexture(GL_TEXTURE_2D, fb.getTexture().getID());
+  glUseProgram(fb.getProgram());
+  glBindVertexArray(*fb.getQuad()->getVAO());
+  glBindTexture(GL_TEXTURE_2D, fb.getTexture()->getID());
   glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
 }

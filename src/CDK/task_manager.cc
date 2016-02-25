@@ -139,7 +139,7 @@ int Task::getId(){
 
    void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
 
-
+     std::shared_ptr<FrameBuffer> frame_buff = std::shared_ptr<FrameBuffer>();
     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
 
     std::shared_ptr<Material::MaterialSettings> mat_sett;
@@ -158,6 +158,7 @@ int Task::getId(){
        if ((t_drawable->geometry() != nullptr && t_drawable->material() != nullptr)){
          std::shared_ptr<Buffer> t_geometry_buff = t_drawable->geometry()->getBuffer();
          std::shared_ptr<Material> t_material = t_drawable->material();
+        
          dl_->add(std::make_shared<UseMaterialCommand>(t_material,mat_sett));
          dl_->add(std::make_shared<UseGeometryCommand>(t_geometry_buff));
          dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));

@@ -130,20 +130,8 @@ private:
   int program_mat_;
 };
 #endif
-/// SETUP CAMERA COMMAND CLASS
-#ifndef __H_SETUP_CAM_COMMAND__
-#define __H_SETUP_CAM_COMMAND__
-#include "command.h"
-#include "camera.h"
-#include "opengl_interfaz.h"
-class SetupCameraCommand : public Command {
-public:
-  SetupCameraCommand();
-  void runCommand(OpenGlInterFaz &in)const;
-private:
 
-};
-#endif
+
 /// USE CAMERA COMMAND CLASS
 #ifndef __H_USE_CAM_COMMAND__
 #define __H_USE_CAM_COMMAND__
@@ -187,10 +175,10 @@ private:
 #include "opengl_interfaz.h"
 class UseFrameBuffer : public Command{
 public:
-  UseFrameBuffer();
+  UseFrameBuffer(FrameBuffer *fb);
   void runCommand(OpenGlInterFaz &in)const;
 private:
-  std::shared_ptr<FrameBuffer> frame_buff_;
+  FrameBuffer* frame_buff_;
 
 
 };
@@ -243,10 +231,7 @@ public:
 	* @brief Execute display list
 	*/
   void execute();
-	/**
-	* @param  Update the display list.
-	*/
-  void update(Node*dr);
+
   /**
   *@brief Clean commands list
   * @param  Update the display list.
@@ -255,6 +240,7 @@ public:
 private:
 
 	OpenGlInterFaz *interfaz_;
+  std::shared_ptr<FrameBuffer> current_framebuffer_;
 
 	List listCommand_;
 

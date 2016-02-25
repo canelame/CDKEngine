@@ -37,29 +37,27 @@ int Window::main(int argc, char** argv){
   //Create Camera
 
   std::shared_ptr<Light> l1 = std::make_shared<Light>();
-  l1->setPosition(vec3(0.0,-30.0,0.0));
-  l1->setAmbientColor(vec3(0.0, 0.0, 0.5));
+  l1->setPosition(vec3(0.0,0.0,95.0));
+  l1->setAmbientColor(vec3(1.0, 1.0, 1.0));
   l1->setSpecularColor(vec3(1.0,1.0,1.0));
-  l1->setDifusseColor(vec3(1.0,1.0,0.0));
+  l1->setDifusseColor(vec3(1.0,1.0,1.0));
   l1->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
   std::shared_ptr<Light> l2 = std::make_shared<Light>();
   l2->setPosition(vec3(0.0, 30.0, 0.0));
   l2->setAmbientColor(vec3(1.0, 0.0, 0.0));
-  l2->setSpecularColor(vec3(1.0, 0.0, 1.0));
+  l2->setSpecularColor(vec3(1.0, 1.0, 1.0));
   l2->setDifusseColor(vec3(0.0, 1.0, 1.0));
   l2->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
 
-//Scene.root->addLight(l1);
-  //Scene.root->addLight(l2);
+//  Scene.root->addLight(l1);
+  Scene.root->addLight(l2);
   std::shared_ptr<Drawable> w = std::make_shared<Drawable>();
   std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/mmn.cdk");
 
   std::shared_ptr<Material> mater = std::make_shared<Material>(1);
   std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
-  w->setName("Cube");
-  w1->setName("Alcoon");
   
   
   geo->createQuad();
@@ -71,17 +69,16 @@ int Window::main(int argc, char** argv){
   mat_s->diffuse_color_ = vec3(1.0);
   mat_s->ambient_color_ = vec3(1.0, 1.0, 0.0);
   mat_s->addTexture("textures/Millennium_Falcon_Bottom_D.tga");
-
+ // w1->setMaterialSettings(mat_s);
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
   Scene.root.get()->addChild(w);
-// Scene.root.get()->addChild(w1);
-
-
+  Scene.root.get()->addChild(w1);
+  std::shared_ptr<FrameBuffer>render_to_text = std::make_shared<FrameBuffer>();
 
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();
-
     window->clearScreen(vec3(0.3, 0.2, 0.1));
+    render_to_text->begin();
     Scene.cam->render(Scene.root);
     window->swap();
 
