@@ -7,6 +7,7 @@ GUI interface for the engine
 #include <memory>
 #include "node.h"
 #include "ImGui\imgui.h"
+class Light;
 class GuInterface{
 
 public:
@@ -30,12 +31,18 @@ private:
   std::vector<bool> selected_nodes_;
   static GuInterface *instance_;
   bool node_parent_selected = false;
+  float n_pos_light[3] ;
+  float n_diff_light[3];
+  float n_spec_light[3];
+  float n_amb_light[3];
   /**
   */
+ 
   void nodePanel( Node &node);
-  void mainMenu();
+  void mainMenu(Node &node);
   void loadNode(Node &node);
-  void transformPanel(Node &node);  
+  void transformPanel(Node &node); 
+  void addLight(Node &node);
   std::shared_ptr<Node> select_node_;
   /**
   

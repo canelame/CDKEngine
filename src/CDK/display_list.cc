@@ -21,10 +21,8 @@ void DisplayList::execute(){
     render_target_changed = true;
     interfaz_->bindFrameBuffer(t_fb->getId());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);
+   
   }
-
-  
 
 	for (int i = 0; i < listCommand_.size(); ++i){
 		listCommand_[i].get()->runCommand(*interfaz_);

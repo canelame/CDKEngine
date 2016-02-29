@@ -37,6 +37,11 @@ void Node::addChild(std::shared_ptr<Node>d){
   }
   
   if (this != NULL){
+    if (data_->name_ == ""){
+      std::string name = "node";
+      name += (size() + 1);
+      data_->name_ = name;
+    }
     d->data_->parent_ = std::make_shared<Node>(*this);
     data_->node_list_.push_back(d);
   }

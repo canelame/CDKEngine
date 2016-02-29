@@ -22,7 +22,13 @@ void key_callback(GLFWwindow*window, int key, int scancode , int action, int mod
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
   Input::instance().setMouseXY(xpos, ypos);
 }
-
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+  EngineManager::instance().window_size_modified_ = true;
+  EngineManager::instance().setWidth(width);
+  EngineManager::instance().setHeight(height);
+  glViewport(0, 0, width, height);
+}
 struct Window::_Window{
   GLFWwindow* main_window_;
   int32 width_ = 800;
@@ -57,7 +63,7 @@ bool Window::init(unsigned int width, unsigned int height){
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+  glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	//Create Window
   window_s_->main_window_ = glfwCreateWindow(window_s_->width_, window_s_->height_, "Default name", nullptr, nullptr);
@@ -74,6 +80,7 @@ bool Window::init(unsigned int width, unsigned int height){
   glfwMakeContextCurrent(window_s_->main_window_);
   glfwSetKeyCallback(window_s_->main_window_, key_callback);
   glfwSetCursorPosCallback(window_s_->main_window_, mouse_callback);
+  glfwSetFramebufferSizeCallback(window_s_->main_window_, framebuffer_size_callback);
 	//Init GLEW
 	glewExperimental = GL_TRUE;
 

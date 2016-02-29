@@ -26,6 +26,7 @@ public:
   * To use it only call this function in your update funtion.
   */
   void FpsCameraUpdate();
+  void controlMouse();
   /**
   * @brief This function allow us to set the perspective projection matrix.
   * @param fov Field of view cam. Should be 45.0f

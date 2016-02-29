@@ -26,7 +26,7 @@ int Window::main(int argc, char** argv){
 
 
   Scene.cam = std::make_shared<Camera>();
-  Scene.cam->setPerspective(45, 800.0 / 600.0, 0.1, 100000.0);
+  Scene.cam->setPerspective(45, 1024.0 / 768.0, 0.1, 10000.0);
   //Create Root
   Scene.root = std::make_shared<Node>();
   std::shared_ptr<Loader> loader = std::make_shared<Loader>();
@@ -78,7 +78,7 @@ int Window::main(int argc, char** argv){
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();
     window->clearScreen(vec3(0.3, 0.2, 0.1));
-    render_to_text->begin();
+    //render_to_text->begin();
     Scene.cam->render(Scene.root);
     window->swap();
 

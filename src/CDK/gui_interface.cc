@@ -1,10 +1,17 @@
 #include "CDK/gui_interface.h"
-
+#include "CDK/light.h"
 #include "ImGui\imgui_impl_glfw_gl3.h"
 
 GuInterface* GuInterface::instance_ = NULL;
 
-GuInterface::GuInterface(){}
+GuInterface::GuInterface(){
+  for (int i = 0; i < 3; i++){
+    n_amb_light[i] = 0.0f;
+    n_diff_light[i] = 0.0f;
+    n_pos_light[i] = 0.0f;
+    n_spec_light[i] = 0.0f;
+  }
+}
 /**
 */
 GuInterface& GuInterface::instance(){
@@ -17,7 +24,7 @@ void GuInterface::update(){
 }
 
 void GuInterface::draw(std::shared_ptr<Node>node){
-  mainMenu();
+  mainMenu(*node.get());
   nodePanel(*node.get());
 
   if (select_node_ != nullptr){
@@ -29,7 +36,9 @@ void GuInterface::draw(std::shared_ptr<Node>node){
 
   ImGui::Render();
 }
-void GuInterface::mainMenu(){
+
+static bool show_menu_addLight = false;
+void GuInterface::mainMenu(Node &node){
  
   ImGuiStyle &style = ImGui::GetStyle();
   setStyle(style);
@@ -40,13 +49,21 @@ void GuInterface::mainMenu(){
       }
       ImGui::EndMenu();
     }
+    
+    if (ImGui::MenuItem("Add Light")){
+      show_menu_addLight = true;
+
+    }
+
     ImGui::EndMainMenuBar();
   }
-
+  if (show_menu_addLight){
+    addLight(node);
+  }
 }
 void GuInterface::setStyle(ImGuiStyle &elemnt){
 
-  elemnt.FramePadding = ImVec2(0.0f, 15.0f);
+ // elemnt.FramePadding = ImVec2(0.0f, 15.0f);
   //elemnt.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.2, 1.0, 0.0, 0.8);
   elemnt.Colors[0] = ImVec4(1.0, 1.0, 0.0, 1.0);
   ImFontAtlas* atlas = ImGui::GetIO().Fonts;
@@ -107,7 +124,44 @@ void GuInterface::loadNode(Node &node){
   }
 
 }
+void GuInterface::addLight(Node &node){
+  
+  
+  int current_item = 0;
+  const char*items[] = { "Directional Light","Point Light" };
+  bool exit = false;
 
+    ImGui::Begin("NewLight");
+  //ImGui::SetWindowSize(ImVec2(300, 300));
+  ImGui::Text("Light position");
+  ImGui::InputFloat3("", n_pos_light);
+  ImGui::Text("Light diffuse");
+  ImGui::ColorEdit3("", n_diff_light);
+  ImGui::Text("Light specular");
+  ImGui::ColorEdit3("", n_spec_light);
+  ImGui::Text("Light ambient");
+  ImGui::ColorEdit3("", n_amb_light);
+  ImGui::ListBox("Light type", &current_item, items, 2,2);
+
+  if (ImGui::Button("Accept")){
+    std::shared_ptr<Light> t_light = std::make_shared<Light>();
+    t_light->setPosition(vec3(n_pos_light[0], n_pos_light[1], n_pos_light[2]));
+    t_light->setAmbientColor(vec3(n_amb_light[0], n_amb_light[1], n_amb_light[2]));
+    t_light->setSpecularColor(vec3(n_spec_light[0], n_spec_light[1], n_spec_light[2]));
+    t_light->setDifusseColor(vec3(n_diff_light[0], n_diff_light[1], n_diff_light[2]));
+    t_light->setTypeLight(Light::T_DIRECTION_LIGHT);
+    node.addLight(std::move(t_light));
+    show_menu_addLight = false;
+  }ImGui::SameLine();
+  if (ImGui::Button("Exits")){
+    show_menu_addLight = false;
+  }
+  ImGui::End();
+  
+  //t_light->setTypeLight
+ // node.addLight()
+
+}
 void GuInterface::transformPanel(Node &node){
 
     ImGui::Begin("TRANSFORM:");

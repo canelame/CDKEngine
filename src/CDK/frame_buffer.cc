@@ -17,7 +17,7 @@ struct FrameBuffer::Data{
 FrameBuffer::FrameBuffer(){
   data_ = new Data;
   data_->material_ = std::make_shared<Material>(0);
-  data_->material_->loadShader("shaders/pp_f.glsl", "shaders/pp_v.glsl");
+  data_->material_->loadShader("shaders/molon_f.glsl", "shaders/pp_v.glsl");
   data_->render_quad_ = std::make_shared<Geometry>();
   data_->texture_ = std::make_shared<Texture>();
   data_->texture_->loadTexture("", "fb");

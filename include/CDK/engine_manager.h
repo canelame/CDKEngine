@@ -2,7 +2,7 @@
 
 class EngineManager{
 public:
-  
+  bool window_size_modified_ = false;
 static  EngineManager& instance();
 /**
 */
@@ -25,6 +25,7 @@ void setHeight(int h);
 void setRenderTarget(FrameBuffer *fb);
 /**
 */
+void setWindowModified(bool value);
 FrameBuffer* getRenderTarget();
 private:
   EngineManager(){};
