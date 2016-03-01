@@ -95,9 +95,12 @@ public:
   void bindFrameBuffer(int fb_id);
   ~OpenGlInterFaz(){};
 
+  static OpenGlInterFaz& instance();
   friend class DisplayList;
 private:
+ 
   struct Data;
+ static OpenGlInterFaz *instance_;
 	OpenGlInterFaz();
   Data *data_;
   friend class Buffer;

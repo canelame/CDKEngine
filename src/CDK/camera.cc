@@ -23,7 +23,7 @@ struct Camera::Data{
   std::shared_ptr<DisplayList> dl_copy_;
   std::shared_ptr<UpdateDisplay> last_task;
   bool created_dl = false;
-  const float fps_speed_move = 0.35f;
+  const float fps_speed_move = 0.2;
   bool loaded=false;
 };
 
@@ -55,7 +55,7 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
 
 void Camera::render(std::shared_ptr<Node>node){
   if (EngineManager::instance().window_size_modified_){
-  //  data_->proyection_mat_ = glm::perspective(45.0f, 800.0f / 600.0f, 0.1, 1000.0);
+   
     setPerspective(45.0f, EngineManager::instance().width() / EngineManager::instance().height(), 0.1, 10000.0f);
   }
   std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, data_->proyection_mat_,data_->look_at_mat_,data_->loaded);
@@ -70,7 +70,7 @@ void Camera::render(std::shared_ptr<Node>node){
      data_->dl_cam_->execute();
      data_->dl_cam_->clear();
      data_->dl_cam_.swap(data_->dl_copy_);
-     GuInterface::instance().draw(node);
+   //  GuInterface::instance().draw(node);
 
  
 }
@@ -144,7 +144,7 @@ void Camera::controlMouse(){
   front.y = -sin(glm::radians(data_->pitch_fps_));
   front.z = sin(glm::radians(data_->yaw_fps_))*cos(glm::radians(data_->pitch_fps_));
   data_->front_ = glm::normalize(front);
- // setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
+ setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
 }
  glm::mat4 Camera::getProyection(){
    return data_->proyection_mat_;

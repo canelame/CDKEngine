@@ -6,9 +6,11 @@
 Material::Material(int v){
   if (v == 0){
     loadShader("shaders/texture_f.glsl", "shaders/texture_v.glsl");
+    type_ = 0;
   }
   else{
     loadShader("shaders/diffuse_f.glsl", "shaders/diffuse_v.glsl");
+    type_ = 1;
   }
 }
 

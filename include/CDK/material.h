@@ -106,13 +106,14 @@ public:
   bool is_compiled_=false;
   std::string vertex_data_;
   std::string fragment_data_;
+  int type_;
 private:
-
+  
   void useMaterial();
   void compileShader(GLuint shader)const;
 
   unsigned int program_;
-
+  
 
 
   
