@@ -104,11 +104,12 @@ void OpenGlInterFaz::useGeometry(GLuint vao){
   glBindVertexArray(vao);
 }
 void OpenGlInterFaz::useMaterial( Material &mat,vec3 color_amb, vec3 color_diff, vec3 color_spe){
-  //printf("Using program:%d", shadow_program_);
+  printf("Using color_amb :%f,%f,%f\n", color_amb.x, color_amb.y, color_amb.z);
+  printf("Using color_diff:%f,%f,%f\n", color_diff.x, color_diff.y, color_diff.z);
+  printf("Using color_spe:%f,%f,%f\n", color_spe.x, color_spe.y, color_spe.z);
+  printf("Using program:%d\n", mat.getProgram());
   glUseProgram(mat.getProgram());
-  glUniform3f(data_->mat_a, color_amb.x, color_amb.y, color_amb.z);
-  glUniform3f(data_->mat_d, color_diff.x, color_diff.y, color_diff.z);
-  glUniform3f(data_->mat_s, color_spe.x, color_spe.y, color_spe.z);
+
   glUniform3f(data_->mat_a_d, color_amb.x, color_amb.y, color_amb.z);
   glUniform3f(data_->mat_d_d, color_diff.x, color_diff.y, color_diff.z);
   glUniform3f(data_->mat_s_d, color_spe.x, color_spe.y, color_spe.z);
