@@ -51,28 +51,36 @@ int Window::main(int argc, char** argv){
   l2->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
 
-//  Scene.root->addLight(l1);
-  Scene.root->addLight(l2);
-  std::shared_ptr<Drawable> w = std::make_shared<Drawable>();
+  Scene.root->addLight(l1);
+  //Scene.root->addLight(l2);
+  std::shared_ptr<Drawable> w;
   std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/mmn.cdk");
 
-  std::shared_ptr<Material> mater = std::make_shared<Material>(1);
+  
   std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
-  
-  
-  geo->createQuad();
-  w->setGeometry(geo);
-  w->setMaterial(mater);
-  w->setPosition(vec3(0.0,0.0, 0.0));
-  w->setScale(vec3(100, 100, 100));
-  std::shared_ptr <Material::MaterialSettings> mat_s = std::make_shared<Material::MaterialSettings>();
-  mat_s->diffuse_color_ = vec3(1.0);
-  mat_s->ambient_color_ = vec3(1.0, 1.0, 0.0);
-  mat_s->addTexture("textures/Millennium_Falcon_Bottom_D.tga");
- // w1->setMaterialSettings(mat_s);
+  geo->createCube();
+
+ 
+  std::shared_ptr<Material> mater = std::make_shared<Material>(1);
+ 
+
+  w->setPosition(vec3(0.0 ,10.0, 0.0 ));
+  for (int i = 0; i < 2; i++){
+    
+    std::shared_ptr <Material::MaterialSettings> mat_s = std::make_shared<Material::MaterialSettings>();
+    w = std::make_shared<Drawable>();
+    mat_s->diffuse_color_ = vec3(1.0);
+    mat_s->ambient_color_ = vec3(1.0, (0.8/i)*0.5 +0.5, (0.1)*0.5 + 0.5);
+
+    w->setGeometry(geo);
+    w->setMaterial(mater);
+    w->setMaterialSettings(mat_s);
+    w->setPosition(vec3(0.0+i*10.0,0.0,0.0+i*10.0));
+    Scene.root->addChild(w);
+  }
+  Scene.root->addChild(w1);
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
-  Scene.root.get()->addChild(w);
-  Scene.root.get()->addChild(w1);
+
   std::shared_ptr<FrameBuffer>render_to_text = std::make_shared<FrameBuffer>();
 
   while (window->processEvents()){

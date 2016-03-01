@@ -3,6 +3,14 @@
 #include "CDK/material.h"
 #include "CDK/texture.h"
 
+OpenGlInterFaz* OpenGlInterFaz::instance_ = nullptr;
+OpenGlInterFaz& OpenGlInterFaz::instance(){
+  if (instance_ == NULL){
+    instance_ = new OpenGlInterFaz();
+  }
+  return *instance_;
+}
+
 struct LightUniforms{
 
   GLint l_pos = -1;
@@ -23,6 +31,7 @@ struct OpenGlInterFaz::Data{
   GLuint shadow_program_;
   GLuint shadow_vertex_shader_;
   GLuint shadow_fragment_shader_;
+
   GLint mat_d = -1;
   GLint mat_s = -1;
   GLint mat_a = -1;
@@ -46,6 +55,7 @@ struct OpenGlInterFaz::Data{
   GLuint shadow_frame_buffer;
   GLuint shadow_fbo_;//FrameBufferObject
   GLuint shadow_texture_frame_buffer;
+  GLuint type;
   };
 
 OpenGlInterFaz::OpenGlInterFaz(){
@@ -92,7 +102,7 @@ void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
     glEnableVertexAttribArray(1);
 
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(position_size+normal_size));
-    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(1);
 
 	  glBindVertexArray(0);	
     glDeleteBuffers(1, &data_->shadow_vbo_i_);
@@ -104,14 +114,21 @@ void OpenGlInterFaz::useGeometry(GLuint vao){
   glBindVertexArray(vao);
 }
 void OpenGlInterFaz::useMaterial( Material &mat,vec3 color_amb, vec3 color_diff, vec3 color_spe){
-  //printf("Using program:%d", shadow_program_);
-  glUseProgram(mat.getProgram());
-  glUniform3f(data_->mat_a, color_amb.x, color_amb.y, color_amb.z);
-  glUniform3f(data_->mat_d, color_diff.x, color_diff.y, color_diff.z);
-  glUniform3f(data_->mat_s, color_spe.x, color_spe.y, color_spe.z);
-  glUniform3f(data_->mat_a_d, color_amb.x, color_amb.y, color_amb.z);
-  glUniform3f(data_->mat_d_d, color_diff.x, color_diff.y, color_diff.z);
-  glUniform3f(data_->mat_s_d, color_spe.x, color_spe.y, color_spe.z);
+  
+
+  data_->type = mat.type_;
+    glUseProgram(mat.getProgram());
+    if (mat.type_ == 0){
+      if (data_->mat_a > -1)glUniform3f(data_->mat_a, color_amb.x, color_amb.y, color_amb.z);
+      if (data_->mat_d > -1) glUniform3f(data_->mat_d, color_diff.x, color_diff.y, color_diff.z);
+      if (data_->mat_s > -1)glUniform3f(data_->mat_s, color_spe.x, color_spe.y, color_spe.z);
+    }
+    if (mat.type_ == 1){
+      if (data_->mat_a_d > -1)glUniform3f(data_->mat_a_d, color_amb.x, color_amb.y, color_amb.z);
+      if (data_->mat_d_d > -1)glUniform3f(data_->mat_d_d, color_diff.x, color_diff.y, color_diff.z);
+      if (data_->mat_s_d > -1)glUniform3f(data_->mat_s_d, color_spe.x, color_spe.y, color_spe.z);
+    }
+
 
  
 }
@@ -231,35 +248,39 @@ void OpenGlInterFaz::bindFrameBuffer(int fb_id){
 
 void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
   
+  if (data_->type == 0){
+    if (data_->proyec_pos >= 0){
+      glUniformMatrix4fv(data_->proyec_pos, 1, GL_FALSE, glm::value_ptr(proyection));
+    }
 
-  if (data_->proyec_pos >= 0){
-    glUniformMatrix4fv(data_->proyec_pos, 1, GL_FALSE, glm::value_ptr(proyection));
+
+    if (data_->model_pos >= 0){
+      glUniformMatrix4fv(data_->model_pos, 1, GL_FALSE, glm::value_ptr(model));
+    }
+
+
+    if (data_->view_pos >= 0){
+      glUniformMatrix4fv(data_->view_pos, 1, GL_FALSE, glm::value_ptr(view));
+    }
   }
 
-  
-  if (data_->model_pos >= 0){
-    glUniformMatrix4fv(data_->model_pos, 1, GL_FALSE, glm::value_ptr(model));
+  if (data_->type == 1){
+    //DIFFUSe
+    if (data_->proyec_pos_d >= 0){
+      glUniformMatrix4fv(data_->proyec_pos_d, 1, GL_FALSE, glm::value_ptr(proyection));
+
+    }
+
+
+    if (data_->model_pos_d >= 0){
+      glUniformMatrix4fv(data_->model_pos_d, 1, GL_FALSE, glm::value_ptr(model));
+    }
+
+
+    if (data_->view_pos_d >= 0){
+      glUniformMatrix4fv(data_->view_pos_d, 1, GL_FALSE, glm::value_ptr(view));
+    }
   }
-
-  
-  if (data_->view_pos >= 0){
-    glUniformMatrix4fv(data_->view_pos, 1, GL_FALSE, glm::value_ptr(view));
-  }
-  //DIFFUSe
-  if (data_->proyec_pos_d >= 0){
-    glUniformMatrix4fv(data_->proyec_pos_d, 1, GL_FALSE, glm::value_ptr(proyection));
-  }
-
-
-  if (data_->model_pos_d >= 0){
-    glUniformMatrix4fv(data_->model_pos_d, 1, GL_FALSE, glm::value_ptr(model));
-  }
-
-
-  if (data_->view_pos_d >= 0){
-    glUniformMatrix4fv(data_->view_pos_d, 1, GL_FALSE, glm::value_ptr(view));
-  }
-
 }
 #include "CDK/engine_manager.h"
 void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
@@ -274,7 +295,7 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, EngineManager::instance().width(),
         EngineManager::instance().height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glGenerateMipmap(GL_TEXTURE_2D);
-    }
+    } 
     else{
       int w = m->getWidth();
       int h = m->getHeigth();
@@ -290,11 +311,12 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 }
 
 void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int texture_id){
-  glActiveTexture(GL_TEXTURE0 + n_text);
+ 
+  glActiveTexture(GL_TEXTURE0 + 1);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+  int tex_i = glGetUniformLocation(data_->shadow_program_, u_name.c_str());
 
-  //int tex_i = glGetUniformLocation(pro,u_name.c_str());
-  GLuint i = texture_id;
-  glBindTexture(GL_TEXTURE_2D, i);
+  
 }
 
 void OpenGlInterFaz::loadLight(int num_light){
@@ -354,66 +376,67 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light){
   vec3 ambient_c = light->getDiffuseColor();
   float shin = light->getShinenes();
   int type = light->getType();
- 
-  if (data_->u_lights[num_light].l_pos >= 0){
-    glUniform3f(data_->u_lights[num_light].l_pos, position.x, position.y, position.z);
-  }
-   
-   
-  if (data_->u_lights[num_light].l_ac >= 0){
-    glUniform3f(data_->u_lights[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
-  }
+  if (data_->type == 0){
+    if (data_->u_lights[num_light].l_pos >= 0){
+      glUniform3f(data_->u_lights[num_light].l_pos, position.x, position.y, position.z);
+    }
 
-  
-  if (data_->u_lights[num_light].l_sc >= 0){
 
-    glUniform3f(data_->u_lights[num_light].l_sc, specular_c.x, specular_c.y, specular_c.z);
+    if (data_->u_lights[num_light].l_ac >= 0){
+      glUniform3f(data_->u_lights[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
+    }
+
+
+    if (data_->u_lights[num_light].l_sc >= 0){
+
+      glUniform3f(data_->u_lights[num_light].l_sc, specular_c.x, specular_c.y, specular_c.z);
+    }
+
+
+    if (data_->u_lights[num_light].l_dc >= 0){
+      glUniform3f(data_->u_lights[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
+    }
+
+
+    if (data_->u_lights[num_light].l_sh >= 0){
+      glUniform1f(data_->u_lights[num_light].l_sh, shin);
+    }
+
+
+    if (data_->u_lights[num_light].l_t >= 0){
+      glUniform1i(data_->u_lights[num_light].l_t, type);
+    }
   }
-
-  
-  if (data_->u_lights[num_light].l_dc >= 0){
-    glUniform3f(data_->u_lights[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
-  }
-
- 
-  if (data_->u_lights[num_light].l_sh >= 0){
-    glUniform1f(data_->u_lights[num_light].l_sh, shin);
-  }
-
- 
-  if (data_->u_lights[num_light].l_t >= 0){
-    glUniform1i(data_->u_lights[num_light].l_t, type);
-  }
-
   //DIFFUSE
-  if (data_->u_lights_d[num_light].l_pos >= 0){
-    glUniform3f(data_->u_lights_d[num_light].l_pos, position.x, position.y, position.z);
+  if (data_->type == 1){
+    if (data_->u_lights_d[num_light].l_pos >= 0){
+      glUniform3f(data_->u_lights_d[num_light].l_pos, position.x, position.y, position.z);
+    }
+
+
+    if (data_->u_lights_d[num_light].l_ac >= 0){
+      glUniform3f(data_->u_lights_d[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
+    }
+
+
+    if (data_->u_lights_d[num_light].l_sc >= 0){
+
+      glUniform3f(data_->u_lights_d[num_light].l_sc, specular_c.x, specular_c.y, specular_c.z);
+    }
+
+
+    if (data_->u_lights_d[num_light].l_dc >= 0){
+      glUniform3f(data_->u_lights_d[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
+    }
+
+
+    if (data_->u_lights_d[num_light].l_sh >= 0){
+      glUniform1f(data_->u_lights_d[num_light].l_sh, shin);
+    }
+
+
+    if (data_->u_lights_d[num_light].l_t >= 0){
+      glUniform1i(data_->u_lights_d[num_light].l_t, type);
+    }
   }
-
-
-  if (data_->u_lights_d[num_light].l_ac >= 0){
-    glUniform3f(data_->u_lights_d[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
-  }
-
-
-  if (data_->u_lights_d[num_light].l_sc >= 0){
-
-    glUniform3f(data_->u_lights_d[num_light].l_sc, specular_c.x, specular_c.y, specular_c.z);
-  }
-
-
-  if (data_->u_lights_d[num_light].l_dc >= 0){
-    glUniform3f(data_->u_lights_d[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
-  }
-
-
-  if (data_->u_lights_d[num_light].l_sh >= 0){
-    glUniform1f(data_->u_lights_d[num_light].l_sh, shin);
-  }
-
-
-  if (data_->u_lights_d[num_light].l_t >= 0){
-    glUniform1i(data_->u_lights_d[num_light].l_t, type);
-  }
-
 }

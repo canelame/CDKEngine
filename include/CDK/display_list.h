@@ -208,7 +208,6 @@ class DisplayList{
   unsigned int vao_;
 
 public:
-  friend class OpenGlInterFaz;
   typedef std::shared_ptr<Command> Comm_;
   typedef std::vector < Comm_ > List;
 
@@ -239,7 +238,7 @@ public:
   void clear();
 private:
 
-	OpenGlInterFaz *interfaz_;
+
   std::shared_ptr<FrameBuffer> current_framebuffer_;
 
 	List listCommand_;

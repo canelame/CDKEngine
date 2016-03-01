@@ -15,7 +15,7 @@ Drawable::Drawable(){
 
 std::shared_ptr<Material::MaterialSettings> Drawable::getMaterialSettings(){ return data_->material_settings_; }
 void Drawable::setGeometry( std::shared_ptr<Geometry> geo){
-	data_->drawable_geometry_=std::move(geo);
+	data_->drawable_geometry_=geo;
   
 }
 void Drawable::setMaterial( std::shared_ptr<Material>mat){
