@@ -31,34 +31,31 @@ int Window::main(int argc, char** argv){
   Scene.root = std::make_shared<Node>();
   std::shared_ptr<Loader> loader = std::make_shared<Loader>();
 
-
-
-
   //Create Camera
 
   std::shared_ptr<Light> l1 = std::make_shared<Light>();
-  l1->setPosition(vec3(0.0,0.0,100.0));
+  l1->setPosition(vec3(0.0,0.0,-100.0));
   l1->setAmbientColor(vec3(0.0, 1.0, 1.0));
   l1->setSpecularColor(vec3(0.0,1.0,1.0));
-  l1->setDifusseColor(vec3(1.0,1.0,1.0));
+  l1->setDifusseColor(vec3(1.0,0.0,1.0));
   l1->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
   std::shared_ptr<Light> l2 = std::make_shared<Light>();
-  l2->setPosition(vec3(0.0, 30.0, 0.0));
-  l2->setAmbientColor(vec3(0.0, 0.0, 0.0));
+  l2->setPosition(vec3(0.0, 100.0, 0.0));
+  l2->setAmbientColor(vec3(1.0, 1.0, 0.0));
   l2->setSpecularColor(vec3(0.0, 1.0, 1.0));
   l2->setDifusseColor(vec3(0.0, 1.0, 1.0));
   l2->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
 
   Scene.root->addLight(l1);
-  Scene.root->addLight(l2);
+  //Scene.root->addLight(l2);
   std::shared_ptr<Drawable> w;
-  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/mmn.cdk");
+  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/dice.cdk");
 
   
   std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
-  geo->createQuad();
+  geo->createCube();
 
  
   std::shared_ptr<Material> mater = std::make_shared<Material>(1);
@@ -69,9 +66,10 @@ int Window::main(int argc, char** argv){
     float j = 0.2;
    
     w = std::make_shared<Drawable>();
-    mat_s->diffuse_color_ = vec3(1.0);
-    mat_s->ambient_color_ = vec3(1.0);
-    mat_s->specular_color_ = vec3(1.0);
+    w->setName("cube");
+    mat_s->diffuse_color_ = vec3(0.0);
+    mat_s->ambient_color_ = vec3(0.0,0.0,0.0);
+    mat_s->specular_color_ = vec3(0.0);
     w->setGeometry(geo);
     w->setMaterial(mater);
     w->setMaterialSettings(mat_s);

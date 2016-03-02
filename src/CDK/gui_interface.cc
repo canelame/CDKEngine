@@ -162,17 +162,25 @@ void GuInterface::transformPanel(Node &node){
 
     ImGui::Begin("TRANSFORM:");
     ImGui::Text(node.getName());
-    ImGui::SetWindowPos(ImVec2(975, 50.0));
+    ImGui::SetWindowPos(ImVec2(600.0, 50.0));
     //Position
     vec3 pos_node = node.position();
     float n_pos[3] = { pos_node.x, pos_node.y, pos_node.z };
-    ImGui::SliderFloat3("Position:", n_pos, 0.0, 1000.0, "%1.0f");
-    node.setPosition(vec3(n_pos[0], n_pos[1], n_pos[2]));
+    if (ImGui::SliderFloat3("Position:", n_pos, 0.0, 1000.0, "%1.0f")){
+      node.setPosition(vec3(n_pos[0], n_pos[1], n_pos[2]));
+    }
     //Scale
     vec3 sclae_node = node.scale();
     float n_scale[3] = { sclae_node.x, sclae_node.y, sclae_node.z };
-    ImGui::SliderFloat3("Scale:", n_scale, 0.0, 1000.0, "%1.0f");
-    node.setScale(vec3(n_scale[0], n_scale[1], n_scale[2]));
+    if (ImGui::SliderFloat3("Scale:", n_scale, 0.0, 1000.0, "%1.0f")){
+     node.setScale(vec3(n_scale[0], n_scale[1], n_scale[2]));
+    }
+    vec3 rotate_node = node.rotation();
+    float n_rotate[3] = { rotate_node.x, rotate_node.y, rotate_node.z };
+    if (ImGui::SliderFloat3("Rotation:", n_rotate, 0.0, 1000.0, "%1.0f")){
+      node.setRotation(vec3(n_rotate[0], n_rotate[1], n_rotate[2]));
+    }
+
     ImGui::End();
   
 }
