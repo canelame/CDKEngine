@@ -66,7 +66,7 @@ public:
   /**
   @brief
   */
-  void drawGeometry(unsigned int indices);
+  void drawGeometry(int vao,unsigned int indices);
   /**
   @brief
   */
@@ -76,11 +76,6 @@ public:
   void sendLight( Light *light,int num_light);
   /**
   @brief
-  */
-  /**
-  */
-  void loadCamera();
-  /**
   */
 
   void useCamera(mat4 proyection, mat4 model, mat4 view);
@@ -96,7 +91,7 @@ public:
   ~OpenGlInterFaz(){};
 
   static OpenGlInterFaz& instance();
-  friend class DisplayList;
+
 private:
  
   struct Data;

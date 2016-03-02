@@ -23,26 +23,21 @@ uniform float u_shinn_d;
 
 
 uniform Light lights_d[10];
-vec3 oColor  = vec3(1.0,0.0,0.0);
+
 
 vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir);
 vec3 computePointLight(Light l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir);
 
 void main(){
 	vec3 view = normalize(o_cam_pos-o_world_position.xyz);
-
-	
-	//color.xyz = vec3(1.0,1.0,1.0f)*vec3(texture(u_diffuse_texture1,o_uv));
-	//color.xyz =computeDirectionLight(default_light,o_normal,view);
-
 	for(int i=0;i<10;i++){
 		if(lights_d[i].type == 1){
 			color.xyz+= computePointLight(lights_d[i],o_normal,o_world_position.xyz,view);
 		}else if(lights_d[i].type==2){
-			
 			color.xyz+=computeDirectionLight(lights_d[i],o_normal,view);
 		}
 	}
+
 }
 
 vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir){
@@ -68,8 +63,8 @@ vec3 computePointLight(Light l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 	//attenuyuation
 	float distance = length(l_dir.position-fragPos);
 	vec3 ambient = l_dir.ambient_color*u_material_ambient_d;
-	vec3 diffuse = l_dir.diffuse_color*u_material_diff_d;
-	vec3 specular = l_dir.specular_color*u_material_specular_d ;
+	vec3 diffuse = l_dir.diffuse_color*u_material_diff_d*diff;
+	vec3 specular = l_dir.specular_color*u_material_specular_d * spec;
 	 return  (ambient+diffuse+specular);
 
 

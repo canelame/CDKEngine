@@ -26,7 +26,7 @@ void DisplayList::execute(){
   }
 
 	for (int i = 0; i < listCommand_.size(); ++i){
-    listCommand_[i].get()->runCommand(OpenGlInterFaz::instance());
+    listCommand_[i].get()->runCommand();
 	}
 
   if (render_target_changed){
@@ -51,7 +51,7 @@ UseTextureComman::UseTextureComman(int pro,std::vector<std::string>textures){
 }
 
 
-void UseTextureComman::runCommand(OpenGlInterFaz &in)const{
+void UseTextureComman::runCommand()const{
   int num_diffuse_t = 1;
   int num_specular_t = 1;
   for (int i = 0; i < textures_.size(); i++){ 
@@ -89,7 +89,7 @@ UseCameraCommand::UseCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_m){
 }
 
 
-void UseCameraCommand::runCommand(OpenGlInterFaz &in)const{
+void UseCameraCommand::runCommand()const{
 
 
   OpenGlInterFaz::instance().useCamera(proyec_m_, model_n_, view_m_);
@@ -101,7 +101,7 @@ LoadTextureCommand::LoadTextureCommand(std::shared_ptr<Material::MaterialSetting
 	t_mat = mat;
 }
 
-void LoadTextureCommand::runCommand(OpenGlInterFaz &in)const{
+void LoadTextureCommand::runCommand()const{
   for (int i = 0; i < t_mat->totalTextures(); i++){
     OpenGlInterFaz::instance().loadTexture(TextureCache::instance().getTexture(t_mat->getTextureAt(i)));
       TextureCache::instance().getTexture(t_mat->getTextureAt(i))->setLoaded(true);
@@ -117,7 +117,7 @@ std::shared_ptr<Material::MaterialSettings>  LoadTextureCommand::getMaterial(){
 LoadMaterialCommand::LoadMaterialCommand(std::shared_ptr<Material> mat){
 	t_mat = mat;
 }
-void LoadMaterialCommand::runCommand(OpenGlInterFaz &in)const{
+void LoadMaterialCommand::runCommand()const{
   OpenGlInterFaz::instance().loadMaterial(t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str());
 	t_mat->is_compiled_ = true;
 }
@@ -126,58 +126,22 @@ std::shared_ptr<Material>  LoadMaterialCommand::getMaterial(){
 	return t_mat; 
 }
 
-///////// LOAD_GEO_COMMAND CLASS/////////////////
-////////////////////////////////////////////
-LoadGeometryCommand::LoadGeometryCommand(std::shared_ptr<Geometry> geo){
-
-		t_geo = geo;
-}
-void LoadGeometryCommand::runCommand(OpenGlInterFaz &in)const{
-
-
-
-}
-bool LoadGeometryCommand::deleted(){
-	return delete_;
-}
-void LoadGeometryCommand::shouldDelete(bool v){
-	delete_ = v;
-}
-
-///////// USE_GEOMETRY CLASS/////////////////
-////////////////////////////////////////////
-UseGeometryCommand::UseGeometryCommand(std::shared_ptr<Buffer>geo){
-
-		t_geo = geo;
-
-}
-
-
-void UseGeometryCommand::runCommand(OpenGlInterFaz &in)const{
-  if (t_geo->isDirty() && t_geo!=nullptr){
-    OpenGlInterFaz::instance().loadBuffer(t_geo);
-    t_geo->setDirty(false);
-    vao_ = *t_geo->getVAO();
-
-  }
-  OpenGlInterFaz::instance().useGeometry(*t_geo->getVAO());
-
-
-}
-
 ///////// DRAW_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
 DrawCommand::DrawCommand(std::shared_ptr<Buffer>g){
 	
 		t_geo = g;
-
+    vao_ =(GLuint) t_geo->getVAO();
     indices_size_ = t_geo->indiceSize();
 
 }
 
-void DrawCommand::runCommand(OpenGlInterFaz &in)const{
-
-  OpenGlInterFaz::instance().drawGeometry(indices_size_);
+void DrawCommand::runCommand()const{
+  if (t_geo->isDirty() && t_geo != nullptr){
+    OpenGlInterFaz::instance().loadBuffer(t_geo);
+    t_geo->setDirty(false);
+  }
+  OpenGlInterFaz::instance().drawGeometry(*t_geo->getVAO(), indices_size_);
 
 }
 
@@ -189,14 +153,13 @@ UseMaterialCommand::UseMaterialCommand(std::shared_ptr<Material> mat, std::share
 
 }
 
-void UseMaterialCommand::runCommand(OpenGlInterFaz &in)const{
+void UseMaterialCommand::runCommand()const{
   if (!t_mat->is_compiled_){
 
     t_mat->setProgram(OpenGlInterFaz::instance().loadMaterial(t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str()));
-    for (int i = 0; i < 1; i++){
+    for (int i = 0; i < 10; i++){
       OpenGlInterFaz::instance().loadLight(i);
     }
-    OpenGlInterFaz::instance().loadCamera();
     t_mat->is_compiled_ = true;
   }
     OpenGlInterFaz::instance().useMaterial(*t_mat.get(), mat_set_->ambient_color_, mat_set_->diffuse_color_, mat_set_->specular_color_);
@@ -209,7 +172,7 @@ LightsCommand::LightsCommand(std::vector<std::shared_ptr<Light>>l){
 
 }
 
-void LightsCommand::runCommand(OpenGlInterFaz &in)const{
+void LightsCommand::runCommand()const{
   for (int i = 0; i < lights_.size(); i++){
     OpenGlInterFaz::instance().sendLight(lights_[i].get(), i);
 
@@ -220,7 +183,7 @@ void LightsCommand::runCommand(OpenGlInterFaz &in)const{
 UseFrameBuffer::UseFrameBuffer(FrameBuffer *fb){
   frame_buff_ = fb;
 }
-void UseFrameBuffer::runCommand(OpenGlInterFaz &in)const{
+void UseFrameBuffer::runCommand()const{
   if (!frame_buff_->isLoaded()){
     OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_);
     frame_buff_->setLoaded(true);

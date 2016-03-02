@@ -57,6 +57,7 @@ void Camera::render(std::shared_ptr<Node>node){
   if (EngineManager::instance().window_size_modified_){
    
     setPerspective(45.0f, EngineManager::instance().width() / EngineManager::instance().height(), 0.1, 10000.0f);
+    EngineManager::instance().setWindowModified(false);
   }
   std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, data_->proyection_mat_,data_->look_at_mat_,data_->loaded);
 
@@ -70,7 +71,7 @@ void Camera::render(std::shared_ptr<Node>node){
      data_->dl_cam_->execute();
      data_->dl_cam_->clear();
      data_->dl_cam_.swap(data_->dl_copy_);
-   //  GuInterface::instance().draw(node);
+     GuInterface::instance().draw(node);
 
  
 }

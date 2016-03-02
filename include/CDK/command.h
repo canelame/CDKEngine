@@ -1,7 +1,7 @@
 #ifndef __H_COMMAND__
 #define __H_COMMAND__
 
-class OpenGlInterFaz;
+
 /**
 * command.h
 * @author Alejandro Canela Mendez 2015.
@@ -16,7 +16,7 @@ public:
   * @brief This commands run OpenGL code, in subclasses.
   * 
   */
-	virtual void runCommand( OpenGlInterFaz &in)const = 0;
+	virtual void runCommand()const = 0;
 
 };
 

@@ -29,6 +29,10 @@ void EngineManager::setHeight(int h){
   height_ = h;
 }
 
+void EngineManager::setWindowModified(bool value){
+  window_size_modified_ = value;
+}
+
 void EngineManager::setRenderTarget(FrameBuffer*fb){
   current_render_target_ = fb;
 }

@@ -75,7 +75,7 @@ bool Window::init(unsigned int width, unsigned int height){
 
   //Set ViewPort
 
- // ImGui_ImplGlfwGL3_Init(window_s_->main_window_, true);
+  ImGui_ImplGlfwGL3_Init(window_s_->main_window_, true);
  
   glfwMakeContextCurrent(window_s_->main_window_);
   glfwSetKeyCallback(window_s_->main_window_, key_callback);
@@ -96,7 +96,7 @@ bool Window::init(unsigned int width, unsigned int height){
 bool Window::processEvents(){
   glfwPollEvents();
 
- // ImGui_ImplGlfwGL3_NewFrame();
+  ImGui_ImplGlfwGL3_NewFrame();
   
   return true; 
 }

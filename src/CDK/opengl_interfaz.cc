@@ -66,7 +66,6 @@ OpenGlInterFaz::OpenGlInterFaz(){
 
 void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
 
-
   GLint position_size =buff->vertexSize() * sizeof(float);
   GLint normal_size = buff->normalSize() * sizeof(float);
   GLint uv_size = buff->uvSize() * sizeof(float);
@@ -74,26 +73,21 @@ void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
   GLint bitan_size = buff->bitangentSize() * sizeof(float);
   GLint index_size = buff->indiceSize() * sizeof(unsigned int);
 
-
   glGenVertexArrays(1, &data_->shadow_vao_);
   glGenBuffers(1, &data_->shadow_vbo_v_);
   glGenBuffers(1, &data_->shadow_vbo_i_);
-
   glBindVertexArray(data_->shadow_vao_);
   glBindBuffer(GL_ARRAY_BUFFER, data_->shadow_vbo_v_);
-
   glBufferData(GL_ARRAY_BUFFER, position_size+normal_size+uv_size, NULL, GL_STATIC_DRAW);
- 
     //Load positions
-
-     glBufferSubData(GL_ARRAY_BUFFER, 0, position_size, &buff->getData()[0]);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, position_size, &buff->getData()[0]);
 
   //Load normals
      int a = strlen(buff->getData());
-    glBufferSubData(GL_ARRAY_BUFFER, position_size, normal_size, &buff->getData()[position_size]);
-    glBufferSubData(GL_ARRAY_BUFFER, position_size+normal_size, uv_size, &buff->getData()[position_size+normal_size]);  
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data_->shadow_vbo_i_);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, &buff->getData()[position_size + normal_size+uv_size+tan_size+bitan_size], GL_STATIC_DRAW);
+   glBufferSubData(GL_ARRAY_BUFFER, position_size, normal_size, &buff->getData()[position_size]);
+   glBufferSubData(GL_ARRAY_BUFFER, position_size+normal_size, uv_size, &buff->getData()[position_size+normal_size]);  
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data_->shadow_vbo_i_);
+   glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, &buff->getData()[position_size + normal_size+uv_size+tan_size+bitan_size], GL_STATIC_DRAW);
   
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),0);
     glEnableVertexAttribArray(0);
@@ -102,7 +96,7 @@ void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
     glEnableVertexAttribArray(1);
 
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(position_size+normal_size));
-    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
 	  glBindVertexArray(0);	
     glDeleteBuffers(1, &data_->shadow_vbo_i_);
@@ -111,11 +105,9 @@ void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
 }
 
 void OpenGlInterFaz::useGeometry(GLuint vao){
-  glBindVertexArray(vao);
+ 
 }
 void OpenGlInterFaz::useMaterial( Material &mat,vec3 color_amb, vec3 color_diff, vec3 color_spe){
-  
-
   data_->type = mat.type_;
     glUseProgram(mat.getProgram());
     if (mat.type_ == 0){
@@ -128,9 +120,6 @@ void OpenGlInterFaz::useMaterial( Material &mat,vec3 color_amb, vec3 color_diff,
       if (data_->mat_d_d > -1)glUniform3f(data_->mat_d_d, color_diff.x, color_diff.y, color_diff.z);
       if (data_->mat_s_d > -1)glUniform3f(data_->mat_s_d, color_spe.x, color_spe.y, color_spe.z);
     }
-
-
- 
 }
 int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_data){
 
@@ -184,8 +173,9 @@ int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_dat
 
 }
 
-void OpenGlInterFaz::drawGeometry(unsigned int indices){
+void OpenGlInterFaz::drawGeometry( int vao,unsigned int indices){
  // printf("Draw elements: %d indices\n",shadow_index_.size());
+  glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)0);
 
 }
@@ -238,9 +228,6 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
   }
 }
 
-void OpenGlInterFaz::loadCamera(){
-
-}
 
 void OpenGlInterFaz::bindFrameBuffer(int fb_id){
   glBindFramebuffer(GL_FRAMEBUFFER,fb_id);
@@ -312,7 +299,7 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 
 void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int texture_id){
  
-  glActiveTexture(GL_TEXTURE0 + 1);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture_id);
   int tex_i = glGetUniformLocation(data_->shadow_program_, u_name.c_str());
 
@@ -320,19 +307,22 @@ void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int textur
 }
 
 void OpenGlInterFaz::loadLight(int num_light){
-  if (data_->u_lights[num_light].l_pos<0)data_->u_lights[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].position").c_str());
-  if (data_->u_lights[num_light].l_ac<0)data_->u_lights[num_light].l_ac = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].ambient_color").c_str());
-  if (data_->u_lights[num_light].l_sc<0)data_->u_lights[num_light].l_sc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].specular_color").c_str());
-  if (data_->u_lights[num_light].l_dc<0)data_->u_lights[num_light].l_dc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].diffuse_color").c_str());
-  if (data_->u_lights[num_light].l_sh<0)data_->u_lights[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
-  if (data_->u_lights[num_light].l_t<0)data_->u_lights[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
-  //DIFFUSE
-  if (data_->u_lights_d[num_light].l_pos<0)data_->u_lights_d[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].position").c_str());
-  if (data_->u_lights_d[num_light].l_ac<0)data_->u_lights_d[num_light].l_ac = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].ambient_color").c_str());
-  if (data_->u_lights_d[num_light].l_sc<0)data_->u_lights_d[num_light].l_sc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].specular_color").c_str());
-  if (data_->u_lights_d[num_light].l_dc<0)data_->u_lights_d[num_light].l_dc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].diffuse_color").c_str());
-  if (data_->u_lights_d[num_light].l_sh<0)data_->u_lights_d[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].sh").c_str());
-  if (data_->u_lights_d[num_light].l_t<0)data_->u_lights_d[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].type").c_str());
+
+    if (data_->u_lights[num_light].l_pos < 0)data_->u_lights[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].position").c_str());
+    if (data_->u_lights[num_light].l_ac < 0)data_->u_lights[num_light].l_ac = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].ambient_color").c_str());
+    if (data_->u_lights[num_light].l_sc < 0)data_->u_lights[num_light].l_sc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].specular_color").c_str());
+    if (data_->u_lights[num_light].l_dc < 0)data_->u_lights[num_light].l_dc = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].diffuse_color").c_str());
+    if (data_->u_lights[num_light].l_sh < 0)data_->u_lights[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
+    if (data_->u_lights[num_light].l_t < 0)data_->u_lights[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
+    //DIFFUSE
+  
+    if (data_->u_lights_d[num_light].l_pos < 0)data_->u_lights_d[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].position").c_str());
+    if (data_->u_lights_d[num_light].l_ac < 0)data_->u_lights_d[num_light].l_ac = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].ambient_color").c_str());
+    if (data_->u_lights_d[num_light].l_sc < 0)data_->u_lights_d[num_light].l_sc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].specular_color").c_str());
+    if (data_->u_lights_d[num_light].l_dc < 0)data_->u_lights_d[num_light].l_dc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].diffuse_color").c_str());
+    if (data_->u_lights_d[num_light].l_sh < 0)data_->u_lights_d[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].sh").c_str());
+    if (data_->u_lights_d[num_light].l_t < 0)data_->u_lights_d[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].type").c_str());
+  
 }
 void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 

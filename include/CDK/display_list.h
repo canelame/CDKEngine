@@ -15,51 +15,18 @@ ESAT 2016.
 class DrawCommand : public Command{
 public:
 	DrawCommand(std::shared_ptr<Buffer> g);
-	void runCommand(OpenGlInterFaz &in)const;
+	void runCommand()const;
 private:
   std::shared_ptr<Buffer> t_geo;
   int indices_size_;
+  GLuint vao_;
 };
 #endif
-///USE GEOMETRY COMMAND CLASS
-#ifndef __H_USE_GEO_COMMAND__
-#define __H_USE_GEO_COMMAND__
-#include "command.h"
-#include "geometry.h"
-#include "opengl_interfaz.h"
-class UseGeometryCommand : public Command{
-public:
-	UseGeometryCommand(std::shared_ptr<Buffer>geo);
-	void runCommand(OpenGlInterFaz &in)const;
-private:	
-	
-  std::shared_ptr<Buffer> t_geo;
-  mutable GLuint vao_;
-};
-#endif
+
 
 ///LOAD GEOMTRY COMMAND CLASS
 
-#ifndef __H_LOAD_GEO_COMMAND__
-#define __H_LOAD_GEO_COMMAND__
-#include "command.h"
-#include "geometry.h"
-#include "opengl_interfaz.h"
-class LoadGeometryCommand: public Command{
-public:	
-	LoadGeometryCommand(std::shared_ptr<Geometry> geo);
 
-
-	void runCommand(OpenGlInterFaz &in)const;
-  
-	bool deleted();
-	void shouldDelete(bool v);
-private:
-	std::shared_ptr<Geometry> t_geo;
-  mutable bool delete_ = false;
-
-};
-#endif
 
 ///USE LIGHT COMMAND CLASS
 #ifndef __H_LIGHTS_COMMAND__
@@ -73,7 +40,7 @@ public:
   LightsCommand(std::vector<std::shared_ptr< Light>> geo);
 
 
-  void runCommand(OpenGlInterFaz &in)const;
+  void runCommand()const;
 
 
 private:
@@ -90,7 +57,7 @@ private:
 class LoadMaterialCommand : public Command{
 public:
 	LoadMaterialCommand(std::shared_ptr<Material> mat);
-	void runCommand(OpenGlInterFaz &in)const;
+	void runCommand()const;
 	std::shared_ptr<Material>  getMaterial();
 private:
 	std::shared_ptr<Material> t_mat;
@@ -107,7 +74,7 @@ private:
 class LoadTextureCommand : public Command{
 public:
 	LoadTextureCommand(std::shared_ptr<Material::MaterialSettings>mat);
-	void runCommand(OpenGlInterFaz &in)const;
+	void runCommand()const;
 	std::shared_ptr<Material::MaterialSettings>  getMaterial();
 private:
 	 std::shared_ptr<Material::MaterialSettings> t_mat;
@@ -124,7 +91,7 @@ private:
 class UseTextureComman : public Command {
 public:
 	UseTextureComman(int pro,std::vector<std::string>textures);
-	void runCommand(OpenGlInterFaz &in)const;
+	void runCommand()const;
 private:
   std::vector<std::string> textures_;
   int program_mat_;
@@ -141,7 +108,7 @@ private:
 class UseCameraCommand : public Command {
 public:
   UseCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_mm);
-  void runCommand(OpenGlInterFaz &in)const;
+  void runCommand()const;
 private:
   mat4 proyec_m_;
   mat4 view_m_;
@@ -158,7 +125,7 @@ private:
 class UseMaterialCommand : public Command{
 public:
 	UseMaterialCommand(std::shared_ptr<Material> mat,std::shared_ptr<Material::MaterialSettings> mt_s);
-	void runCommand(OpenGlInterFaz &in)const;
+	void runCommand()const;
 private:
   std::shared_ptr<Material::MaterialSettings> mat_set_;
   std::shared_ptr<Material> t_mat;
@@ -176,7 +143,7 @@ private:
 class UseFrameBuffer : public Command{
 public:
   UseFrameBuffer(FrameBuffer *fb);
-  void runCommand(OpenGlInterFaz &in)const;
+  void runCommand()const;
 private:
   FrameBuffer* frame_buff_;
 

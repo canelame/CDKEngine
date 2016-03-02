@@ -37,41 +37,41 @@ int Window::main(int argc, char** argv){
   //Create Camera
 
   std::shared_ptr<Light> l1 = std::make_shared<Light>();
-  l1->setPosition(vec3(0.0,0.0,95.0));
-  l1->setAmbientColor(vec3(1.0, 1.0, 1.0));
-  l1->setSpecularColor(vec3(1.0,1.0,1.0));
+  l1->setPosition(vec3(0.0,0.0,100.0));
+  l1->setAmbientColor(vec3(0.0, 1.0, 1.0));
+  l1->setSpecularColor(vec3(0.0,1.0,1.0));
   l1->setDifusseColor(vec3(1.0,1.0,1.0));
   l1->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
   std::shared_ptr<Light> l2 = std::make_shared<Light>();
   l2->setPosition(vec3(0.0, 30.0, 0.0));
-  l2->setAmbientColor(vec3(1.0, 0.0, 0.0));
-  l2->setSpecularColor(vec3(1.0, 1.0, 1.0));
+  l2->setAmbientColor(vec3(0.0, 0.0, 0.0));
+  l2->setSpecularColor(vec3(0.0, 1.0, 1.0));
   l2->setDifusseColor(vec3(0.0, 1.0, 1.0));
   l2->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
 
   Scene.root->addLight(l1);
-  //Scene.root->addLight(l2);
+  Scene.root->addLight(l2);
   std::shared_ptr<Drawable> w;
   std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/mmn.cdk");
 
   
   std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
-  geo->createCube();
+  geo->createQuad();
 
  
   std::shared_ptr<Material> mater = std::make_shared<Material>(1);
- 
+  std::shared_ptr <Material::MaterialSettings> mat_s = std::make_shared<Material::MaterialSettings>();
 
   w->setPosition(vec3(0.0 ,10.0, 0.0 ));
-  for (int i = 0; i < 2; i++){
-    
-    std::shared_ptr <Material::MaterialSettings> mat_s = std::make_shared<Material::MaterialSettings>();
+  for (int i = 0 ; i < 2; i++){
+    float j = 0.2;
+   
     w = std::make_shared<Drawable>();
     mat_s->diffuse_color_ = vec3(1.0);
-    mat_s->ambient_color_ = vec3(1.0, (0.8/i)*0.5 +0.5, (0.1)*0.5 + 0.5);
-
+    mat_s->ambient_color_ = vec3(1.0);
+    mat_s->specular_color_ = vec3(1.0);
     w->setGeometry(geo);
     w->setMaterial(mater);
     w->setMaterialSettings(mat_s);

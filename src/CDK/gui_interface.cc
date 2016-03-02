@@ -30,10 +30,6 @@ void GuInterface::draw(std::shared_ptr<Node>node){
   if (select_node_ != nullptr){
     transformPanel(*select_node_.get());
   }
-    
-  
-     
-
   ImGui::Render();
 }
 
