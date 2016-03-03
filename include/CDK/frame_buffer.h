@@ -8,9 +8,7 @@ class Material;
 class FrameBuffer{
 
 public:
-  enum kFrameBufferAttachment{
-  
-  };
+  enum kFrameBufferAttachments;
   FrameBuffer();
   ~FrameBuffer(){};
   FrameBuffer(const FrameBuffer&);
@@ -25,7 +23,8 @@ public:
   int getProgram();
   void begin();
   void end();
-
+  void setAttachment(kFrameBufferAttachments);
+  kFrameBufferAttachments getAttachment();
 private:
   struct Data;
   Data *data_;

@@ -9,8 +9,18 @@ ESAT 2016
 */
 class Texture{
 public:
-  enum kTextureFiltering;
-  enum kTextureWrapping;
+  enum kTextureFiltering{
+    kTextureFiltering_Linear = 0,
+    kTextureFiltering_Nearest
+
+  };
+  enum kTextureWrapping{
+    kTextureWrapping_Repeat = 0,
+    kTextureWrapping_Mirror_Repeat,
+    kTextureWrapping_Clamp_Edge,
+    kTextureWrapping_Clamp_Border
+
+  };
   Texture();
   //~Texture(){};
   Texture(const Texture&t);
@@ -74,9 +84,22 @@ public:
   void setMinFilter(kTextureFiltering filter);
   /**
   */
-  void setWrapCoordinateS();
-  void setWrapCoordinateT();
-
+  void setWrapCoordinateS(kTextureWrapping wrap);
+  /**
+  */
+  void setWrapCoordinateT(kTextureWrapping wrap);
+  /**
+  */
+  kTextureFiltering getMagFilter( );
+  /**
+  */
+  kTextureFiltering getMinFilter( );
+  /**
+  */
+  kTextureWrapping getWrapCoordinateS( );
+  /**
+  */
+  kTextureWrapping getWrapCoordinateT( );
 private:
   struct Data;
 	Data *data_;

@@ -7,7 +7,7 @@ vec2 window_size =vec2(1024,768);
 
 vec2 center = vec2(window_size.x/2.0,window_size.y/2.0);
 float radius = 600.0;
-float angle = 1.5;
+float angle = 5.0;
 
 vec4 guapo( ){
 	vec2 tw_size = vec2(window_size.x,window_size.y);

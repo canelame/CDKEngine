@@ -12,6 +12,16 @@ struct FrameBuffer::Data{
   std::shared_ptr<Material> material_;
   GLuint texture_frame_buffer_id;
   bool loaded = false;
+  FrameBuffer::kFrameBufferAttachments attachment;
+};
+
+enum FrameBuffer::kFrameBufferAttachments{
+
+  kFrameBufferAttachments_Depth=0,
+  kFrameBufferAttachments_Stencil,
+  kFrameBufferAttachments_Depth_Stencil,
+  kFrameBufferAttachments_Color
+
 };
 
 FrameBuffer::FrameBuffer(){
@@ -62,4 +72,12 @@ Material& FrameBuffer::getMaterial(){
 
 std::shared_ptr<Buffer> FrameBuffer::getQuad(){
   return data_->render_quad_->getBuffer();
+}
+
+FrameBuffer::kFrameBufferAttachments FrameBuffer::getAttachment(){
+  return data_->attachment;
+}
+
+void FrameBuffer::setAttachment(FrameBuffer::kFrameBufferAttachments attach){
+  data_->attachment = attach;
 }

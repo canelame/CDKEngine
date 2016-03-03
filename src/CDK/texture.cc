@@ -7,27 +7,24 @@ struct Texture::Data{
   unsigned char* image_;  
   int w, h;
   int comp;
+  kTextureFiltering mag_filter;
+  kTextureFiltering min_filter;
+  kTextureWrapping s_wrapping;
+  kTextureWrapping t_wrapping;
   char path[100];
   char type[30];
 };
-enum Texture::kTextureFiltering{
-  kTextureFiltering_Linear =0,
-  kTextureFiltering_Nearest
 
-};
-enum Texture::kTextureWrapping{
-  kTextureWrapping_Repeat=0,
-  kTextureWrapping_Mirror_Repeat,
-  kTextureWrapping_Clamp_Edge,
-  kTextureWrapping_Clamp_Border
-
-};
 
 Texture::Texture(){ 
 	data_ = new Data;
 	data_->is_loaded = false;
+  data_->mag_filter = kTextureFiltering::kTextureFiltering_Linear;
+  data_->min_filter = kTextureFiltering::kTextureFiltering_Linear;
+  data_->s_wrapping = kTextureWrapping::kTextureWrapping_Repeat;
+  data_->t_wrapping = kTextureWrapping::kTextureWrapping_Repeat;
 };
-void Te
+
 void Texture::loadTexture(const char*file,const char type[30]){
 
     memcpy(&data_->path[0], &file[0], strlen(file)); data_->path[strlen(file)] = '\0';
@@ -76,3 +73,30 @@ char* Texture::getPath(){
 char* Texture::getType(){
   return data_->type; 
 }
+
+void Texture::setMagFilter(Texture::kTextureFiltering filter){
+  data_->mag_filter = filter;
+}
+void Texture::setMinFilter(Texture::kTextureFiltering filter){
+  data_->min_filter = filter;
+}
+void Texture::setWrapCoordinateS(Texture::kTextureWrapping wrap){
+  data_->s_wrapping = wrap;
+}
+void Texture::setWrapCoordinateT(Texture::kTextureWrapping wrap){
+  data_->t_wrapping = wrap;
+}
+
+Texture::kTextureFiltering Texture::getMagFilter(){
+  return data_->mag_filter;
+}
+Texture::kTextureFiltering Texture::getMinFilter(){
+  return data_->min_filter;
+}
+Texture::kTextureWrapping Texture::getWrapCoordinateS(){
+  return data_->s_wrapping;
+}
+Texture::kTextureWrapping Texture::getWrapCoordinateT(){
+ return data_->t_wrapping;
+}
+

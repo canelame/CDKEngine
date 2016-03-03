@@ -70,7 +70,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
 
  if (file != NULL){
 
-   std::shared_ptr<Material>  mat_child = std::make_shared<Material>(1);
+   std::shared_ptr<Material>  mat_child = std::make_shared<Material>(0);
    fread((void*)&num_meshes, sizeof(const int), 1, file);
    MeshData m;
    std::shared_ptr<Material::MaterialSettings> mat_sett;

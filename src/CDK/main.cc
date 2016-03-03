@@ -51,7 +51,7 @@ int Window::main(int argc, char** argv){
   Scene.root->addLight(l1);
   //Scene.root->addLight(l2);
   std::shared_ptr<Drawable> w;
-  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/mmn.cdk");
+  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/paris.cdk");
 
   
   std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
@@ -77,6 +77,7 @@ int Window::main(int argc, char** argv){
     Scene.root->addChild(w);
   }
   Scene.root->addChild(w1);
+  Scene.root->addChild(w1);
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
 
   std::shared_ptr<FrameBuffer>render_to_text = std::make_shared<FrameBuffer>();
@@ -84,7 +85,7 @@ int Window::main(int argc, char** argv){
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();
     window->clearScreen(vec3(0.3, 0.2, 0.1));
-    //render_to_text->begin();
+  //  render_to_text->begin();
     Scene.cam->render(Scene.root);
     window->swap();
 
