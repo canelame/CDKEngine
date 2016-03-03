@@ -363,7 +363,7 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light){
   vec3 position = light->getPosition();
   vec3 diffuse_c = light->getDiffuseColor();
   vec3 specular_c = light->getSpecularColor();
-  vec3 ambient_c = light->getDiffuseColor();
+  vec3 ambient_c = light->getAmbientColor();
   float shin = light->getShinenes();
   int type = light->getType();
   if (data_->type == 0){
@@ -403,7 +403,6 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light){
       glUniform3f(data_->u_lights_d[num_light].l_pos, position.x, position.y, position.z);
     }
 
-
     if (data_->u_lights_d[num_light].l_ac >= 0){
       glUniform3f(data_->u_lights_d[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
     }
@@ -419,11 +418,9 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light){
       glUniform3f(data_->u_lights_d[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
     }
 
-
     if (data_->u_lights_d[num_light].l_sh >= 0){
       glUniform1f(data_->u_lights_d[num_light].l_sh, shin);
     }
-
 
     if (data_->u_lights_d[num_light].l_t >= 0){
       glUniform1i(data_->u_lights_d[num_light].l_t, type);

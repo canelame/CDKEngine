@@ -9,7 +9,8 @@ ESAT 2016
 */
 class Texture{
 public:
-
+  enum kTextureFiltering;
+  enum kTextureWrapping;
   Texture();
   //~Texture(){};
   Texture(const Texture&t);
@@ -64,6 +65,18 @@ public:
   @return A char string whit type
   */
   char* getType();
+
+  /**
+  */
+  void setMagFilter(kTextureFiltering filter);
+  /**
+  */
+  void setMinFilter(kTextureFiltering filter);
+  /**
+  */
+  void setWrapCoordinateS();
+  void setWrapCoordinateT();
+
 private:
   struct Data;
 	Data *data_;

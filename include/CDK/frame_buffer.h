@@ -8,6 +8,9 @@ class Material;
 class FrameBuffer{
 
 public:
+  enum kFrameBufferAttachment{
+  
+  };
   FrameBuffer();
   ~FrameBuffer(){};
   FrameBuffer(const FrameBuffer&);

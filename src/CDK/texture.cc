@@ -10,11 +10,24 @@ struct Texture::Data{
   char path[100];
   char type[30];
 };
+enum Texture::kTextureFiltering{
+  kTextureFiltering_Linear =0,
+  kTextureFiltering_Nearest
+
+};
+enum Texture::kTextureWrapping{
+  kTextureWrapping_Repeat=0,
+  kTextureWrapping_Mirror_Repeat,
+  kTextureWrapping_Clamp_Edge,
+  kTextureWrapping_Clamp_Border
+
+};
+
 Texture::Texture(){ 
 	data_ = new Data;
 	data_->is_loaded = false;
 };
-
+void Te
 void Texture::loadTexture(const char*file,const char type[30]){
 
     memcpy(&data_->path[0], &file[0], strlen(file)); data_->path[strlen(file)] = '\0';
