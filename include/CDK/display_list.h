@@ -14,10 +14,10 @@ ESAT 2016.
 #include "geometry.h"
 class DrawCommand : public Command{
 public:
-	DrawCommand(std::shared_ptr<Buffer> g);
+	DrawCommand(Buffer* g);
 	void runCommand()const;
 private:
-  std::shared_ptr<Buffer> t_geo;
+  Buffer *t_geo;
   int indices_size_;
   GLuint vao_;
 };
@@ -37,14 +37,14 @@ private:
 #include "opengl_interfaz.h"
 class LightsCommand : public Command{
 public:
-  LightsCommand(std::vector<std::shared_ptr< Light>> geo);
+  LightsCommand(std::vector<Light*> geo);
 
 
   void runCommand()const;
 
 
 private:
-  mutable std::vector<std::shared_ptr< Light>> lights_;
+  mutable std::vector<Light*> lights_;
 
 };
 #endif
@@ -56,11 +56,11 @@ private:
 #include "opengl_interfaz.h"
 class LoadMaterialCommand : public Command{
 public:
-	LoadMaterialCommand(std::shared_ptr<Material> mat);
+	LoadMaterialCommand(Material* mat);
 	void runCommand()const;
-	std::shared_ptr<Material>  getMaterial();
+	Material*  getMaterial();
 private:
-	std::shared_ptr<Material> t_mat;
+	Material *t_mat;
 
 };
 #endif
@@ -73,11 +73,11 @@ private:
 
 class LoadTextureCommand : public Command{
 public:
-	LoadTextureCommand(std::shared_ptr<Material::MaterialSettings>mat);
+	LoadTextureCommand(Material::MaterialSettings *mat);
 	void runCommand()const;
-	std::shared_ptr<Material::MaterialSettings>  getMaterial();
+	Material::MaterialSettings* getMaterial();
 private:
-	 std::shared_ptr<Material::MaterialSettings> t_mat;
+	 Material::MaterialSettings *t_mat;
 	 bool delete_ = false;
 
 };
@@ -124,11 +124,11 @@ private:
 #include "opengl_interfaz.h"
 class UseMaterialCommand : public Command{
 public:
-	UseMaterialCommand(std::shared_ptr<Material> mat,std::shared_ptr<Material::MaterialSettings> mt_s);
+	UseMaterialCommand(Material* mat,Material::MaterialSettings *mt_s);
 	void runCommand()const;
 private:
-  std::shared_ptr<Material::MaterialSettings> mat_set_;
-  std::shared_ptr<Material> t_mat;
+  Material::MaterialSettings *mat_set_;
+  Material *t_mat;
   mutable const char* v_data;
   mutable const char* f_data;
 

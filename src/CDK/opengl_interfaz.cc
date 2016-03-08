@@ -64,7 +64,7 @@ OpenGlInterFaz::OpenGlInterFaz(){
 
 };
 
-void OpenGlInterFaz::loadBuffer(std::shared_ptr<Buffer>buff){
+void OpenGlInterFaz::loadBuffer(Buffer *buff){
 
   GLint position_size =buff->vertexSize() * sizeof(float);
   GLint normal_size = buff->normalSize() * sizeof(float);
@@ -231,6 +231,7 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
 
 void OpenGlInterFaz::bindFrameBuffer(int fb_id){
   glBindFramebuffer(GL_FRAMEBUFFER,fb_id);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
@@ -327,21 +328,20 @@ void OpenGlInterFaz::loadLight(int num_light){
 void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 
   //Create Program for frameBuffer
-  Material &mat = fb.getMaterial();
-  mat.setProgram(loadMaterial(mat.getVertexData().c_str(), mat.getFragmentData().c_str()));
-  loadBuffer(fb.getQuad());
+
   loadTexture(fb.getTexture());
 
   //Create FramebBuffer
   glGenFramebuffers(1, &data_->shadow_frame_buffer);
   glBindFramebuffer(GL_FRAMEBUFFER, data_->shadow_frame_buffer);
 
-  glGenRenderbuffers(1, &data_->shadow_fbo_);
-  glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, EngineManager::instance().width(),EngineManager::instance().height());
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
+ // glGenRenderbuffers(1, &data_->shadow_fbo_);
+ // glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
+ // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, EngineManager::instance().width(),EngineManager::instance().height());
+ // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
   //Load texture TODO
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb.getTexture()->getID(),0);
+  glDrawBuffer(GL_COLOR_ATTACHMENT0);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 
     printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
@@ -353,8 +353,8 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 }
 
 void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
-  glUseProgram(fb.getProgram());
-  glBindVertexArray(*fb.getQuad()->getVAO());
+ 
+
   glBindTexture(GL_TEXTURE_2D, fb.getTexture()->getID());
   glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);

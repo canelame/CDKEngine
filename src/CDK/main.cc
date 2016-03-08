@@ -9,7 +9,7 @@
 #include "CDK/loader.h"
 #include "glm\glm.hpp"
 #include "CDK/texture.h"
-#
+#include "post_process.h"
 
 struct {
 	std::shared_ptr<Node> root;
@@ -51,7 +51,7 @@ int Window::main(int argc, char** argv){
   Scene.root->addLight(l1);
   //Scene.root->addLight(l2);
   std::shared_ptr<Drawable> w;
-  std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/mmn.cdk");
+  //std::shared_ptr<Drawable> w1 = loader->loadCDK("meshes/mmn.cdk");
 
   
   std::shared_ptr<Geometry> geo = std::make_shared<Geometry>();
@@ -67,26 +67,29 @@ int Window::main(int argc, char** argv){
    
     w = std::make_shared<Drawable>();
     w->setName("cube");
-    mat_s->diffuse_color_ = vec3(1.0);
-    mat_s->ambient_color_ = vec3(1.0,1.0,1.0);
-    mat_s->specular_color_ = vec3(1.0);
+    mat_s->diffuse_color_ = vec3(0.0,0.64,0.0);
+    mat_s->ambient_color_ = vec3(0.0);
+    mat_s->specular_color_ = vec3(0.0);
     w->setGeometry(geo);
     w->setMaterial(mater);
     w->setMaterialSettings(mat_s);
     w->setPosition(vec3(0.0+i*10.0,0.0,0.0+i*10.0));
     Scene.root->addChild(w);
   }
-  Scene.root->addChild(w1);
+//  Scene.root->addChild(w1);
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
 
-  std::shared_ptr<FrameBuffer>render_to_text = std::make_shared<FrameBuffer>();
-
+  std::shared_ptr<PostProcess>render_to_text = std::make_shared<PostProcess>();
+  
   while (window->processEvents()){
     Scene.cam->FpsCameraUpdate();
     window->clearScreen(vec3(0.3, 0.2, 0.1));
-    //render_to_text->begin();
+  
+    render_to_text->begin();
     Scene.cam->render(Scene.root);
+    render_to_text->end();
     window->swap();
+    
 
   }
 

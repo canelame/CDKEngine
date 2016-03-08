@@ -96,7 +96,7 @@ bool Window::init(unsigned int width, unsigned int height){
 bool Window::processEvents(){
   glfwPollEvents();
 
-  ImGui_ImplGlfwGL3_NewFrame();
+ // ImGui_ImplGlfwGL3_NewFrame();
   
   return true; 
 }

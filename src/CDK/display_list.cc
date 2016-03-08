@@ -15,24 +15,15 @@ void DisplayList::add(Comm_ c){
 }
 void DisplayList::execute(){
 
-  bool render_target_changed = false;
-  FrameBuffer * t_fb = EngineManager::instance().getRenderTarget();
-  if ( t_fb != nullptr){
-    listCommand_.push_back(std::make_shared<UseFrameBuffer>(EngineManager::instance().getRenderTarget()));
-    render_target_changed = true;
-    OpenGlInterFaz::instance().bindFrameBuffer(t_fb->getId());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ 
    
-  }
+  
 
 	for (int i = 0; i < listCommand_.size(); ++i){
-    listCommand_[i].get()->runCommand();
+    listCommand_[i]->runCommand();
 	}
 
-  if (render_target_changed){
-    OpenGlInterFaz::instance().bindFrameBuffer(0);
-    OpenGlInterFaz::instance().renderFrameBuffer(*t_fb);
-  }
+
 }
 
 
@@ -97,7 +88,7 @@ void UseCameraCommand::runCommand()const{
 
 ///////// LOAD_TEXTURE_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-LoadTextureCommand::LoadTextureCommand(std::shared_ptr<Material::MaterialSettings>mat){
+LoadTextureCommand::LoadTextureCommand(Material::MaterialSettings *mat){
 	t_mat = mat;
 }
 
@@ -108,13 +99,13 @@ void LoadTextureCommand::runCommand()const{
   }
 
 }
-std::shared_ptr<Material::MaterialSettings>  LoadTextureCommand::getMaterial(){
+Material::MaterialSettings*  LoadTextureCommand::getMaterial(){
 	return t_mat;
 }
 
 ///////// LOAD_MATERIAL_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-LoadMaterialCommand::LoadMaterialCommand(std::shared_ptr<Material> mat){
+LoadMaterialCommand::LoadMaterialCommand(Material* mat){
 	t_mat = mat;
 }
 void LoadMaterialCommand::runCommand()const{
@@ -122,13 +113,13 @@ void LoadMaterialCommand::runCommand()const{
 	t_mat->is_compiled_ = true;
 }
 
-std::shared_ptr<Material>  LoadMaterialCommand::getMaterial(){ 
+Material*  LoadMaterialCommand::getMaterial(){ 
 	return t_mat; 
 }
 
 ///////// DRAW_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-DrawCommand::DrawCommand(std::shared_ptr<Buffer>g){
+DrawCommand::DrawCommand(Buffer *g){
 	
 		t_geo = g;
     vao_ =(GLuint) t_geo->getVAO();
@@ -147,7 +138,7 @@ void DrawCommand::runCommand()const{
 
 ///////// USE_MATERIAL_COMMAND CLASS/////////
 ////////////////////////////////////////////
-UseMaterialCommand::UseMaterialCommand(std::shared_ptr<Material> mat, std::shared_ptr<Material::MaterialSettings>mt_S){
+UseMaterialCommand::UseMaterialCommand(Material* mat, Material::MaterialSettings *mt_S){
 	t_mat = mat;
   mat_set_ = mt_S;
 
@@ -162,19 +153,19 @@ void UseMaterialCommand::runCommand()const{
     }
     t_mat->is_compiled_ = true;
   }
-    OpenGlInterFaz::instance().useMaterial(*t_mat.get(), mat_set_->ambient_color_, mat_set_->diffuse_color_, mat_set_->specular_color_);
+    OpenGlInterFaz::instance().useMaterial(*t_mat, mat_set_->ambient_color_, mat_set_->diffuse_color_, mat_set_->specular_color_);
   
 }
 
 
-LightsCommand::LightsCommand(std::vector<std::shared_ptr<Light>>l){
+LightsCommand::LightsCommand(std::vector<Light*>l){
   lights_ = l;
 
-}
+} 
 
 void LightsCommand::runCommand()const{
   for (int i = 0; i < lights_.size(); i++){
-    OpenGlInterFaz::instance().sendLight(lights_[i].get(), i);
+    OpenGlInterFaz::instance().sendLight(lights_[i], i);
 
   }
   

@@ -46,8 +46,6 @@ void TaskManager::mainThreadLoop(){
       TaskT_ t;
       t = task_list_.front();
       task_list_.pop_front();
-
-
       run_tasks_list_.push_back(t);
           t->runTask();
    }
@@ -98,7 +96,7 @@ int Task::getId(){
          }
        }
        
-       if (is_finish){
+       if (is_finish || run_tasks_list_.size()==0){
          return;
        }
     }
@@ -153,15 +151,15 @@ int Task::getId(){
      if (t_drawable){
     
        if ((t_drawable->geometry() != nullptr && t_drawable->material() != nullptr)){
-         std::shared_ptr<Buffer> t_geometry_buff = t_drawable->geometry()->getBuffer();
-         std::shared_ptr<Material> t_material = t_drawable->material();
-         std::shared_ptr<Material::MaterialSettings> mat_sett = t_drawable->getMaterialSettings();
+        Buffer *t_geometry_buff = t_drawable->geometry()->getBuffer().get();
+         Material *t_material = t_drawable->material().get();
+         Material::MaterialSettings *mat_sett = t_drawable->getMaterialSettings().get();
 
         
          dl_->add(std::make_shared<UseMaterialCommand>(t_material,mat_sett));
          dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, t_drawable->worldMat()));
        if(mat_sett->getTextures().size()>0)  dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));
-      if(scene_lights_.size()>0)   dl_->add(std::make_shared<LightsCommand>(scene_lights_));
+      //if(scene_lights_.size()>0)   dl_->add(std::make_shared<LightsCommand>(scene_lights_));
          dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
          //t_drawable->setDirtyNode(false);
        }

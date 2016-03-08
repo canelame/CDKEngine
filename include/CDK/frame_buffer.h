@@ -2,8 +2,8 @@
 #define __H_FRAME_BUFFER__
 
 #include "CDK/geometry.h"
+#include "CDK/texture.h"
 
-class Texture;
 class Material;
 class FrameBuffer{
 
@@ -19,12 +19,9 @@ public:
   void setLoaded(bool loaded);
   void setId(int id);
   int getId();
-  Material& getMaterial();
+
   std::shared_ptr<Texture> getTexture();
-  std::shared_ptr<Buffer> getQuad();
-  int getProgram();
-  void begin();
-  void end();
+
 
 private:
   struct Data;

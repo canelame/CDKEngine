@@ -22,7 +22,7 @@ public:
   @brief Load geometry 
   @param buff The geometry buffer of mesh to laod
   */
-  void loadBuffer(std::shared_ptr<Buffer> buff);
+  void loadBuffer(Buffer* buff);
   /**
   @brief Use a specific material
   @param Program of the material to use
