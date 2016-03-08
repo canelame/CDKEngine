@@ -57,7 +57,7 @@ int Buffer::uvSize(){ return data_->num_uv_vertex_; }
 int Buffer::tangentSize(){ return data_->num_tan_vertex_; }
 int Buffer::bitangentSize(){ return data_->num_bitan_vertex_; }
 int Buffer::indiceSize(){ return data_->num_indices_; }
-unsigned int* Buffer::getVAO(){ return &data_->vao_; }
+int Buffer::getVAO(){ return data_->vao_; }
 
 
 

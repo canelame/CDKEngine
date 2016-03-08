@@ -9,8 +9,12 @@ class FrameBuffer{
 
 public:
   enum kFrameBufferAttachment{
-  
+    kFrameBufferAttachment_ColorAttachment=0,
+    kFrameBufferAttachment_DepthAttachment,
+    kFrameBufferAttachment_StencilAttachment,
+    kFrameBufferAttachment_DepthStencilAttachment
   };
+
   FrameBuffer();
   ~FrameBuffer(){};
   FrameBuffer(const FrameBuffer&);
@@ -21,8 +25,8 @@ public:
   int getId();
 
   std::shared_ptr<Texture> getTexture();
-
-
+  kFrameBufferAttachment getAttachment();
+  void setAttachment(FrameBuffer::kFrameBufferAttachment attach);
 private:
   struct Data;
   Data *data_;

@@ -1,6 +1,6 @@
 #include "CDK/display_list.h"
 #include "CDK/texture_cache.h"
-#include "CDK/texture.h"
+
 #include "CDK/engine_manager.h"
 
 
@@ -132,7 +132,7 @@ void DrawCommand::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
   }
-  OpenGlInterFaz::instance().drawGeometry(*t_geo->getVAO(), indices_size_);
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_);
 
 }
 
@@ -158,14 +158,14 @@ void UseMaterialCommand::runCommand()const{
 }
 
 
-LightsCommand::LightsCommand(std::vector<Light*>l){
+LightsCommand::LightsCommand(std::vector < std::shared_ptr< Light >> l){
   lights_ = l;
 
 } 
 
 void LightsCommand::runCommand()const{
   for (int i = 0; i < lights_.size(); i++){
-    OpenGlInterFaz::instance().sendLight(lights_[i], i);
+    OpenGlInterFaz::instance().sendLight(lights_[i].get(), i);
 
   }
   
@@ -179,5 +179,20 @@ void UseFrameBuffer::runCommand()const{
     OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_,true);
     frame_buff_->setLoaded(true);
   }
+
+}
+
+//SHAdow class
+ShadowCommand::ShadowCommand(){
+  depth_buffer_ = std::make_shared<FrameBuffer>();
+  Texture  * d_texture = depth_buffer_->getTexture().get();
+  d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+  d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+  d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Repeat);
+  d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Repeat);
+}
+
+void ShadowCommand::runCommand()const{
+
 
 }

@@ -274,27 +274,92 @@ void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
 void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 
     
-    glGenTextures(1, &data_->shadow_texture_);
-    glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
+  int mag_filter = m->getMagFilter();
+  int min_filter = m->getMinFilter();
+
+  int s_wrap = m->getWrapCoordinateS();
+  int t_wrap = m->getWrapCoordinateT();
+
+  glGenTextures(1, &data_->shadow_texture_);
+  glBindTexture(GL_TEXTURE_2D, data_->shadow_texture_);
+
+  switch (mag_filter)
+  {
+  case 0:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    if (strcmp(m->getType(), "fb")==0){
-      
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, EngineManager::instance().width(),
-        EngineManager::instance().height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glGenerateMipmap(GL_TEXTURE_2D);
-    } 
-    else{
-      int w = m->getWidth();
-      int h = m->getHeigth();
-      unsigned char * d = m->getData();
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w,
-        h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-        d);
-      glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    glBindTexture(GL_TEXTURE_2D,0);
-		m->setID(data_->shadow_texture_);
+    break;
+  case 1:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    break;
+  default:
+    break;
+  }
+
+  switch (min_filter)
+  {
+  case 0:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    break;
+  case 1:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    break;
+
+  }
+
+  switch (t_wrap)
+  {
+  case 0:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    break;
+  case 1:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    break;
+  case 2:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    break;
+  case 3:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    break;
+  default:
+    break;
+  }
+
+  switch (s_wrap)
+  {
+  case 0:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    break;
+  case 1:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    break;
+  case 2:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    break;
+  case 3:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    break;
+  default:
+    break;
+  }
+
+
+  if (strcmp(m->getType(), "fb") == 0){
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, EngineManager::instance().width(),
+      EngineManager::instance().height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+  
+  }
+  else{
+    int w = m->getWidth();
+    int h = m->getHeigth();
+    unsigned char * d = m->getData();
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w,
+      h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+      d);
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+  glBindTexture(GL_TEXTURE_2D, 0);
+  m->setID(data_->shadow_texture_);
     
 }
 
@@ -316,7 +381,6 @@ void OpenGlInterFaz::loadLight(int num_light){
     if (data_->u_lights[num_light].l_sh < 0)data_->u_lights[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
     if (data_->u_lights[num_light].l_t < 0)data_->u_lights[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
     //DIFFUSE
-  
     if (data_->u_lights_d[num_light].l_pos < 0)data_->u_lights_d[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].position").c_str());
     if (data_->u_lights_d[num_light].l_ac < 0)data_->u_lights_d[num_light].l_ac = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].ambient_color").c_str());
     if (data_->u_lights_d[num_light].l_sc < 0)data_->u_lights_d[num_light].l_sc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].specular_color").c_str());
@@ -325,7 +389,7 @@ void OpenGlInterFaz::loadLight(int num_light){
     if (data_->u_lights_d[num_light].l_t < 0)data_->u_lights_d[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].type").c_str());
   
 }
-void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
+void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb,bool use_render_buffer){
 
   //Create Program for frameBuffer
 
@@ -335,13 +399,13 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
   glGenFramebuffers(1, &data_->shadow_frame_buffer);
   glBindFramebuffer(GL_FRAMEBUFFER, data_->shadow_frame_buffer);
 
- // glGenRenderbuffers(1, &data_->shadow_fbo_);
- // glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
- // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, EngineManager::instance().width(),EngineManager::instance().height());
- // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
+  glGenRenderbuffers(1, &data_->shadow_fbo_);
+ glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, EngineManager::instance().width(),EngineManager::instance().height());
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
   //Load texture TODO
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb.getTexture()->getID(),0);
-  glDrawBuffer(GL_COLOR_ATTACHMENT0);
+  
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 
     printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");

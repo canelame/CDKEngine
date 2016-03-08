@@ -9,12 +9,13 @@ struct FrameBuffer::Data{
   GLuint id_framebuffer_;
   std::shared_ptr<Texture> texture_;
   bool loaded = false;
+  FrameBuffer::kFrameBufferAttachment attachment;
 };
 
 FrameBuffer::FrameBuffer(){
   data_ = new Data;
   data_->texture_ = std::make_shared<Texture>();
-  data_->texture_->loadTexture("", "fb");
+  data_->texture_->loadTexture("","fb");
 }
 
 void FrameBuffer::initFrameBuffer(){
@@ -40,3 +41,10 @@ int FrameBuffer::getId(){
   return data_->id_framebuffer_;
 }
 
+FrameBuffer::kFrameBufferAttachment FrameBuffer::getAttachment(){
+  return data_->attachment;
+}
+
+void FrameBuffer::setAttachment(FrameBuffer::kFrameBufferAttachment attach){
+  data_->attachment = attach;
+}

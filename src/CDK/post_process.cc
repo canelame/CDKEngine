@@ -3,7 +3,7 @@
 #include "CDK/opengl_interfaz.h"
 #include "CDK/frame_buffer.h"
 #include "CDK/texture.h"
-#include "CDK/geometry.h"
+
 
 PostProcess::PostProcess(){
   material_ = std::make_shared<Material>(0);
@@ -24,17 +24,20 @@ std::shared_ptr<Buffer> PostProcess::getQuad(){
 
 
 void PostProcess::begin(){
-  EngineManager::instance().setRenderTarget(frame_buff_.get());
+
   if (!frame_buff_->isLoaded()){
-    OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_.get());
-    OpenGlInterFaz::instance().loadMaterial(material_->getVertexData().c_str() ,material_->getFragmentData().c_str());
+    OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_.get(),true);
+   material_->setProgram( OpenGlInterFaz::instance().loadMaterial(material_->getVertexData().c_str() ,material_->getFragmentData().c_str()));
     OpenGlInterFaz::instance().loadBuffer(render_quad_->getBuffer().get());
+    EngineManager::instance().setRenderTarget(frame_buff_.get());
+    frame_buff_->setLoaded(true);
   }
   OpenGlInterFaz::instance().bindFrameBuffer(frame_buff_->getId());
 }
 void PostProcess::end(){
+  OpenGlInterFaz::instance().bindFrameBuffer(0);
   glUseProgram(material_->getProgram());
   OpenGlInterFaz::instance().useTexture(0, 0, "", frame_buff_->getTexture().get()->getID());
-  OpenGlInterFaz::instance().useGeometry((unsigned int)render_quad_->getBuffer()->getIndexesT());
-  EngineManager::instance().setRenderTarget(nullptr);
+  Buffer * buff = render_quad_->getBuffer().get();
+  OpenGlInterFaz::instance().drawGeometry((unsigned int)buff->getVAO(),6);
 }

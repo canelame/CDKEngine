@@ -24,10 +24,19 @@ private:
 #endif
 
 
-///LOAD GEOMTRY COMMAND CLASS
+///SHADOWS COMMAND CLASS
 
+#ifndef __H_SHADOW_COMMAND__
+#define __H_SHADOW_COMMAND__
+class ShadowCommand : public Command{
+public:
+  ShadowCommand();
+  void runCommand()const;
+private:
+  std::shared_ptr<FrameBuffer> depth_buffer_;
+};
 
-
+#endif
 ///USE LIGHT COMMAND CLASS
 #ifndef __H_LIGHTS_COMMAND__
 #define __H_LIGHTS_COMMAND__  
@@ -37,14 +46,14 @@ private:
 #include "opengl_interfaz.h"
 class LightsCommand : public Command{
 public:
-  LightsCommand(std::vector<Light*> geo);
+  LightsCommand(std::vector<std::shared_ptr<Light>> geo);
 
 
   void runCommand()const;
 
 
 private:
-  mutable std::vector<Light*> lights_;
+  mutable std::vector<std::shared_ptr<Light>> lights_;
 
 };
 #endif

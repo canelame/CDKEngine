@@ -1,5 +1,5 @@
 #ifndef __H_TEXTURE__
-#define __H_TEXTURE_
+#define __H_TEXTURE__
 #include "command.h"
 #include <memory>
 #include "external/stb_image.h"

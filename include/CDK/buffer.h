@@ -73,7 +73,7 @@ public:
   * @brief This function return where the vao is ;
   * @return Where the vao is binding.
   */
-	unsigned int* getVAO();
+	 int getVAO();
   /**
   * @brief Set vao of the buffer
   */
@@ -92,7 +92,7 @@ public:
   * @brief This function return the indices list ;
   * @return Indices list.
   */
-  unsigned int* getIndexesT();
+   int getIndexesT();
   /**
   * @brief This function is used to call opengl to use the geometry, and return the instance of
   opengl_interfaz.

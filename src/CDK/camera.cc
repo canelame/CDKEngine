@@ -68,10 +68,10 @@ void Camera::render(std::shared_ptr<Node>node){
 
 
      data_->last_task = update_task;
-    data_->dl_cam_->execute();
+     data_->dl_cam_->execute();
      data_->dl_cam_->clear();
      data_->dl_cam_.swap(data_->dl_copy_);
-     // GuInterface::instance().draw(node);
+     GuInterface::instance().draw(node);
 
  
 }

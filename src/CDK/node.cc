@@ -145,9 +145,9 @@ void  Node::calculateModel(){
   data_->dirty_node_ = true;
   data_->model_mat_ = glm::translate(mat4(), data_->position_);
   data_->model_mat_ = glm::scale(data_->model_mat_, data_->scale_);
-  data_->model_mat_ = glm::rotate(data_->model_mat_, data_->rotation_.x, vec3(1.0, 0.0, 0.0));
-  data_->model_mat_ = glm::rotate(data_->model_mat_, data_->rotation_.y, vec3(0.0, 1.0, 0.0));
-  data_->model_mat_ = glm::rotate(data_->model_mat_, data_->rotation_.z, vec3(0.0, 0.0, 1.0));
+  data_->model_mat_ = glm::rotate(data_->model_mat_, glm::radians(data_->rotation_.x), vec3(1.0, 0.0, 0.0));
+  data_->model_mat_ = glm::rotate(data_->model_mat_, glm::radians(data_->rotation_.y), vec3(0.0, 1.0, 0.0));
+  data_->model_mat_ = glm::rotate(data_->model_mat_, glm::radians(data_->rotation_.z), vec3(0.0, 0.0, 1.0));
 
 }
 

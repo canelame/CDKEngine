@@ -101,14 +101,11 @@ void GuInterface::loadNode(Node &node){
 
       for (int i = 0; i < node.size(); i++){
 
-
+        ImGui::PushID(node.childAt(i).get());
         if (ImGui::Selectable(node.childAt(i).get()->getName())){
           select_node_ = std::make_shared<Node>(*node.childAt(i).get());
         }
-        else{
-
-        }
-
+        ImGui::PopID();
       }
       ImGui::TreePop();
     }
@@ -177,7 +174,7 @@ void GuInterface::transformPanel(Node &node){
     }
     vec3 rotate_node = node.rotation();
     float n_rotate[3] = { rotate_node.x, rotate_node.y, rotate_node.z };
-    if (ImGui::SliderFloat3("Rotation:", n_rotate, 0.0, 1000.0, "%1.0f")){
+    if (ImGui::SliderFloat3("Rotation:", n_rotate, 0.0, 360.0, "%1.0f")){
       node.setRotation(vec3(n_rotate[0], n_rotate[1], n_rotate[2]));
     }
 
