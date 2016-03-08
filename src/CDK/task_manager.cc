@@ -136,7 +136,7 @@ int Task::getId(){
 
    void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
 
-     std::shared_ptr<FrameBuffer> frame_buff = std::shared_ptr<FrameBuffer>();
+   /*  std::shared_ptr<FrameBuffer> frame_buff = std::shared_ptr<FrameBuffer>();
     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
 
      if (node->getParent() != nullptr){
@@ -167,7 +167,7 @@ int Task::getId(){
      else{
 
      }
-
+     */
      //hijos
      for (int i = 0; i < node->size(); i++){
        loadNode(node->childAt(i));

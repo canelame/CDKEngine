@@ -81,7 +81,7 @@ public:
   void useCamera(mat4 proyection, mat4 model, mat4 view);
   /**
   */
-  void createFrameBuffer(FrameBuffer &fb);
+  void createFrameBuffer(FrameBuffer &fb, bool use_render_buffer);
   /**
   */
   void renderFrameBuffer(FrameBuffer &fb);

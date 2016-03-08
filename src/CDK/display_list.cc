@@ -176,7 +176,7 @@ UseFrameBuffer::UseFrameBuffer(FrameBuffer *fb){
 }
 void UseFrameBuffer::runCommand()const{
   if (!frame_buff_->isLoaded()){
-    OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_);
+    OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_,true);
     frame_buff_->setLoaded(true);
   }
 
