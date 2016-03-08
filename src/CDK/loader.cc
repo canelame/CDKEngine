@@ -212,11 +212,13 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
   printf("");
 }
 
-std::shared_ptr<Texture> Loader::loadTexture(const char* file_name,char *type, std::shared_ptr<TaskManager>tk){
-  int x, y;
-    char *data;
+std::shared_ptr<Texture> Loader::loadTexture(const char* file_name,char *type){
+
   std::shared_ptr<Texture> t = std::make_shared<Texture>();
-  tk->addTask(std::make_unique<ReadTexture>(t,file_name,type));
+  std::shared_ptr<ReadTexture> read_task = std::make_unique<ReadTexture>(t, file_name, type);
+  TaskManager::instance().addTask(read_task);
+  TaskManager::instance().waitTask(*read_task.get());
+  TextureCache::instance().addTexture(t);
   return t;
 }
 

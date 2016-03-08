@@ -40,7 +40,7 @@ public:
   @param file_name Texture name.
   @param type Type of texture //Can be: TEXTURE or ONLY_DIFFUSE
   */
-  std::shared_ptr<Texture> loadTexture(const char* file_name, char *type, std::shared_ptr<TaskManager> tk);
+  std::shared_ptr<Texture> loadTexture(const char* file_name, char *type);
 
  };
 

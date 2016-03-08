@@ -1,5 +1,5 @@
 #include "CDK/texture.h"
-
+#include "CDK/task_manager.h"
 
 struct Texture::Data{
 	bool is_loaded;
@@ -29,6 +29,7 @@ void Texture::loadTexture(const char*file,const char type[30]){
 
     memcpy(&data_->path[0], &file[0], strlen(file)); data_->path[strlen(file)] = '\0';
     memcpy(&data_->type[0], &type[0], strlen(type)); data_->type[strlen(type)] = '\0';
+
     if (file == ""){
       data_->image_ = NULL;
     }

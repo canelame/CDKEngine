@@ -10,6 +10,7 @@
 #include "glm\glm.hpp"
 #include "CDK/texture.h"
 #include "post_process.h"
+#include "CDK/gui_interface.h"
 
 struct {
 	std::shared_ptr<Node> root;
@@ -43,27 +44,31 @@ int Window::main(int argc, char** argv){
   std::shared_ptr<Drawable> drawable_cube;
   std::shared_ptr<Material> mater = std::make_shared<Material>(0);
   std::shared_ptr<Material::MaterialSettings> mat_s = std::make_shared<Material::MaterialSettings>();
-  std::shared_ptr<Texture> texture_cube = std::make_shared<Texture>();
-  texture_cube->loadTexture("container.jpg", "textures/diffuse");
+  mat_s->diffuse_color_ = vec3(0.0, 1.0, 0.0);
+  mat_s->ambient_color_ = vec3(0.5);
+  mat_s->specular_color_ = vec3(1.0);
+  mat_s->addTexture("textures/container.jpg");
+  std::shared_ptr<Texture> texture_cube = loader->loadTexture("textures/container.jpg","diffuse");
+  std::shared_ptr<Texture> texture_plane = loader->loadTexture("textures/wall.jpg", "diffuse");
   for (int i = 0; i < 5; i++){
       float j = 0.2;
       drawable_cube = std::make_shared<Drawable>();
       drawable_cube->setName("cube");
-      mat_s->diffuse_color_ = vec3(0.0, 1.0, 0.0);
-      mat_s->ambient_color_ = vec3(0.5);
-      mat_s->specular_color_ = vec3(1.0);
+
       drawable_cube->setGeometry(cube);
       drawable_cube->setMaterial(mater);
       drawable_cube->setMaterialSettings(mat_s);
+      
       drawable_cube->setPosition(vec3(0.0 + i*10.0, 0.0, 0.0 + i*10.0));
       Scene.root->addChild(drawable_cube);
   }
-
+  std::shared_ptr<Material::MaterialSettings> mat_p = std::make_shared<Material::MaterialSettings>();
+  mat_p->addTexture("textures/wall.jpg");
   drawable_cube = std::make_shared<Drawable>();
   drawable_cube->setName("Plane");
   drawable_cube->setGeometry(plane);
   drawable_cube->setMaterial(mater);
-  drawable_cube->setMaterialSettings(mat_s);
+  drawable_cube->setMaterialSettings(mat_p);
   drawable_cube->setPosition(vec3(0.0,-5.0,0.0));
   drawable_cube->setRotation(vec3(90.0, 0.0, 0.0));
   drawable_cube->setScale(vec3(100.0, 100.0, 100.0));
@@ -98,8 +103,9 @@ int Window::main(int argc, char** argv){
     window->clearScreen(vec3(0.3, 0.2, 0.1));
   
     //render_to_text->begin();
-    Scene.cam->render(Scene.root);
+   Scene.cam->render(Scene.root);
    // render_to_text->end();
+    GuInterface::instance().draw(Scene.root);
     window->swap();
     
 

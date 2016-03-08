@@ -97,8 +97,10 @@ void GuInterface::nodePanel( Node &node){
 void GuInterface::loadNode(Node &node){
 
   if (node.getParent() == nullptr){
-    if (ImGui::TreeNode(node.getName())){
+    ImGui::PushID(node.getParent().get());
 
+    if (ImGui::TreeNode(node.getName())){
+    
       for (int i = 0; i < node.size(); i++){
 
         ImGui::PushID(node.childAt(i).get());
@@ -109,6 +111,7 @@ void GuInterface::loadNode(Node &node){
       }
       ImGui::TreePop();
     }
+    ImGui::PopID();
   }
   for (int i = 0; i < node.size(); i++){
         loadNode(*node.childAt(i).get());
