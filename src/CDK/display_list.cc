@@ -16,12 +16,10 @@ void DisplayList::add(Comm_ c){
 void DisplayList::execute(){
 
  
-   
+  std::shared_ptr<ShadowCommand> render_shadow_command = std::make_shared<ShadowCommand>();
+  render_shadow_command->runCommand();
   
-
-	for (int i = 0; i < listCommand_.size(); ++i){
-    listCommand_[i]->runCommand();
-	}
+  renderScene();
 
 
 }
@@ -183,16 +181,37 @@ void UseFrameBuffer::runCommand()const{
 }
 
 //SHAdow class
-ShadowCommand::ShadowCommand(){
+ShadowCommand::ShadowCommand(std::vector<std::shared_ptr<Light>> lights){
   depth_buffer_ = std::make_shared<FrameBuffer>();
+  shadow_shader_ = std::make_shared<Material>();
+  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
+  OpenGlInterFaz::instance().setDrawBuffer(depth_buffer_->getId());
+  OpenGlInterFaz::instance().setReadBuffer(depth_buffer_->getId());
   Texture  * d_texture = depth_buffer_->getTexture().get();
+  d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
+  d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
   d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
   d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
   d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Repeat);
   d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Repeat);
+  lights_ = lights;
 }
 
 void ShadowCommand::runCommand()const{
+  mat4 light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f,1.0f,7.5f );
+  mat4 light_view = glm::lookAt(lights_[0]->getPosition(), vec3(0.0), vec3(0.0));
+  mat4 light_space = light_projection * light_view;
+  
+  glUseProgram(shadow_shader_->getProgram());
+ int a = glGetUniformLocation(shadow_shader_->getProgram(), "light_screen");
+ glUniformMatrix4fv(a, 1, false, glm::value_ptr(light_space));
 
 
+}
+
+void DisplayList::renderScene(){
+
+  for (int i = 0; i < listCommand_.size(); ++i){
+    listCommand_[i]->runCommand();
+  }
 }

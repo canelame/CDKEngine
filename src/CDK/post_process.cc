@@ -9,6 +9,7 @@ PostProcess::PostProcess(){
   material_ = std::make_shared<Material>(0);
   render_quad_ = std::make_shared<Geometry>();
   frame_buff_ = std::make_shared<FrameBuffer>();
+  frame_buff_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_ColorAttachment);
   material_->loadShader("shaders/molon_f.glsl", "shaders/pp_v.glsl");
   render_quad_->createQuad();
 }
@@ -32,10 +33,10 @@ void PostProcess::begin(){
     EngineManager::instance().setRenderTarget(frame_buff_.get());
     frame_buff_->setLoaded(true);
   }
-  OpenGlInterFaz::instance().bindFrameBuffer(frame_buff_->getId());
+  OpenGlInterFaz::instance().bindFrameBuffer(frame_buff_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
 }
 void PostProcess::end(){
-  OpenGlInterFaz::instance().bindFrameBuffer(0);
+  OpenGlInterFaz::instance().bindFrameBuffer(0,FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
   glUseProgram(material_->getProgram());
   OpenGlInterFaz::instance().useTexture(0, 0, "", frame_buff_->getTexture().get()->getID());
   Buffer * buff = render_quad_->getBuffer().get();

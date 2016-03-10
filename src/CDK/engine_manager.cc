@@ -40,3 +40,11 @@ void EngineManager::setRenderTarget(FrameBuffer*fb){
 FrameBuffer* EngineManager::getRenderTarget(){
   return current_render_target_;
 }
+
+void EngineManager::addUniform(char*name, int value){
+  loaded_uniforms_.insert(std::pair<char*, int>(name, value));
+}
+
+int EngineManager::getUniform(char*name){
+  loaded_uniforms_.find(name);
+}

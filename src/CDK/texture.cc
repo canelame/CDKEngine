@@ -11,6 +11,8 @@ struct Texture::Data{
   kTextureFiltering min_filter;
   kTextureWrapping s_wrapping;
   kTextureWrapping t_wrapping;
+  kTextureFormat format;
+  kTexturePixelType pixel_type;
   char path[100];
   char type[30];
 };
@@ -99,5 +101,21 @@ Texture::kTextureWrapping Texture::getWrapCoordinateS(){
 }
 Texture::kTextureWrapping Texture::getWrapCoordinateT(){
  return data_->t_wrapping;
+}
+
+Texture::kTextureFormat Texture::getFormat(){
+  return data_->format;
+}
+
+void Texture::setFormat(Texture::kTextureFormat format){
+  data_->format = format;
+}
+
+Texture::kTexturePixelType Texture::getPixelType(){
+  return data_->pixel_type;
+}
+
+void Texture::setPixelType(Texture::kTexturePixelType format){
+  data_->pixel_type = format;
 }
 

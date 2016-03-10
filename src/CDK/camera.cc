@@ -89,7 +89,7 @@ void Camera::FpsCameraUpdate(){
   }
   if (Input::instance().pressKeyS() == true){
     vec3 temp_vector;
-    temp_vector = data_->front_*data_->fps_speed_move;
+    temp_vector = glm::normalize(data_->front_)*data_->fps_speed_move;
     current_position = current_position - temp_vector;
     data_->position_ = current_position;
   }
@@ -105,7 +105,7 @@ void Camera::FpsCameraUpdate(){
 
   if (Input::instance().pressKeyW() == true){
     vec3 temp_vector;
-    temp_vector = data_->front_*data_->fps_speed_move;
+    temp_vector = glm::normalize(data_->front_)*data_->fps_speed_move;
     current_position = current_position + temp_vector;
     data_->position_ = current_position;
 

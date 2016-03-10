@@ -56,6 +56,9 @@ struct OpenGlInterFaz::Data{
   GLuint shadow_fbo_;//FrameBufferObject
   GLuint shadow_texture_frame_buffer;
   GLuint type;
+
+  ///
+  GLint shadow_map;
   };
 
 OpenGlInterFaz::OpenGlInterFaz(){
@@ -229,8 +232,27 @@ void OpenGlInterFaz::useUniformUi(const char *name, int value){
 }
 
 
-void OpenGlInterFaz::bindFrameBuffer(int fb_id){
-  glBindFramebuffer(GL_FRAMEBUFFER,fb_id);
+void OpenGlInterFaz::bindFrameBuffer(int fb_id,FrameBuffer::kFramebufferBindType type){
+  GLenum type_binding;
+  switch (type)
+  {
+  case FrameBuffer::kFramebufferBindType_FrameBuffer:
+    type_binding = GL_FRAMEBUFFER;
+    break;
+  case FrameBuffer::kFramebufferBindType_Draw:
+    type_binding = GL_DRAW_FRAMEBUFFER;
+    break;
+  case FrameBuffer::kFramebufferBindType_Read:
+    type_binding = GL_READ_FRAMEBUFFER;
+    break;
+  case FrameBuffer::kFramebufferBindType_None:
+    type_binding = GL_NONE;
+    break;
+  default:
+    type_binding = GL_FRAMEBUFFER;
+    break;
+  }
+  glBindFramebuffer(type_binding,fb_id);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -342,19 +364,62 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     break;
   }
 
+  Texture::kTextureFormat format = m->getFormat();
+  GLenum t_format;
+  switch (format)
+  {
+  case Texture::kTextureFormat_Rgb:
+    t_format = GL_RGB;
+    break;
+  case Texture::kTextureFormat_Rgba:
+    t_format = GL_RGBA;
+    break;
+  case Texture::kTextureFormat_Depth:
+    t_format = GL_DEPTH_COMPONENT;
+    break;
+  case Texture::kTextureFormat_Depth_Stencil:
+    t_format = GL_DEPTH_STENCIL;
+    break;
+  default:
+    t_format = GL_RGBA;
+    break;
+  }
+  Texture::kTexturePixelType pixel_t = m->getPixelType();
+  GLenum pixel_type;
+  switch (pixel_t)
+  {
+  case Texture::kTexturePixelType_UByte:
+    pixel_type = GL_UNSIGNED_BYTE;
+    break;
+  case Texture::kTexturePixelType_Byte:
+    pixel_type = GL_BYTE;
+    break;
+  case Texture::kTexturePixelType_UInt:
+    pixel_type = GL_UNSIGNED_INT;
+    break;
+  case Texture::kTexturePixelType_Int:
+    pixel_type = GL_INT;
+    break;
+  case Texture::kTexturePixelType_Float:
+    pixel_type = GL_FLOAT;
+    break;
+  default:
+    pixel_type = GL_UNSIGNED_BYTE;
+    break;
+  }
 
   if (strcmp(m->getType(), "fb") == 0){
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, EngineManager::instance().width(),
-      EngineManager::instance().height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, t_format, EngineManager::instance().width(),
+      EngineManager::instance().height(), 0, t_format, pixel_type, NULL);
   
   }
   else{
     int w = m->getWidth();
     int h = m->getHeigth();
     unsigned char * d = m->getData();
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w,
-      h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+    glTexImage2D(GL_TEXTURE_2D, 0, t_format, w,
+      h, 0, t_format, pixel_type,
       d);
     glGenerateMipmap(GL_TEXTURE_2D);
   }
@@ -394,17 +459,39 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb,bool use_render_buffer){
   //Create Program for frameBuffer
 
   loadTexture(fb.getTexture());
-
+  FrameBuffer::kFrameBufferAttachment attachment = fb.getAttachment();
+  GLenum fb_attach;
+  switch (attachment)
+  {
+  case FrameBuffer::kFrameBufferAttachment_ColorAttachment:
+    fb_attach = GL_COLOR_ATTACHMENT0;
+    break;
+  case FrameBuffer::kFrameBufferAttachment_DepthAttachment:
+    fb_attach = GL_DEPTH_ATTACHMENT;
+    break;
+  case FrameBuffer::kFrameBufferAttachment_StencilAttachment:
+    fb_attach = GL_STENCIL_ATTACHMENT;
+    break;
+  case FrameBuffer::kFrameBufferAttachment_DepthStencilAttachment:
+    fb_attach = GL_DEPTH_STENCIL_ATTACHMENT;
+    break;
+  case FrameBuffer::kFrameBufferAttachment_None:
+    printf("Error, framebuffer not attachment\n.");
+    return;
+    break;
+  default:
+    break;
+  }
   //Create FramebBuffer
   glGenFramebuffers(1, &data_->shadow_frame_buffer);
   glBindFramebuffer(GL_FRAMEBUFFER, data_->shadow_frame_buffer);
 
-  glGenRenderbuffers(1, &data_->shadow_fbo_);
- glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, EngineManager::instance().width(),EngineManager::instance().height());
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
+  //glGenRenderbuffers(1, &data_->shadow_fbo_);
+// glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
+ // glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, EngineManager::instance().width(),EngineManager::instance().height());
+ // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
   //Load texture TODO
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb.getTexture()->getID(),0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, fb_attach, GL_TEXTURE_2D, fb.getTexture()->getID(),0);
   
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 
@@ -490,4 +577,15 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light){
       glUniform1i(data_->u_lights_d[num_light].l_t, type);
     }
   }
+}
+void OpenGlInterFaz::setDrawBuffer(int fb_id){
+
+  glNamedFramebufferDrawBuffer(fb_id, GL_NONE);
+}
+void OpenGlInterFaz::setReadBuffer(int fb_id){
+  glNamedFramebufferReadBuffer(fb_id, GL_NONE);
+}
+
+void OpenGlInterFaz::renderShadows(){
+  
 }

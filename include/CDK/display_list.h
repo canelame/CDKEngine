@@ -30,10 +30,12 @@ private:
 #define __H_SHADOW_COMMAND__
 class ShadowCommand : public Command{
 public:
-  ShadowCommand();
+  ShadowCommand(std::vector<std::shared_ptr<Light>> lights);
   void runCommand()const;
 private:
+  std::vector<std::shared_ptr<Light>> lights_;
   std::shared_ptr<FrameBuffer> depth_buffer_;
+  std::shared_ptr<Material> shadow_shader_;
 };
 
 #endif
@@ -213,7 +215,7 @@ public:
   */
   void clear();
 private:
-
+  void renderScene();
 
   std::shared_ptr<FrameBuffer> current_framebuffer_;
 

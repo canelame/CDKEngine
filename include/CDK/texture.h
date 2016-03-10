@@ -9,6 +9,14 @@ ESAT 2016
 */
 class Texture{
 public:
+  enum kTexturePixelType{
+    kTexturePixelType_UByte=0,
+    kTexturePixelType_Byte,
+    kTexturePixelType_UInt,
+    kTexturePixelType_Int,
+    kTexturePixelType_Float
+
+  };
   enum kTextureFiltering{
     kTextureFiltering_Linear = 0,
     kTextureFiltering_Nearest
@@ -19,6 +27,14 @@ public:
     kTextureWrapping_Mirror_Repeat,
     kTextureWrapping_Clamp_Edge,
     kTextureWrapping_Clamp_Border
+
+  };
+  enum kTextureFormat{
+    kTextureFormat_Rgb=0,
+    kTextureFormat_Rgba,
+    kTextureFormat_Depth,
+    kTextureFormat_Depth_Stencil,
+
 
   };
   Texture();
@@ -100,6 +116,16 @@ public:
   /**
   */
   kTextureWrapping getWrapCoordinateT( );
+  /**
+  */
+  kTextureFormat getFormat();
+  /**
+  */
+  void setFormat(kTextureFormat format);
+  /**
+  */
+  kTexturePixelType getPixelType();
+  void setPixelType(kTexturePixelType type);
 private:
   struct Data;
 	Data *data_;

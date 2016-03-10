@@ -87,9 +87,18 @@ public:
   void renderFrameBuffer(FrameBuffer &fb);
   /**
   */
-  void bindFrameBuffer(int fb_id);
-  ~OpenGlInterFaz(){};
+  void bindFrameBuffer(int fb_id,FrameBuffer::kFramebufferBindType type);
 
+  /**
+  */
+  void setDrawBuffer(int fb_id);
+  /**
+ */
+  void setReadBuffer(int fb_id);
+  ~OpenGlInterFaz(){};
+  /**
+  */
+  void renderShadows();
   static OpenGlInterFaz& instance();
 
 private:

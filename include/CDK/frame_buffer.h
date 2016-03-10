@@ -12,7 +12,16 @@ public:
     kFrameBufferAttachment_ColorAttachment=0,
     kFrameBufferAttachment_DepthAttachment,
     kFrameBufferAttachment_StencilAttachment,
-    kFrameBufferAttachment_DepthStencilAttachment
+    kFrameBufferAttachment_DepthStencilAttachment,
+    kFrameBufferAttachment_None
+  };
+
+  enum  kFramebufferBindType
+  {
+    kFramebufferBindType_FrameBuffer=0,
+    kFramebufferBindType_Draw ,
+    kFramebufferBindType_Read,
+    kFramebufferBindType_None
   };
 
   FrameBuffer();
@@ -27,6 +36,9 @@ public:
   std::shared_ptr<Texture> getTexture();
   kFrameBufferAttachment getAttachment();
   void setAttachment(FrameBuffer::kFrameBufferAttachment attach);
+  /**
+  */
+
 private:
   struct Data;
   Data *data_;

@@ -68,11 +68,11 @@ vec3 computePointLight(Light l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 
 	//attenuyuation
 	float distance = length(l_dir.position-fragPos);
-	vec3 ambient = l_dir.ambient_color*u_material_ambient*vec3(texture(u_diffuse_texture1,o_uv));
-	vec3 diffuse = l_dir.diffuse_color*u_material_diff*vec3(texture(u_diffuse_texture1,o_uv));
-	vec3 specular = l_dir.specular_color*u_material_specular * vec3(texture(u_diffuse_texture1,o_uv));
+	float attenuation = 1.0/(1.0f+0.09*distance+0.032*(distance*distance));
+
+	vec3 ambient = (l_dir.ambient_color*u_material_ambient*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
+	vec3 diffuse = (l_dir.diffuse_color*u_material_diff*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
+	vec3 specular = (l_dir.specular_color*u_material_specular * vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
 	 return  (ambient+diffuse+specular);
-
-
 
 }

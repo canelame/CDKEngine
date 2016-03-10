@@ -67,7 +67,7 @@ public:
     vec3 getSpecularColor(){ return specular_color_; }
     vec3 getAmbientColor(){ return ambient_color_; }
   };
-
+  Material(){}
   Material(int v);
   /**
   * @brief This function allows to load own shader.

@@ -26,11 +26,15 @@ void setRenderTarget(FrameBuffer *fb);
 /**
 */
 void setWindowModified(bool value);
+void addUniform(char *name, int location);
+ int getUniform(char *name);
 FrameBuffer* getRenderTarget();
 private:
-  EngineManager(){};
-  int width_;
-  int height_;
+ EngineManager(){};
+ int width_;
+ int height_;
+ std::map<char*, unsigned int> loaded_uniforms_;
+
  FrameBuffer* current_render_target_=nullptr;
  static EngineManager * instance_;
 

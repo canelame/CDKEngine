@@ -16,6 +16,7 @@ FrameBuffer::FrameBuffer(){
   data_ = new Data;
   data_->texture_ = std::make_shared<Texture>();
   data_->texture_->loadTexture("","fb");
+  data_->attachment = kFrameBufferAttachment::kFrameBufferAttachment_None;
 }
 
 void FrameBuffer::initFrameBuffer(){
