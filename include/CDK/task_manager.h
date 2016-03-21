@@ -61,7 +61,8 @@ public:
 	* @brief Execute the task
 	*/
 	void runTask();
-  void loadNode(std::shared_ptr<Node>node );
+  void loadNode(std::shared_ptr<Node>node);
+  void loadShadows(std::shared_ptr<Node>node);
 private:
  std::shared_ptr<Node> nod_;
 	DisplayList* dl_;
@@ -70,7 +71,7 @@ private:
   mat4 view_mat_;
   bool cam_loaded_;
   std::vector<std::shared_ptr<Light> > scene_lights_;
-//std::vector<Light> light_scene_;
+  std::vector<vec3> shadow_models_;
 };
 #endif
 

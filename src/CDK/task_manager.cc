@@ -130,8 +130,23 @@ int Task::getId(){
    void UpdateDisplay::runTask(){
      lock();
      scene_lights_ = nod_->getLigths();
+     
      loadNode(nod_);
+
      unlock();
+   }
+
+   void UpdateDisplay::loadShadows(std::shared_ptr<Node>node){
+
+     if (node->getParent() != nullptr){
+       node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
+     }
+     else{
+       //  mat_sett  = t_drawable->getMaterialSettings();
+       node->setWorldMat(node->modelMat());
+     }
+
+
    }
 
    void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
@@ -139,14 +154,6 @@ int Task::getId(){
     std::shared_ptr<FrameBuffer> frame_buff = std::shared_ptr<FrameBuffer>();
     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
 
-     if (node->getParent() != nullptr){
-       node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
-     
-     }
-     else{
-   //  mat_sett  = t_drawable->getMaterialSettings();
-       node->setWorldMat(node->modelMat());
-     }
 
      if (t_drawable){
     
@@ -161,6 +168,7 @@ int Task::getId(){
        if(mat_sett->getTextures().size()>0)  dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));
       if(scene_lights_.size()>0)   dl_->add(std::make_shared<LightsCommand>(scene_lights_));
          dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
+         shadow_models_.push_back(t_drawable->position());
          //t_drawable->setDirtyNode(false);
        }
      }

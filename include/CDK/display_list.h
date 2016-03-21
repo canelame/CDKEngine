@@ -31,6 +31,8 @@ private:
 class ShadowCommand : public Command{
 public:
   ShadowCommand(std::vector<std::shared_ptr<Light>> lights);
+
+  ShadowCommand(){}
   void runCommand()const;
 private:
   std::vector<std::shared_ptr<Light>> lights_;
@@ -136,6 +138,7 @@ private:
 class UseMaterialCommand : public Command{
 public:
 	UseMaterialCommand(Material* mat,Material::MaterialSettings *mt_s);
+  UseMaterialCommand(){}
 	void runCommand()const;
 private:
   Material::MaterialSettings *mat_set_;
@@ -220,6 +223,7 @@ private:
   std::shared_ptr<FrameBuffer> current_framebuffer_;
 
 	List listCommand_;
+  List shadowList_;
 
 };
 

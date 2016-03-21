@@ -46,5 +46,6 @@ void EngineManager::addUniform(char*name, int value){
 }
 
 int EngineManager::getUniform(char*name){
-  loaded_uniforms_.find(name);
+ // loaded_uniforms_.find(name);
+  return 0;
 }

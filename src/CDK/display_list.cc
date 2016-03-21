@@ -198,14 +198,16 @@ ShadowCommand::ShadowCommand(std::vector<std::shared_ptr<Light>> lights){
 }
 
 void ShadowCommand::runCommand()const{
-  mat4 light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f,1.0f,7.5f );
-  mat4 light_view = glm::lookAt(lights_[0]->getPosition(), vec3(0.0), vec3(0.0));
-  mat4 light_space = light_projection * light_view;
-  
-  glUseProgram(shadow_shader_->getProgram());
- int a = glGetUniformLocation(shadow_shader_->getProgram(), "light_screen");
- glUniformMatrix4fv(a, 1, false, glm::value_ptr(light_space));
+  if (lights_.size() > 0){
+    mat4 light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+    mat4 light_view = glm::lookAt(lights_[0]->getPosition(), vec3(0.0), vec3(0.0));
+    mat4 light_space = light_projection * light_view;
 
+
+    glUseProgram(shadow_shader_->getProgram());
+    int a = glGetUniformLocation(shadow_shader_->getProgram(), "light_screen");
+    glUniformMatrix4fv(a, 1, false, glm::value_ptr(light_space));
+  }
 
 }
 
