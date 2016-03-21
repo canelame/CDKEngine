@@ -46,7 +46,7 @@ public:
   /**
   @brief
   */
-  void useUniformMat4(const char *name,const float* m_data);
+  void useUniformMat4(mat4 m);
   /**
   @brief
   */
@@ -98,7 +98,7 @@ public:
   ~OpenGlInterFaz(){};
   /**
   */
-  void renderShadows();
+  void renderShadows(int program,mat4 light);
   static OpenGlInterFaz& instance();
 
 private:

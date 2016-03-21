@@ -79,11 +79,11 @@ int Window::main(int argc, char** argv){
   ///LIGHTS
   
   std::shared_ptr<Light> l1 = std::make_shared<Light>();
-  l1->setPosition(vec3(0.0,0.0,60.0));
-  l1->setAmbientColor(vec3(1.0, 1.0, 1.0));
+  l1->setPosition(vec3(0.0,20.0,0.0));
+  l1->setAmbientColor(vec3(0.2, 0.2, 0.2));
   l1->setSpecularColor(vec3(1.0,1.0,1.0));
   l1->setDifusseColor(vec3(1.0,1.0,1.0));
-  l1->setTypeLight(Light::LightType::T_POINT_LIGHT);
+  l1->setTypeLight(Light::LightType::T_DIRECTION_LIGHT);
 
   std::shared_ptr<Light> l2 = std::make_shared<Light>();
   l2->setPosition(vec3(10.0, 0.0, 100.0));
@@ -94,7 +94,7 @@ int Window::main(int argc, char** argv){
 
 
   Scene.root->addLight(l1);
-  Scene.root->addLight(l2);
+  //Scene.root->addLight(l2);
   Scene.root->setPosition(vec3(0.0,0.0,90.0));
 
   std::shared_ptr<PostProcess>render_to_text = std::make_shared<PostProcess>();
@@ -103,10 +103,10 @@ int Window::main(int argc, char** argv){
     Scene.cam->FpsCameraUpdate();
     window->clearScreen(vec3(0.3, 0.2, 0.1));
   
-    render_to_text->begin();
+   // render_to_text->begin();
    Scene.cam->render(Scene.root);
-    render_to_text->end();
-    GuInterface::instance().draw(Scene.root);
+ //   render_to_text->end();
+    //GuInterface::instance().draw(Scene.root);
     window->swap();
     
 

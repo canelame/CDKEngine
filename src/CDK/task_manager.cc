@@ -129,14 +129,17 @@ int Task::getId(){
 	 }
    void UpdateDisplay::runTask(){
      lock();
+    
      scene_lights_ = nod_->getLigths();
-     
+     dl_->add(std::make_shared<StartShadowCommand>(scene_lights_[0]));
+     loadShadows(nod_);
      loadNode(nod_);
-
+    
      unlock();
    }
 
    void UpdateDisplay::loadShadows(std::shared_ptr<Node>node){
+     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
 
      if (node->getParent() != nullptr){
        node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
@@ -144,14 +147,23 @@ int Task::getId(){
      else{
        //  mat_sett  = t_drawable->getMaterialSettings();
        node->setWorldMat(node->modelMat());
+
      }
 
+     if (t_drawable){
+       Buffer *t_geometry_buff = t_drawable->geometry()->getBuffer().get();
+       dl_->add(std::make_shared<SendObjectShadow>(t_drawable->worldMat()));
+       dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
 
+     } 
+     for (int i = 0; i < node->size(); i++){
+       loadShadows(node->childAt(i));
+     }
    }
 
    void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
 
-    std::shared_ptr<FrameBuffer> frame_buff = std::shared_ptr<FrameBuffer>();
+
     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
 
 

@@ -57,14 +57,14 @@ struct OpenGlInterFaz::Data{
   GLuint shadow_texture_frame_buffer;
   GLuint type;
 
-  ///
-  GLint shadow_map;
+  ///Shadows
+  GLint shadow_map_texture;
+  GLuint shadow_model_=-1;
+  GLuint light_space_ = -1;
   };
 
 OpenGlInterFaz::OpenGlInterFaz(){
   data_ = new Data;
-
-
 };
 
 void OpenGlInterFaz::loadBuffer(Buffer *buff){
@@ -92,19 +92,19 @@ void OpenGlInterFaz::loadBuffer(Buffer *buff){
    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data_->shadow_vbo_i_);
    glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, &buff->getData()[position_size + normal_size+uv_size+tan_size+bitan_size], GL_STATIC_DRAW);
   
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),0);
-    glEnableVertexAttribArray(0);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),0);
+   glEnableVertexAttribArray(0);
   
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void*)position_size);
-    glEnableVertexAttribArray(1);
+   glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 3 * sizeof(float), (void*)position_size);
+   glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(position_size+normal_size));
-    glEnableVertexAttribArray(2);
+   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(position_size+normal_size));
+   glEnableVertexAttribArray(2);
 
-	  glBindVertexArray(0);	
-    glDeleteBuffers(1, &data_->shadow_vbo_i_);
-    glDeleteBuffers(1, &data_->shadow_vbo_v_);
-    buff->setVAO(data_->shadow_vao_);
+	 glBindVertexArray(0);	
+   glDeleteBuffers(1, &data_->shadow_vbo_i_);
+   glDeleteBuffers(1, &data_->shadow_vbo_v_);
+   buff->setVAO(data_->shadow_vao_);
 }
 
 void OpenGlInterFaz::useGeometry(GLuint vao){
@@ -171,6 +171,9 @@ int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_dat
     if (data_->mat_d_d<0)data_->mat_d_d = glGetUniformLocation(data_->shadow_program_, "u_material_diff_d");
     if (data_->mat_s_d<0)data_->mat_s_d = glGetUniformLocation(data_->shadow_program_, "u_material_specular_d");
     if (data_->mat_a_d<0)data_->mat_a_d = glGetUniformLocation(data_->shadow_program_, "u_material_ambient_d");
+    //SHADOWS
+    if (data_->shadow_model_ < 0)data_->shadow_model_ = glGetUniformLocation(data_->shadow_model_,"u_model_m");
+    if (data_->light_space_ < 0)data_->light_space_ = glGetUniformLocation(data_->light_space_, "light_screen");
     return data_->shadow_program_;
   }
 
@@ -214,12 +217,12 @@ void OpenGlInterFaz::useUnifor3f(const char* name, const float*data){
 	}
 }
 
-void OpenGlInterFaz::useUniformMat4(const char* name,const float *m_data){
+void OpenGlInterFaz::useUniformMat4(mat4 m){
 
-  GLint pos = glGetUniformLocation(data_->shadow_program_, name);
-	if (pos >= 0){
-		glUniformMatrix4fv(pos, 1, GL_FALSE, m_data);
-	}
+  
+
+		glUniformMatrix4fv(data_->shadow_model_, 1, GL_FALSE, &m[0][0]);
+	
 
 }
 
@@ -482,9 +485,10 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb,bool use_render_buffer){
   default:
     break;
   }
+  GLuint ok=0;
   //Create FramebBuffer
-  glGenFramebuffers(1, &data_->shadow_frame_buffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, data_->shadow_frame_buffer);
+  glGenFramebuffers(1, &ok);
+  glBindFramebuffer(GL_FRAMEBUFFER,ok);
 
   //glGenRenderbuffers(1, &data_->shadow_fbo_);
 // glBindRenderbuffer(GL_RENDERBUFFER, data_->shadow_fbo_);
@@ -492,14 +496,33 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb,bool use_render_buffer){
  // glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, data_->shadow_fbo_);
   //Load texture TODO
   glFramebufferTexture2D(GL_FRAMEBUFFER, fb_attach, GL_TEXTURE_2D, fb.getTexture()->getID(),0);
-  
+  GLenum fb_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-
+    switch (fb_status)
+    {
+    case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+      printf("Incomplete attachment\n");
+      break;
+    case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+      printf("Incomplete attachment\n");
+      break;
+    case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+      printf("Incoplete mission attachment\n");
+      break;
+    case GL_FRAMEBUFFER_UNSUPPORTED:
+      printf("Framebuffer unsuported\n");
+      break;
+    default:
+      break;
+    }
     printf("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
   }else{
-    fb.setId(data_->shadow_frame_buffer);
+    fb.setId(ok);
+    fb.setLoaded(true);
+    
   }
 
+  
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -586,6 +609,7 @@ void OpenGlInterFaz::setReadBuffer(int fb_id){
   glNamedFramebufferReadBuffer(fb_id, GL_NONE);
 }
 
-void OpenGlInterFaz::renderShadows(){
-  
+void OpenGlInterFaz::renderShadows(int program,mat4 light){
+  glUseProgram(program);
+  glUniformMatrix4fv(data_->light_space_, 1, GL_FALSE, &light[0][0]);
 }

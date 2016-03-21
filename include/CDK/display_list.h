@@ -28,16 +28,30 @@ private:
 
 #ifndef __H_SHADOW_COMMAND__
 #define __H_SHADOW_COMMAND__
-class ShadowCommand : public Command{
+class StartShadowCommand : public Command{
 public:
-  ShadowCommand(std::vector<std::shared_ptr<Light>> lights);
+  StartShadowCommand(std::shared_ptr<Light> lights);
 
-  ShadowCommand(){}
+  StartShadowCommand(){}
   void runCommand()const;
 private:
-  std::vector<std::shared_ptr<Light>> lights_;
+ std::shared_ptr<Light> lights_;
   std::shared_ptr<FrameBuffer> depth_buffer_;
   std::shared_ptr<Material> shadow_shader_;
+};
+
+#endif
+//
+#ifndef __H_SEND_OBJECT_SHADOW__
+#define __H_SEND_OBJECT_SHADOW__
+class SendObjectShadow : public Command{
+public:
+  SendObjectShadow(mat4 m);
+
+  SendObjectShadow(){}
+  void runCommand()const;
+private:
+  mat4 m_;
 };
 
 #endif

@@ -28,7 +28,7 @@ void PostProcess::begin(){
 
   if (!frame_buff_->isLoaded()){
     OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_.get(),true);
-   material_->setProgram( OpenGlInterFaz::instance().loadMaterial(material_->getVertexData().c_str() ,material_->getFragmentData().c_str()));
+    material_->setProgram( OpenGlInterFaz::instance().loadMaterial(material_->getVertexData().c_str() ,material_->getFragmentData().c_str()));
     OpenGlInterFaz::instance().loadBuffer(render_quad_->getBuffer().get());
     EngineManager::instance().setRenderTarget(frame_buff_.get());
     frame_buff_->setLoaded(true);
