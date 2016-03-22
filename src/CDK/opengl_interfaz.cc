@@ -59,8 +59,8 @@ struct OpenGlInterFaz::Data{
 
   ///Shadows
   GLint shadow_map_texture;
-  GLuint shadow_model_=-1;
-  GLuint light_space_ = -1;
+  GLint shadow_model_= -1;
+  GLint light_space_ = -1;
   };
 
 OpenGlInterFaz::OpenGlInterFaz(){
@@ -172,8 +172,8 @@ int OpenGlInterFaz::loadMaterial(const char*vertex_data, const char*fragment_dat
     if (data_->mat_s_d<0)data_->mat_s_d = glGetUniformLocation(data_->shadow_program_, "u_material_specular_d");
     if (data_->mat_a_d<0)data_->mat_a_d = glGetUniformLocation(data_->shadow_program_, "u_material_ambient_d");
     //SHADOWS
-    if (data_->shadow_model_ < 0)data_->shadow_model_ = glGetUniformLocation(data_->shadow_model_,"u_model_m");
-    if (data_->light_space_ < 0)data_->light_space_ = glGetUniformLocation(data_->light_space_, "light_screen");
+    if (data_->shadow_model_<0)data_->shadow_model_ = glGetUniformLocation(data_->shadow_program_, "u_model");
+    if (data_->light_space_<0)data_->light_space_ = glGetUniformLocation(data_->shadow_program_, "light_screen");
     return data_->shadow_program_;
   }
 
@@ -219,10 +219,7 @@ void OpenGlInterFaz::useUnifor3f(const char* name, const float*data){
 
 void OpenGlInterFaz::useUniformMat4(mat4 m){
 
-  
-
-		glUniformMatrix4fv(data_->shadow_model_, 1, GL_FALSE, &m[0][0]);
-	
+  glUniformMatrix4fv(data_->shadow_model_, 1, GL_FALSE, &m[0][0]);
 
 }
 
@@ -256,7 +253,7 @@ void OpenGlInterFaz::bindFrameBuffer(int fb_id,FrameBuffer::kFramebufferBindType
     break;
   }
   glBindFramebuffer(type_binding,fb_id);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 }
 
 void OpenGlInterFaz::useCamera(mat4 proyection, mat4 model, mat4 view){
@@ -413,8 +410,8 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 
   if (strcmp(m->getType(), "fb") == 0){
 
-    glTexImage2D(GL_TEXTURE_2D, 0, t_format, EngineManager::instance().width(),
-      EngineManager::instance().height(), 0, t_format, pixel_type, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, t_format,1024,
+      1024, 0, t_format, pixel_type, NULL);
   
   }
   else{
@@ -434,10 +431,7 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
 void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int texture_id){
  
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture_id);
-  int tex_i = glGetUniformLocation(data_->shadow_program_, u_name.c_str());
-
-  
+  glBindTexture(GL_TEXTURE_2D, texture_id);  
 }
 
 void OpenGlInterFaz::loadLight(int num_light){
@@ -527,7 +521,6 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb,bool use_render_buffer){
 }
 
 void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
- 
 
   glBindTexture(GL_TEXTURE_2D, fb.getTexture()->getID());
   glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT, 0);

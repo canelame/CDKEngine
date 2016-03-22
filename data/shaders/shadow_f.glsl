@@ -1,14 +1,9 @@
 #version 330
-
-in vec2 o_uv;
-in vec2 o_world_position;
-
-uniform sampler2D depth_texture;
 out vec4 color;
+in vec2 o_uv;
+uniform sampler2D depth_texture;
 
 void main(){
-	float depth = texture(depth_texture,o_uv).r;
-	
-	color = vec4(vec3depth)1.0);
-
+	float depth_value = texture(depth_texture,o_uv).r;
+	color = vec4(vec3(depth_value),1.0f);
 }

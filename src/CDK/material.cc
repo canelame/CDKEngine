@@ -5,11 +5,11 @@
 
 Material::Material(int v){
   if (v == 0){
-    loadShader("shaders/texture_f.glsl", "shaders/texture_v.glsl");
+    loadShader("shaders/texture_v.glsl", "shaders/texture_f.glsl");
     type_ = v;
   }
   else{
-    loadShader("shaders/diffuse_f.glsl", "shaders/diffuse_v.glsl");
+    loadShader("shaders/diffuse_v.glsl", "shaders/diffuse_f.glsl");
     type_ = v;
   }
 }
@@ -24,7 +24,7 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
     temp_vertex_data << file_V.rdbuf();
     file_V.close();
     line = temp_vertex_data.str();
-    fragment_data_ = line;
+    vertex_data_ = line;
 
   }
   std::stringstream temp_vertex_data1;
@@ -34,7 +34,7 @@ void Material::loadShader(const char *vertex_file, const char* fragment_file){
     temp_vertex_data1 << file_V1.rdbuf();
     file_V1.close();
     line = temp_vertex_data1.str();
-    vertex_data_ = line;
+    fragment_data_ = line;
   }
 }
 

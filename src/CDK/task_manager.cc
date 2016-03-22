@@ -131,23 +131,22 @@ int Task::getId(){
      lock();
     
      scene_lights_ = nod_->getLigths();
-     dl_->add(std::make_shared<StartShadowCommand>(scene_lights_[0]));
+    
      loadShadows(nod_);
-     loadNode(nod_);
+     dl_->add(std::make_shared<EndShadowCommand>());
+    loadNode(nod_);
     
      unlock();
    }
 
    void UpdateDisplay::loadShadows(std::shared_ptr<Node>node){
      std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
-
      if (node->getParent() != nullptr){
        node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
      }
      else{
        //  mat_sett  = t_drawable->getMaterialSettings();
        node->setWorldMat(node->modelMat());
-
      }
 
      if (t_drawable){
@@ -159,28 +158,27 @@ int Task::getId(){
      for (int i = 0; i < node->size(); i++){
        loadShadows(node->childAt(i));
      }
+
    }
 
    void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
 
-
+ 
     std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
 
 
      if (t_drawable){
     
        if ((t_drawable->geometry() != nullptr && t_drawable->material() != nullptr)){
-        Buffer *t_geometry_buff = t_drawable->geometry()->getBuffer().get();
+         Buffer *t_geometry_buff = t_drawable->geometry()->getBuffer().get();
          Material *t_material = t_drawable->material().get();
          Material::MaterialSettings *mat_sett = t_drawable->getMaterialSettings().get();
 
-        
          dl_->add(std::make_shared<UseMaterialCommand>(t_material,mat_sett));
          dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, t_drawable->worldMat()));
-       if(mat_sett->getTextures().size()>0)  dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));
-      if(scene_lights_.size()>0)   dl_->add(std::make_shared<LightsCommand>(scene_lights_));
+         if(mat_sett->getTextures().size()>0)dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));
+         if(scene_lights_.size()>0)dl_->add(std::make_shared<LightsCommand>(scene_lights_));
          dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
-         shadow_models_.push_back(t_drawable->position());
          //t_drawable->setDirtyNode(false);
        }
      }
