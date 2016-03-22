@@ -44,8 +44,8 @@ int Window::main(int argc, char** argv){
   std::shared_ptr<Drawable> drawable_cube;
   std::shared_ptr<Material> mater = std::make_shared<Material>(0);
   std::shared_ptr<Material::MaterialSettings> mat_s = std::make_shared<Material::MaterialSettings>();
-  mat_s->diffuse_color_ = vec3(0.0, 1.0, 0.0);
-  mat_s->ambient_color_ = vec3(0.5);
+  mat_s->diffuse_color_ = vec3(0.0, 0.0, 0.0);
+  mat_s->ambient_color_ = vec3(1.0);
   mat_s->specular_color_ = vec3(1.0);
   mat_s->addTexture("textures/container.jpg");
   std::shared_ptr<Texture> texture_cube = loader->loadTexture("textures/container.jpg","diffuse");
@@ -79,7 +79,7 @@ int Window::main(int argc, char** argv){
   ///LIGHTS
   
   std::shared_ptr<Light> l1 = std::make_shared<Light>();
-  l1->setPosition(vec3(0.0,20.0,0.0));
+  l1->setPosition(vec3(0.0,-20.0,0.0));
   l1->setAmbientColor(vec3(0.2, 0.2, 0.2));
   l1->setSpecularColor(vec3(1.0,1.0,1.0));
   l1->setDifusseColor(vec3(1.0,1.0,1.0));

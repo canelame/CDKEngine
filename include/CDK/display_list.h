@@ -30,17 +30,34 @@ private:
 #define __H_SHADOW_COMMAND__
 class StartShadowCommand : public Command{
 public:
-  StartShadowCommand(std::shared_ptr<Light> lights);
+  StartShadowCommand(int depth_program,int depth_fb,std::shared_ptr<Light> lights=nullptr);
 
   StartShadowCommand(){}
   void runCommand()const;
 private:
+  int shader_program_;
+  int fb_id_;
  std::shared_ptr<Light> lights_;
-  std::shared_ptr<FrameBuffer> depth_buffer_;
 
 };
 
 #endif
+
+///SHADOWS COMMAND CLASS
+
+#ifndef __H_SHADOW_END_COMMAND__
+#define __H_SHADOW_END_COMMAND__
+class EndShadowCommand : public Command{
+public:
+  EndShadowCommand();
+ 
+  void runCommand()const;
+private:
+
+
+};
+#endif
+
 //
 #ifndef __H_SEND_OBJECT_SHADOW__
 #define __H_SEND_OBJECT_SHADOW__
