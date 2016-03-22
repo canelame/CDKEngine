@@ -602,11 +602,14 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light){
   }
 }
 void OpenGlInterFaz::setDrawBuffer(int fb_id){
-
-  glNamedFramebufferDrawBuffer(fb_id, GL_NONE);
+  glBindFramebuffer(GL_FRAMEBUFFER,fb_id);
+  glDrawBuffer(GL_NONE);
+  glBindFramebuffer(GL_FRAMEBUFFER,0);
 }
 void OpenGlInterFaz::setReadBuffer(int fb_id){
-  glNamedFramebufferReadBuffer(fb_id, GL_NONE);
+  glBindFramebuffer(GL_FRAMEBUFFER, fb_id);
+  glReadBuffer(GL_NONE);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void OpenGlInterFaz::renderShadows(int program,mat4 light){

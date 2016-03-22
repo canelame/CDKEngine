@@ -37,7 +37,7 @@ public:
 private:
  std::shared_ptr<Light> lights_;
   std::shared_ptr<FrameBuffer> depth_buffer_;
-  std::shared_ptr<Material> shadow_shader_;
+
 };
 
 #endif
@@ -234,7 +234,8 @@ public:
 private:
   void renderScene();
 
-  std::shared_ptr<FrameBuffer> current_framebuffer_;
+  std::shared_ptr<FrameBuffer> depth_buffer_;
+  std::shared_ptr<Material> shadow_shader_;
 
 	List listCommand_;
   List shadowList_;

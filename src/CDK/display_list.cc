@@ -5,6 +5,21 @@
 
 
 DisplayList::DisplayList(){
+  depth_buffer_ = std::make_shared<FrameBuffer>();
+  if (!depth_buffer_->isLoaded()){
+    Texture  * d_texture = depth_buffer_->getTexture().get();
+    d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
+    d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
+    d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+    d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+    d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Repeat);
+    d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Repeat);
+    OpenGlInterFaz::instance().createFrameBuffer(*depth_buffer_.get(), false);
+    OpenGlInterFaz::instance().setDrawBuffer(depth_buffer_->getId());
+    OpenGlInterFaz::instance().setReadBuffer(depth_buffer_->getId());
+  }
+  shadow_shader_ = std::make_shared<Material>();
+  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
 
 }
 DisplayList::~DisplayList(){
@@ -15,11 +30,7 @@ void DisplayList::add(Comm_ c){
 }
 void DisplayList::execute(){
 
- 
-
-  
   renderScene();
-
 
 }
 
@@ -183,8 +194,7 @@ void UseFrameBuffer::runCommand()const{
 StartShadowCommand::StartShadowCommand(std::shared_ptr<Light> lights){
   depth_buffer_ = std::make_shared<FrameBuffer>();
   depth_buffer_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_DepthAttachment);
-  shadow_shader_ = std::make_shared<Material>();
-  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
+  
   lights_ = lights;
 }
 
@@ -192,23 +202,10 @@ void StartShadowCommand::runCommand()const{
 
     if (lights_->getType() == Light::LightType::T_DIRECTION_LIGHT){
 
-      if (!depth_buffer_->isLoaded()){
-        Texture  * d_texture = depth_buffer_->getTexture().get();
-        d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
-        d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
-        d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
-        d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
-        d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Repeat);
-        d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Repeat);
-        OpenGlInterFaz::instance().createFrameBuffer(*depth_buffer_.get(), false);
-        OpenGlInterFaz::instance().setDrawBuffer(depth_buffer_->getId());
-        OpenGlInterFaz::instance().setReadBuffer(depth_buffer_->getId());
-      }
-
       mat4 light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
       mat4 light_view = glm::lookAt(lights_->getPosition(), vec3(0.0), vec3(0.0));
       mat4 light_space = light_projection * light_view;
-      OpenGlInterFaz::instance().renderShadows(shadow_shader_->getProgram(),light_space);
+      OpenGlInterFaz::instance().renderShadows();
       glViewport(0, 0, 1024, 1024);
       OpenGlInterFaz::instance().bindFrameBuffer(depth_buffer_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
       glClear(GL_DEPTH_BUFFER_BIT);
