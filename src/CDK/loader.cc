@@ -3,6 +3,7 @@
  #include "CDK/task_manager.h"
 #include "CDK/texture_cache.h"
 #include "CDK/texture.h"
+
 struct Loader::MeshData{
   int num_positions;
   int num_normals;
@@ -70,12 +71,12 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
 
  if (file != NULL){
 
-   std::shared_ptr<Material>  mat_child = std::make_shared<Material>(0);
+   std::shared_ptr<TextureMaterial>  mat_child = std::make_shared<TextureMaterial>();
    fread((void*)&num_meshes, sizeof(const int), 1, file);
    MeshData m;
-   std::shared_ptr<Material::MaterialSettings> mat_sett;
+   std::shared_ptr<TextureMaterial::MaterialSettings> mat_sett;
    for (int mn = 0; mn < num_meshes; mn++){
-     mat_sett = std::make_shared<Material::MaterialSettings>();
+     mat_sett = std::make_shared<TextureMaterial::MaterialSettings>();
      fread(&m, sizeof(MeshData), 1, file);
      const int position_offset = m.num_positions*sizeof(float);
      const int normal_offset = m.num_normals*sizeof(float);
@@ -99,7 +100,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
 
 
     if (m.num_diffuse_textures == 0 && m.num_specular_textures == 0){
-      mat_child = std::make_shared<Material>(1);
+     // mat_child = std::make_shared<Material>(1);
     }
     else{
   
@@ -114,7 +115,7 @@ std::shared_ptr<Drawable> Loader::loadCDK(const char*file_in){
        printf("Loading diffuse texture: %s\n",t_t.path );
        bool skip = false;
        //Search if the texture is already loaded
-       for (int j= 0; j < mat_sett->totalTextures();j++){
+       for (int j = 0; j < mat_sett->totalTextures(); j++){
         
          if (strcmp(mat_sett->getTextureAt(j), tpath) == 0){
            mat_sett->addTexture(mat_sett->getTextureAt(j));

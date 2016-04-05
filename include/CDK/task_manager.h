@@ -45,6 +45,10 @@ private:
 #ifndef __H_UPDATE_LIST__
 #define __H_UPDATE_LIST__
 #include "display_list.h"
+#include "scene.h"
+#include <map>
+#include <vector>
+
 	/**
 	* @author Alejandro Canela Mendez 2015.
 	* @brief Create a task to update the dispay list.
@@ -56,7 +60,7 @@ public:
 	*	@brief Constructor of the task UpdateDisplay
 	* @param dl The display list to update
 	*/
-  UpdateDisplay(DisplayList *dl,std::shared_ptr<Node> n,mat4 proyection_m,  mat4 view_m,bool loaded);
+  UpdateDisplay(DisplayList *dl,Scene* n,bool loaded);
 	/**
 	* @brief Execute the task
 	*/
@@ -64,13 +68,15 @@ public:
   void loadNode(std::shared_ptr<Node>node);
   void loadShadows(std::shared_ptr<Node>node);
 private:
- std::shared_ptr<Node> nod_;
+  void directionalShadowPass();
+ std::shared_ptr<Scene> nod_;
 	DisplayList* dl_;
   mat4 proyex_mat_;
   mat4 model_mat_;
   mat4 view_mat_;
   bool cam_loaded_;
-  std::vector<std::shared_ptr<Light> > scene_lights_;
+  std::map <Material*,std::vector<Drawable*>> objects_order_by_program_;
+
   std::vector<vec3> shadow_models_;
 };
 #endif

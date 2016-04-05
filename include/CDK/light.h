@@ -97,6 +97,10 @@ public:
   @return value Get value for loaded state
   */
   bool getLoaded();
+
+  bool isDirty();
+  void setDirty(bool value);
+
 private:
   struct Data;
   Data *data_;

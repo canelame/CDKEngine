@@ -73,7 +73,7 @@ public:
   void loadLight(int num_light);
   /**
   */
-  void sendLight( Light *light,int num_light);
+  void sendLight( Light *light,int num_light,bool is_directional);
   /**
   @brief
   */
@@ -98,9 +98,20 @@ public:
   ~OpenGlInterFaz(){};
   /**
   */
-  void renderShadows(int program,mat4 light);
+  void renderShadows(int program);
+  /**
+  */
+  void setDepthRenderTarget(int value);
+  /**
+  */
+  void setLightProyection(mat4 mat);
+  /**
+  */
+  void loadDirectionalLight();
+  //Return depth buffer id
+  int createShadowBuffer();
   static OpenGlInterFaz& instance();
-
+  
 private:
  
   struct Data;

@@ -36,7 +36,7 @@ public:
   void runCommand()const;
 private:
   int shader_program_;
-  int fb_id_;
+  mutable int fb_id_;
  std::shared_ptr<Light> lights_;
 
 };
@@ -63,12 +63,13 @@ private:
 #define __H_SEND_OBJECT_SHADOW__
 class SendObjectShadow : public Command{
 public:
-  SendObjectShadow(mat4 m);
+  SendObjectShadow(Buffer *g,mat4 m);
 
   SendObjectShadow(){}
   void runCommand()const;
 private:
   mat4 m_;
+  mutable  Buffer* t_geo;
 };
 
 #endif
@@ -81,7 +82,7 @@ private:
 #include "opengl_interfaz.h"
 class LightsCommand : public Command{
 public:
-  LightsCommand(std::vector<std::shared_ptr<Light>> geo);
+  LightsCommand(std::vector<std::shared_ptr<Light>> geo,std::shared_ptr<Light>dir_light);
 
 
   void runCommand()const;
@@ -89,7 +90,7 @@ public:
 
 private:
   mutable std::vector<std::shared_ptr<Light>> lights_;
-
+  std::shared_ptr<Light> dir_light_;
 };
 #endif
 ///LOAD MATERIAL COMMMAND CLASS
@@ -112,16 +113,16 @@ private:
 #ifndef __H_LOAD_TEXTURE_COMMAND__
 #define __H_LOAD_TEXTURE_COMMAND__
 #include "command.h"
-#include "material.h"
+#include "texture_material.h"
 #include "opengl_interfaz.h"
 
 class LoadTextureCommand : public Command{
 public:
-	LoadTextureCommand(Material::MaterialSettings *mat);
+	LoadTextureCommand( TextureMaterial::MaterialSettings*mat);
 	void runCommand()const;
-	Material::MaterialSettings* getMaterial();
+
 private:
-	 Material::MaterialSettings *t_mat;
+	TextureMaterial::MaterialSettings *t_mat;
 	 bool delete_ = false;
 
 };
@@ -168,7 +169,7 @@ private:
 #include "opengl_interfaz.h"
 class UseMaterialCommand : public Command{
 public:
-	UseMaterialCommand(Material* mat,Material::MaterialSettings *mt_s);
+	UseMaterialCommand(Material* mat);
   UseMaterialCommand(){}
 	void runCommand()const;
 private:
@@ -218,7 +219,8 @@ class DisplayList{
   ///Draw Command variable
   unsigned int indices_size_;
   unsigned int vao_;
-
+  bool shadow_buffer_created_=false;
+  GLuint  depth_buffer_id__;
 public:
   typedef std::shared_ptr<Command> Comm_;
   typedef std::vector < Comm_ > List;
@@ -251,7 +253,7 @@ public:
 private:
   void renderScene();
 
-  std::shared_ptr<FrameBuffer> depth_buffer_;
+
   std::shared_ptr<Material> shadow_shader_;
 
 	List listCommand_;

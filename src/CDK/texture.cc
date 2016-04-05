@@ -25,6 +25,7 @@ Texture::Texture(){
   data_->min_filter = kTextureFiltering::kTextureFiltering_Linear;
   data_->s_wrapping = kTextureWrapping::kTextureWrapping_Repeat;
   data_->t_wrapping = kTextureWrapping::kTextureWrapping_Repeat;
+  data_->pixel_type = kTexturePixelType::kTexturePixelType_UByte;
 };
 
 void Texture::loadTexture(const char*file,const char type[30]){

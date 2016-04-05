@@ -1,5 +1,5 @@
 #include "CDK/engine_manager.h"
-
+#include "CDK/opengl_interfaz.h"
 EngineManager* EngineManager::instance_ = nullptr;
 EngineManager& EngineManager::instance(){
   if (instance_ == NULL){
@@ -12,6 +12,11 @@ void EngineManager::init(){
   width_ = 0;
   height_ = 0;
   current_render_target_ =0;
+  shadow_depth_buffer_ = std::make_shared<FrameBuffer>();
+  shadow_depth_buffer_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_DepthAttachment);
+  shadow_shader_ = std::make_shared<Material>();
+  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
+
 }
 int EngineManager::width(){
   return width_;
@@ -49,3 +54,10 @@ int EngineManager::getUniform(char*name){
  // loaded_uniforms_.find(name);
   return 0;
 }
+
+/*void EngineManager::setShadowBuffer(std::shared_ptr<FrameBuffer> fb){
+
+}
+std::shared_ptr<FrameBuffer> EngineManager::getShadowBuffer(){
+
+}*/

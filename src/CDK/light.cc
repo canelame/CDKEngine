@@ -79,3 +79,4 @@ void Light::setLoaded(bool value){
 bool Light::getLoaded(){
   return data_->loaded;
 }
+

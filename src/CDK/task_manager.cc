@@ -1,5 +1,6 @@
 #include "CDK/task_manager.h"
 #include "CDK/texture.h"
+#include "CDK/engine_manager.h"
 Task::Task(){
 	id_ = 0;
 	is_locked_ = false;
@@ -119,23 +120,36 @@ int Task::getId(){
 	 /////////////////////////////////////////////////////
 
 	 //UPDATE_DISPLAY_LIST_TASK
-   UpdateDisplay::UpdateDisplay(DisplayList*dl, std::shared_ptr<Node> n, mat4 proyection_m ,mat4 view_m,bool loaded){
+   UpdateDisplay::UpdateDisplay(DisplayList*dl, Scene *n,bool loaded){
      dl_ = dl;
-     nod_ = n;
-     proyex_mat_ = proyection_m;
+     nod_ = std::make_shared<Scene>(*n);
      cam_loaded_ = loaded;
-     view_mat_=view_m;
+     proyex_mat_ = nod_->camera_->getProyection();
+     view_mat_ = nod_->camera_->getView();
    
 	 }
+   void UpdateDisplay::directionalShadowPass(){
+     for (std::map<Material*, std::vector<Drawable*>>::iterator it = objects_order_by_program_.begin();
+       it != objects_order_by_program_.end(); it++){
+       for (int i = 0; i < it->second.size(); i++){
+         dl_->add(std::make_shared<SendObjectShadow>(it->second[i]->geometry()->getBuffer().get(),it->second[i]->worldMat()));
+       }
+     }
+     dl_->add(std::make_shared<EndShadowCommand>());
+   }
+
    void UpdateDisplay::runTask(){
      lock();
-    
-     scene_lights_ = nod_->getLigths();
-    
-     loadShadows(nod_);
-     dl_->add(std::make_shared<EndShadowCommand>());
-    loadNode(nod_);
-    
+     mat4 light_projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 20.5f);
+     mat4 light_view = glm::lookAt(nod_->directional_light_->getPosition(), vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
+     mat4 light_space = light_projection * light_view;
+     OpenGlInterFaz::instance().setLightProyection(light_space);
+
+     dl_->add(std::make_shared<StartShadowCommand>(0, 0));
+     loadShadows(nod_->root_);
+     directionalShadowPass();
+     loadNode(nod_->root_);
+
      unlock();
    }
 
@@ -145,16 +159,24 @@ int Task::getId(){
        node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
      }
      else{
-       //  mat_sett  = t_drawable->getMaterialSettings();
        node->setWorldMat(node->modelMat());
      }
-
      if (t_drawable){
-       Buffer *t_geometry_buff = t_drawable->geometry()->getBuffer().get();
-       dl_->add(std::make_shared<SendObjectShadow>(t_drawable->worldMat()));
-       dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
+       Material* material = t_drawable->material().get();
+       if (material){
+         std::map<Material*, std::vector<Drawable*>>::iterator it;
+         it = objects_order_by_program_.find(material);
+         if (it != objects_order_by_program_.end()){
+           it->second.push_back(t_drawable.get());
+         }
+         else{
+           std::vector < Drawable*>  objs;
+           objs.push_back(t_drawable.get());
+           objects_order_by_program_.insert(std::pair< Material*, std::vector<Drawable*> >(material, objs));
+         }
+       }
+     }
 
-     } 
      for (int i = 0; i < node->size(); i++){
        loadShadows(node->childAt(i));
      }
@@ -163,33 +185,27 @@ int Task::getId(){
 
    void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
 
- 
-    std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
+    // if (t_drawable){
+       for (std::map<Material*, std::vector<Drawable*>>::iterator it = objects_order_by_program_.begin();
+         it != objects_order_by_program_.end(); it++){
+         //Use program
+        
+         Material *t_material = it->first;
+        
+         if (t_material->type_ == 0){  
+           dl_->add(std::make_shared<UseMaterialCommand>(t_material));  
+         }
+         //Render all objects that use this program
+         for (int i = 0; i < it->second.size(); i++){
+           TextureMaterial::MaterialSettings *mat_sett = (TextureMaterial::MaterialSettings*)it->second[i]->getMaterialSettings().get();
+           if (mat_sett->getTextures().size()>0)dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));
+           Buffer *t_geometry_buff = it->second[i]->geometry()->getBuffer().get();
+           dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, it->second[i]->worldMat()));
+           dl_->add(std::make_shared<LightsCommand>(nod_->lights_, nod_->directional_light_));
+           dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
+         }
 
-
-     if (t_drawable){
-    
-       if ((t_drawable->geometry() != nullptr && t_drawable->material() != nullptr)){
-         Buffer *t_geometry_buff = t_drawable->geometry()->getBuffer().get();
-         Material *t_material = t_drawable->material().get();
-         Material::MaterialSettings *mat_sett = t_drawable->getMaterialSettings().get();
-
-         dl_->add(std::make_shared<UseMaterialCommand>(t_material,mat_sett));
-         dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, t_drawable->worldMat()));
-         if(mat_sett->getTextures().size()>0)dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));
-         if(scene_lights_.size()>0)dl_->add(std::make_shared<LightsCommand>(scene_lights_));
-         dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
-         //t_drawable->setDirtyNode(false);
        }
-     }
-     else{
-
-     }
-     
-     //hijos
-     for (int i = 0; i < node->size(); i++){
-       loadNode(node->childAt(i));
-     }
      finished_ = true;
 
    }

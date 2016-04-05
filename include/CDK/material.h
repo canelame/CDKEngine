@@ -32,7 +32,7 @@ public:
   
   class MaterialSettings{
   public:
-    std::vector<std::string > texture_;
+
     vec3 diffuse_color_;
     vec3 specular_color_;
     vec3 ambient_color_;
@@ -43,23 +43,8 @@ public:
         specular_color_ = vec3(1.0);
         diffuse_color_ = vec3(1.0);
     }
-    /**
-    @Brief Return the texture placed at i
-    @return Texture of material on index i
-    */
-    const char* getTextureAt(int i);
-    /**
-    @brief Get total textures of the material
-    @return Total num texutures
-    */
-    int totalTextures();
-    /**
-    @brief add a texture to material
-    @param txt new texture
-    @param tk The current taskManager
-    */
-    void addTexture(const char*name);
-    std::vector<std::string> getTextures();
+
+
     void setDiffuseColor(vec3 value){ diffuse_color_ = value; }
     void setSpecularColor(vec3 value){ specular_color_ = value; }
     void setAmbientColor(vec3 value){ ambient_color_ = value; }
@@ -67,8 +52,8 @@ public:
     vec3 getSpecularColor(){ return specular_color_; }
     vec3 getAmbientColor(){ return ambient_color_; }
   };
-  Material(){}
-  Material(int v);
+  Material();
+
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
@@ -111,7 +96,6 @@ private:
   
   void useMaterial();
   void compileShader(GLuint shader)const;
-
   unsigned int program_;
   
 

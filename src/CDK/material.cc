@@ -3,15 +3,8 @@
 #include "CDK/task_manager.h"
 
 
-Material::Material(int v){
-  if (v == 0){
-    loadShader("shaders/texture_v.glsl", "shaders/texture_f.glsl");
-    type_ = v;
-  }
-  else{
-    loadShader("shaders/diffuse_v.glsl", "shaders/diffuse_f.glsl");
-    type_ = v;
-  }
+Material::Material(){
+
 }
 
 void Material::loadShader(const char *vertex_file, const char* fragment_file){
@@ -54,24 +47,5 @@ std::string Material::getFragmentData(){
 }
 std::string Material::getVertexData(){ 
   return vertex_data_; 
-}
-
-
-//////////////////MATERIAL SETTINGS//////////////////////
-void Material::MaterialSettings::addTexture(const char *name){
-
-  texture_.push_back(name);
-
-}
-int Material::MaterialSettings::totalTextures(){
-  return texture_.size();
-}
-
-
-std::vector<std::string> Material::MaterialSettings::getTextures(){
-  return texture_;
-}
-const char* Material::MaterialSettings::getTextureAt(int i){
-  return texture_.at(i).c_str(); 
 }
 

@@ -6,11 +6,11 @@
 
 
 PostProcess::PostProcess(){
-  material_ = std::make_shared<Material>(0);
+  material_ = std::make_shared<Material>();
   render_quad_ = std::make_shared<Geometry>();
   frame_buff_ = std::make_shared<FrameBuffer>();
-  frame_buff_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_ColorAttachment);
-  material_->loadShader("shaders/molon_f.glsl", "shaders/pp_v.glsl");
+  frame_buff_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_DepthAttachment);
+  material_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
   render_quad_->createQuad();
 }
 
@@ -26,19 +26,20 @@ std::shared_ptr<Buffer> PostProcess::getQuad(){
 
 void PostProcess::begin(){
 
-  if (!frame_buff_->isLoaded()){
-    OpenGlInterFaz::instance().createFrameBuffer(*frame_buff_.get(),true);
-    material_->setProgram( OpenGlInterFaz::instance().loadMaterial(material_->getVertexData().c_str() ,material_->getFragmentData().c_str()));
-    OpenGlInterFaz::instance().loadBuffer(render_quad_->getBuffer().get());
-    EngineManager::instance().setRenderTarget(frame_buff_.get());
-    frame_buff_->setLoaded(true);
-  }
+
+
+
+  OpenGlInterFaz::instance().renderShadows(material_->getProgram());
+
+  glViewport(0, 0, 1024, 1024);
   OpenGlInterFaz::instance().bindFrameBuffer(frame_buff_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+  glClear(GL_DEPTH_BUFFER_BIT);
+ 
 }
 void PostProcess::end(){
-  OpenGlInterFaz::instance().bindFrameBuffer(0,FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
-  glUseProgram(material_->getProgram());
+ // OpenGlInterFaz::instance().bindFrameBuffer(0,FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+  /*glUseProgram(material_->getProgram());
   OpenGlInterFaz::instance().useTexture(0, 0, "", frame_buff_->getTexture().get()->getID());
   Buffer * buff = render_quad_->getBuffer().get();
-  OpenGlInterFaz::instance().drawGeometry((unsigned int)buff->getVAO(),6);
+  OpenGlInterFaz::instance().drawGeometry((unsigned int)buff->getVAO(),6);*/
 }

@@ -46,8 +46,7 @@ int main(int argc, char**argv){
 
 void Window::clearScreen(vec3 color){
 	glClearColor(color.x, color.y, color.z, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
+
 }
 
 bool Window::init(unsigned int width, unsigned int height){

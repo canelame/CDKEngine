@@ -14,7 +14,7 @@
 * @brief This class represent an abtraction of a camera in opengGL.
 *
 */
- 
+class Scene;
 class Camera 
 {
 
@@ -58,7 +58,7 @@ public:
   @param node Root node
   @param tk TaskManager
   */
-  void render(std::shared_ptr<Node> node);
+  void render(Scene* scene);
   /**
   @brief Get model cam.
   */

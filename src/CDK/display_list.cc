@@ -3,28 +3,9 @@
 
 #include "CDK/engine_manager.h"
 
-
+#define ENGINE EngineManager::instance()
 DisplayList::DisplayList(){
-  depth_buffer_ = std::make_shared<FrameBuffer>();
-  depth_buffer_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_DepthAttachment);
-  shadow_shader_ = std::make_shared<Material>();
-  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
-  if (!depth_buffer_->isLoaded()){
-    Texture  * d_texture = depth_buffer_->getTexture().get();
-    d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
-    d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
-    d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
-    d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
-    d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Repeat);
-    d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Repeat);
-    OpenGlInterFaz::instance().createFrameBuffer(*depth_buffer_.get(), false);
-    OpenGlInterFaz::instance().setDrawBuffer(depth_buffer_->getId());
-    OpenGlInterFaz::instance().setReadBuffer(depth_buffer_->getId());
-  }
-  if (!shadow_shader_->is_compiled_){
-    shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(shadow_shader_->getVertexData().c_str(), shadow_shader_->getFragmentData().c_str()));
-    shadow_shader_->is_compiled_ = true;
-  }
+
 }
 DisplayList::~DisplayList(){
 }
@@ -34,11 +15,7 @@ void DisplayList::add(Comm_ c){
 }
 void DisplayList::execute(){
 
-  std::shared_ptr<StartShadowCommand> shadow_command = std::make_shared<StartShadowCommand>(shadow_shader_->getProgram(),depth_buffer_);
-  shadow_command->runCommand();
-
   renderScene();
-
 
 }
 
@@ -104,7 +81,7 @@ void UseCameraCommand::runCommand()const{
 
 ///////// LOAD_TEXTURE_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
-LoadTextureCommand::LoadTextureCommand(Material::MaterialSettings *mat){
+LoadTextureCommand::LoadTextureCommand(TextureMaterial::MaterialSettings *mat){
 	t_mat = mat;
 }
 
@@ -115,9 +92,7 @@ void LoadTextureCommand::runCommand()const{
   }
 
 }
-Material::MaterialSettings*  LoadTextureCommand::getMaterial(){
-	return t_mat;
-}
+
 
 ///////// LOAD_MATERIAL_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
@@ -148,15 +123,15 @@ void DrawCommand::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
   }
-  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_);
+  OpenGlInterFaz::instance().drawGeometry(vao_, indices_size_);
 
 }
 
 ///////// USE_MATERIAL_COMMAND CLASS/////////
 ////////////////////////////////////////////
-UseMaterialCommand::UseMaterialCommand(Material* mat, Material::MaterialSettings *mt_S){
+UseMaterialCommand::UseMaterialCommand(Material* mat){
 	t_mat = mat;
-  mat_set_ = mt_S;
+ 
 
 }
 
@@ -167,22 +142,32 @@ void UseMaterialCommand::runCommand()const{
     for (int i = 0; i < 10; i++){
       OpenGlInterFaz::instance().loadLight(i);
     }
+    OpenGlInterFaz::instance().loadDirectionalLight();
     t_mat->is_compiled_ = true;
   }
-    OpenGlInterFaz::instance().useMaterial(*t_mat, mat_set_->ambient_color_, mat_set_->diffuse_color_, mat_set_->specular_color_);
+  OpenGlInterFaz::instance().useMaterial(*t_mat, vec3(1.0), vec3(1.0), vec3(1.0));
   
 }
 
 
-LightsCommand::LightsCommand(std::vector < std::shared_ptr< Light >> l){
+LightsCommand::LightsCommand(std::vector < std::shared_ptr< Light >> l,std::shared_ptr<Light>dir_light){
   lights_ = l;
-
+  dir_light_ = dir_light;
 } 
 
 void LightsCommand::runCommand()const{
-  for (int i = 0; i < lights_.size(); i++){
-    OpenGlInterFaz::instance().sendLight(lights_[i].get(), i);
 
+
+  if (!dir_light_->getLoaded()) {
+    OpenGlInterFaz::instance().sendLight(dir_light_.get(), 0, true);
+    dir_light_->setLoaded(true);
+  }
+
+  for (int i = 0; i < lights_.size(); i++){
+    if (!lights_[i]->getLoaded()){
+      OpenGlInterFaz::instance().sendLight(lights_[i].get(), i, false);
+      lights_[i]->setLoaded(true);
+    }
   }
   
 }
@@ -207,17 +192,35 @@ StartShadowCommand::StartShadowCommand(int depth_program,int depth_fb,std::share
 
 void StartShadowCommand::runCommand()const{
 
-    //if (lights_->getType() == Light::LightType::T_DIRECTION_LIGHT){
+  if (!ENGINE.shadow_depth_buffer_->isLoaded()){
 
+    Texture  * d_texture = ENGINE.shadow_depth_buffer_->getTexture().get();
+    d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
+    d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
+    d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+    d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+    d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
+    d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
+    OpenGlInterFaz::instance().createFrameBuffer(*ENGINE.shadow_depth_buffer_.get(), false);
+    OpenGlInterFaz::instance().setDrawBuffer(ENGINE.shadow_depth_buffer_->getId());
+    OpenGlInterFaz::instance().setReadBuffer(ENGINE.shadow_depth_buffer_->getId());
+    OpenGlInterFaz::instance().createFrameBuffer(*ENGINE.shadow_depth_buffer_.get(), true);
+    // EngineManager::instance().setRenderTarget(frame_buff_.get());
+    EngineManager::instance().depth_texture_id_ = d_texture->getID();
+    ENGINE.shadow_depth_buffer_->setLoaded(true);
+  }
 
+  if (!ENGINE.shadow_shader_->is_compiled_){
+    ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_->getVertexData().c_str(), ENGINE.shadow_shader_->getFragmentData().c_str()));
+    ENGINE.shadow_shader_->is_compiled_ = true;
+  }
 
-      mat4 light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
-      mat4 light_view = glm::lookAt(vec3(0.0,10.0,0.0), vec3(0.0), vec3(1.0));
-      mat4 light_space = light_projection * light_view;
-      OpenGlInterFaz::instance().renderShadows(shader_program_,light_space);
-      glViewport(0, 0, 1024, 1024);
-      OpenGlInterFaz::instance().bindFrameBuffer(fb_id_, FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
-      glClear(GL_DEPTH_BUFFER_BIT);
+  OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram());
+  glViewport(0, 0, 1024, 1024);
+  glBindFramebuffer(GL_FRAMEBUFFER, ENGINE.shadow_depth_buffer_->getId());// , FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+  glClear(GL_DEPTH_BUFFER_BIT);
+  glCullFace(GL_FRONT);
+      
     //}
 }
 
@@ -229,16 +232,25 @@ void DisplayList::renderScene(){
 }
 
 
-SendObjectShadow::SendObjectShadow(mat4 m){
+SendObjectShadow::SendObjectShadow(Buffer * g,mat4 m){
   m_ = m;
+  t_geo = g;
 }
 
 void SendObjectShadow::runCommand()const{
   OpenGlInterFaz::instance().useUniformMat4(m_);
+  if (t_geo->isDirty()){
+    OpenGlInterFaz::instance().loadBuffer(t_geo);
+    t_geo->setDirty(false);
+   }
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), (unsigned int)t_geo->indiceSize());
 }
 
  EndShadowCommand::EndShadowCommand(){}
  void EndShadowCommand::runCommand()const{
+   glCullFace(GL_BACK);
    OpenGlInterFaz::instance().bindFrameBuffer(0, FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
-   glViewport(0,0,1024, 768);
+   glViewport(0,0,1024, 1024);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
  }

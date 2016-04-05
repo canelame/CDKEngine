@@ -5,6 +5,7 @@
 #include "CDK/input.h"
 #include "CDK/task_manager.h"
 #include "CDK/gui_interface.h"
+#include "CDK/scene.h"
 struct Camera::Data{
 
   mat4 proyection_mat_;
@@ -31,10 +32,12 @@ Camera::Camera(){
   
   data_ = new Data;
  
-  data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =105.0;
+  data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =0.0;
   data_->up_.x = 0; 	data_->up_.y = 1.0; 	data_->up_.z = 0;
   data_->front_.x = 0.0; 	data_->front_.y = 0.0; 	data_->front_.z = -100.0;
   setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
+  setPerspective(45.0f, EngineManager::instance().width() / EngineManager::instance().height(), 1.0f, 100.0f);
+
   data_->dl_cam_ = std::make_shared<DisplayList>();
   data_->dl_copy_ = std::make_shared<DisplayList>();
 }
@@ -53,13 +56,13 @@ void Camera::setLookAt(vec3 eye, vec3 center, vec3 up){
   data_->look_at_mat_ = glm::lookAt(eye, center, up);
 }
 
-void Camera::render(std::shared_ptr<Node>node){
+void Camera::render(Scene *node){
   if (EngineManager::instance().window_size_modified_){
    
     setPerspective(45.0f, EngineManager::instance().width() / EngineManager::instance().height(), 0.1, 10000.0f);
     EngineManager::instance().setWindowModified(false);
   }
-  std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, data_->proyection_mat_,data_->look_at_mat_,data_->loaded);
+  std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, data_->loaded);
 
      TaskManager::instance().addTask(update_task);
      if (data_->last_task.get() != nullptr){
@@ -72,7 +75,7 @@ void Camera::render(std::shared_ptr<Node>node){
      data_->dl_cam_->clear();
      data_->dl_cam_.swap(data_->dl_copy_);
 
-
+//     GuInterface::instance().draw(node);
  
 }
 void Camera::FpsCameraUpdate(){
