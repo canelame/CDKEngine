@@ -5,6 +5,7 @@
 #include "CDK/geometry.h"
 #include "CDK/camera.h"
 #include "CDK/texture_material.h"
+#include "CDK/point_light.h"
 #include "CDK/node.h"
 #include "CDK/loader.h"
 #include "glm\glm.hpp"
@@ -88,16 +89,16 @@ int Window::main(int argc, char** argv){
   
 
 
-  std::shared_ptr<Light> l2 = std::make_shared<Light>();
-  l2->setPosition(vec3(0.0, 4.0, 1.0));
-  l2->setAmbientColor(vec3(0.0, 0.0, 0.0));
-  l2->setSpecularColor(vec3(0.0, 1.0, 1.0));
-  l2->setDifusseColor(vec3(1.0, 0.0, 1.0));
+  std::shared_ptr<PointLight> l2 = std::make_shared<PointLight>();
+  l2->setPosition(vec3(0.0, -4.0, 1.0));
+  l2->setAmbientColor(vec3(1.0, 0.0, 0.0));
+  l2->setSpecularColor(vec3(1.0, 0.0, 0.0));
+  l2->setDifusseColor(vec3(1.0, 0.0, 0.0));
   l2->setTypeLight(Light::LightType::T_POINT_LIGHT);
 
 
   
- // scene->addLight(l2);
+  scene->addLight(l2);
   scene->root_->setPosition(vec3(0.0,0.0,0.0));
 
   //std::shared_ptr<PostProcess>render_to_text = std::make_shared<PostProcess>();

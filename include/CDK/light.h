@@ -2,7 +2,7 @@
 #define __H_LIGHT__
 #include "glm\glm.hpp"
 #include "CDK\types.h"
-#include "CDK\node.h"
+
 
 class Light{
 

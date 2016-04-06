@@ -58,6 +58,22 @@ private:
 };
 #endif
 
+
+#ifndef __RENDER_SHADOW_MAP__
+#define __RENDER_SHADOW_MAP__
+
+class RenderShadowMapCommand : public Command{
+public:
+  RenderShadowMapCommand(Light * l);
+  Light *light_;
+  void runCommand()const;
+private:
+
+
+};
+#endif
+
+
 //
 #ifndef __H_SEND_OBJECT_SHADOW__
 #define __H_SEND_OBJECT_SHADOW__

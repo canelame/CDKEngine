@@ -98,7 +98,7 @@ public:
   ~OpenGlInterFaz(){};
   /**
   */
-  void renderShadows(int program);
+  void renderShadows(int program,mat4 light_proyection_space);
   /**
   */
   void setDepthRenderTarget(int value);
