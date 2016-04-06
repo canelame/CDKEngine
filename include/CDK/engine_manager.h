@@ -31,7 +31,7 @@ void addUniform(char *name, int location);
 FrameBuffer* getRenderTarget();
 
 std::shared_ptr<Material>  shadow_shader_;
-std::shared_ptr<FrameBuffer> shadow_depth_buffer_;
+
 
 int shadow_buffer_created_ = false;
 int depth_bufer_id_;

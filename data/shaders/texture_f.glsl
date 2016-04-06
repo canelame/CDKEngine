@@ -6,6 +6,16 @@ struct Light{
 	vec3 specular_color;
 	float sh;
 	int type;//0 none 1 pint 2 direction
+	sampler2D depth_map;
+};
+struct PointLight{
+	vec3 position;
+	vec3 ambient_color;
+	vec3 diffuse_color;
+	vec3 specular_color;
+	float sh;
+	int type;//0 none 1 pint 2 direction
+	samplerCube depth_map;
 };
 out vec4 color;
 in vec2 o_uv;
@@ -24,12 +34,12 @@ uniform vec3 u_material_ambient;
 uniform float u_shinn;
 
 
-uniform Light lights[10];
+uniform PointLight lights[10];
 uniform Light u_directional_light;
 
 
 vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir);
-vec3 computePointLight(Light l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir);
+vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir);
 
 float computeShadows(vec4 posLightSpace,vec3 normal,vec3 light_dir){
 	vec3 projectionFrag = posLightSpace.xyz/posLightSpace.w;
@@ -59,15 +69,11 @@ float computeShadows(vec4 posLightSpace,vec3 normal,vec3 light_dir){
 
 void main(){
 	vec3 view = normalize(o_cam_pos-o_world_position.xyz);
-
 	
-
-	color.xyz+=computeDirectionLight(u_directional_light,o_normal,view);
+	color.xyz+=computeDirectionLight( u_directional_light,o_normal,view);
 	for(int i=0;i<10;i++){
 		if(lights[i].type == 1){
 			color.xyz+= computePointLight(lights[i],o_normal,o_world_position.xyz,view);
-		}else if(lights[i].type==2){
-
 		}
 	}
 
@@ -89,7 +95,7 @@ vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir){
 
 }
 
-vec3 computePointLight(Light l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
+vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 	vec3 lightDir = normalize(l_dir.position-fragPos);
 	float diff =max(dot(normal,lightDir),0.0);
 	vec3 rf = reflect(-lightDir,normal);

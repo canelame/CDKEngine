@@ -12,8 +12,7 @@ void EngineManager::init(){
   width_ = 0;
   height_ = 0;
   current_render_target_ =0;
-  shadow_depth_buffer_ = std::make_shared<FrameBuffer>();
-  shadow_depth_buffer_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_DepthAttachment);
+  
   shadow_shader_ = std::make_shared<Material>();
   shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
 

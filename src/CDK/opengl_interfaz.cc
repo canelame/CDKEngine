@@ -19,6 +19,7 @@ struct LightUniforms{
   GLint l_dc = -1;
   GLint l_sh = -1;
   GLint l_t = -1;
+  GLint texture_id;
 };
 struct OpenGlInterFaz::Data{
    GLuint shadow_texture_;
@@ -573,6 +574,11 @@ void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
   glBindVertexArray(0);
 }
 void OpenGlInterFaz::sendLight( Light *light,int num_light,bool is_directioal){
+
+  
+  
+
+  //Send uniforms
   vec3 position = light->getPosition();
   vec3 diffuse_c = light->getDiffuseColor();
   vec3 specular_c = light->getSpecularColor();
@@ -683,27 +689,30 @@ void OpenGlInterFaz::setReadBuffer(int fb_id){
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void OpenGlInterFaz::renderShadows(int program){
+void OpenGlInterFaz::renderShadows(int program,mat4 light_proyection_space){
   glUseProgram(program);
-  glUniformMatrix4fv(data_->light_space_, 1, GL_FALSE, &data_->light_proyection_[0][0]);
+  glUniformMatrix4fv(data_->light_space_, 1, GL_FALSE, &light_proyection_space[0][0]);
 }
  
 int  OpenGlInterFaz::createShadowBuffer(){
   GLuint id_texture;
   GLuint id_fb;
   glGenTextures(1, &id_texture);
-  glBindTexture(GL_TEXTURE_2D, id_texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024,
-    1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, id_texture);
+  for (int i = 0; i < 6; i++){
+    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, 1024,
+      1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+  }
+
 
   glGenFramebuffers(1, &id_fb);
   glBindFramebuffer(GL_FRAMEBUFFER, id_fb);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, id_texture, 0);
-  EngineManager::instance().depth_texture_id_ = id_texture;
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, id_texture, 0);
   glDrawBuffer(GL_NONE);
   glReadBuffer(GL_NONE);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

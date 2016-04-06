@@ -66,9 +66,10 @@ public:
 	*/
 	void runTask();
   void loadNode(std::shared_ptr<Node>node);
-  void loadShadows(std::shared_ptr<Node>node);
+  void loadObjects(std::shared_ptr<Node>node);
 private:
   void directionalShadowPass();
+  void loadLights();
  std::shared_ptr<Scene> nod_;
 	DisplayList* dl_;
   mat4 proyex_mat_;
@@ -76,6 +77,7 @@ private:
   mat4 view_mat_;
   bool cam_loaded_;
   std::map <Material*,std::vector<Drawable*>> objects_order_by_program_;
+  
 
   std::vector<vec3> shadow_models_;
 };

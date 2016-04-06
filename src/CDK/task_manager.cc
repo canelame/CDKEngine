@@ -128,6 +128,34 @@ int Task::getId(){
      view_mat_ = nod_->camera_->getView();
    
 	 }
+   void UpdateDisplay::loadLights(){
+     
+     //Directional light
+     FrameBuffer * light_depth_map = nod_->directional_light_->shadow_depth_buffer_.get();
+
+     if (light_depth_map->isLoaded()){
+
+       Texture  * d_texture = light_depth_map->getTexture().get();
+       d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
+       d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
+       d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+       d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+       d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
+       d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
+       OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map, false);
+       OpenGlInterFaz::instance().setDrawBuffer(light_depth_map->getId());
+       OpenGlInterFaz::instance().setReadBuffer(light_depth_map->getId());
+       OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map, true);
+       EngineManager::instance().depth_texture_id_ = d_texture->getID();
+       light_depth_map->setLoaded(true);
+     }
+
+     //More lights
+     for (int i = 0; i < nod_->lights_.size(); i++){
+
+     }
+   }
+
    void UpdateDisplay::directionalShadowPass(){
      for (std::map<Material*, std::vector<Drawable*>>::iterator it = objects_order_by_program_.begin();
        it != objects_order_by_program_.end(); it++){
@@ -140,20 +168,26 @@ int Task::getId(){
 
    void UpdateDisplay::runTask(){
      lock();
-     mat4 light_projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 20.5f);
-     mat4 light_view = glm::lookAt(nod_->directional_light_->getPosition(), vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
-     mat4 light_space = light_projection * light_view;
-     OpenGlInterFaz::instance().setLightProyection(light_space);
 
-     dl_->add(std::make_shared<StartShadowCommand>(0, 0));
-     loadShadows(nod_->root_);
+     //Load lights and create their depth maps
+     //loadLights();
+     //Start rendering the scene into shadow maps
+     loadObjects(nod_->root_);
+     dl_->add(std::make_shared<RenderShadowMapCommand>(nod_->directional_light_.get()) );
      directionalShadowPass();
+
+     //dl_->add(std::make_shared<StartShadowCommand>(0, 0));
+     for (int i = 0; i < nod_->lights_.size(); i++){
+      
+     }
+    // loadObjects(nod_->root_);
+
      loadNode(nod_->root_);
 
      unlock();
    }
 
-   void UpdateDisplay::loadShadows(std::shared_ptr<Node>node){
+   void UpdateDisplay::loadObjects(std::shared_ptr<Node>node){
      std::shared_ptr<Drawable> t_drawable = std::dynamic_pointer_cast<Drawable>(node);
      if (node->getParent() != nullptr){
        node->setWorldMat(node->getParent()->worldMat()*node->modelMat());
@@ -178,7 +212,7 @@ int Task::getId(){
      }
 
      for (int i = 0; i < node->size(); i++){
-       loadShadows(node->childAt(i));
+       loadObjects(node->childAt(i));
      }
 
    }

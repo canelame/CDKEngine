@@ -26,11 +26,6 @@ std::shared_ptr<Buffer> PostProcess::getQuad(){
 
 void PostProcess::begin(){
 
-
-
-
-  OpenGlInterFaz::instance().renderShadows(material_->getProgram());
-
   glViewport(0, 0, 1024, 1024);
   OpenGlInterFaz::instance().bindFrameBuffer(frame_buff_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
   glClear(GL_DEPTH_BUFFER_BIT);
