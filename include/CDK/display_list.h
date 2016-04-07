@@ -78,11 +78,11 @@ private:
 
 class RenderPointShadowMapCommand : public Command{
 public:
-  RenderPointShadowMapCommand(Light * l);
+  RenderPointShadowMapCommand(Light * l, int face);
   PointLight *light_;
   void runCommand()const;
 private:
-
+  int face_;
 
 };
 #endif

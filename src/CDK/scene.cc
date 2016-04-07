@@ -6,9 +6,9 @@ Scene::Scene(){
 
   directional_light_ = std::make_shared < DirectionalLight>();
   directional_light_->setPosition(vec3(-2.0, -4.0, -1.0));
-  directional_light_->setAmbientColor(vec3(1.0, 1.0, 1.0));
-  directional_light_->setSpecularColor(vec3(1.0, 1.0, 1.0));
-  directional_light_->setDifusseColor(vec3(1.0, 1.0, 1.0));
+  directional_light_->setAmbientColor(vec3(0.0, 1.0, 1.0));
+  directional_light_->setSpecularColor(vec3(0.0, 1.0, 1.0));
+  directional_light_->setDifusseColor(vec3(0.0, 1.0, 1.0));
 
 }
 

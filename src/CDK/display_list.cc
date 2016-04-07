@@ -279,8 +279,9 @@ void SendObjectShadow::runCommand()const{
 
 #include "CDK/point_light.h"
 
- RenderPointShadowMapCommand::RenderPointShadowMapCommand(Light * l){
+ RenderPointShadowMapCommand::RenderPointShadowMapCommand(Light * l, int face){
    light_ = (PointLight*)l;
+   face_ = face;
  }
  void RenderPointShadowMapCommand::runCommand()const{
 
@@ -292,13 +293,13 @@ void SendObjectShadow::runCommand()const{
    if (light_->getShadowCubeMapTexture() < 0 && light_->getShadowCubeMapBuffer() < 0){
      OpenGlInterFaz::instance().createShadoCubeMap(light_);
    }
-   glViewport(0, 0, 1024, 1024);
-   glBindFramebuffer(GL_FRAMEBUFFER,light_->getShadowCubeMapBuffer());
-   glClear(GL_DEPTH_BUFFER_BIT);
    glUseProgram(ENGINE.shadow_shader_->getProgram());
-   
-   for (int i = 0; i < 6; i++){
-     //glUniformMatrix4fv(glGetUniformLocation(ENGINE.shadow_shader_->getProgram(), ("shadowMatrices[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(shadowTransforms[i]));
+   glViewport(0, 0, 1024, 1024);
+   glBindFramebuffer(GL_FRAMEBUFFER, light_->getShadowCubeMapBuffer());
+   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, face_, light_->getShadowCubeMapTexture(), 0);
+   glDrawBuffer(GL_COLOR_ATTACHMENT0);
+  
+   //http://gamedev.stackexchange.com/questions/19461/opengl-glsl-render-to-cube-map
 
-   }
  }
