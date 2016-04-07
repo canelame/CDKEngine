@@ -113,7 +113,6 @@ Material*  LoadMaterialCommand::getMaterial(){
 DrawCommand::DrawCommand(Buffer *g){
 	
 		t_geo = g;
-    vao_ =(GLuint) t_geo->getVAO();
     indices_size_ = t_geo->indiceSize();
 
 }
@@ -123,7 +122,7 @@ void DrawCommand::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
   }
-  OpenGlInterFaz::instance().drawGeometry(vao_, indices_size_);
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_);
 
 }
 
@@ -161,7 +160,7 @@ void LightsCommand::runCommand()const{
 
   if (!dir_light_->getLoaded()) {
     OpenGlInterFaz::instance().sendLight(dir_light_.get(), 0, true);
-    dir_light_->setLoaded(true);
+    //dir_light_->setLoaded(true);
   }
 
   for (int i = 0; i < lights_.size(); i++){
@@ -230,24 +229,76 @@ void SendObjectShadow::runCommand()const{
 
  EndShadowCommand::EndShadowCommand(){}
  void EndShadowCommand::runCommand()const{
-  
-
+   glCullFace(GL_FRONT);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glViewport(0, 0, 1024, 1024);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  }
 
- RenderShadowMapCommand::RenderShadowMapCommand(Light* l){
+ RenderDirectionalShadowMapCommand::RenderDirectionalShadowMapCommand(Light* l){
    light_ = l;
  }
  
 #include "CDK/directional_light.h"
- void RenderShadowMapCommand::runCommand()const{
+ void RenderDirectionalShadowMapCommand::runCommand()const{
+   
+   if (!ENGINE.shadow_shader_->is_compiled_){
+     ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_->getVertexData().c_str(), ENGINE.shadow_shader_->getFragmentData().c_str()));
+     ENGINE.shadow_shader_->is_compiled_ = true;
+   }
+
    if (light_->getType() == Light::T_DIRECTION_LIGHT){
-     
+
      DirectionalLight * dr_light = (DirectionalLight*)light_;
+     //Directional light
+     FrameBuffer * light_depth_map = dr_light->shadow_depth_buffer_.get();
+
+     if (!light_depth_map->isLoaded()){
+
+       Texture  * d_texture = light_depth_map->getTexture().get();
+       d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
+       d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
+       d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+       d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
+       d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
+       d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
+       OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map, false);
+       OpenGlInterFaz::instance().setDrawBuffer(light_depth_map->getId());
+       OpenGlInterFaz::instance().setReadBuffer(light_depth_map->getId());
+       light_depth_map->setLoaded(true);
+     }
+
+
      OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram(),dr_light->light_proyection_ );
+     glViewport(0, 0, 1024, 1024);
+     glBindFramebuffer(GL_FRAMEBUFFER,dr_light->shadow_depth_buffer_->getId());
+     glClear(GL_DEPTH_BUFFER_BIT);
+     
+   }
+ }
+
+#include "CDK/point_light.h"
+
+ RenderPointShadowMapCommand::RenderPointShadowMapCommand(Light * l){
+   light_ = (PointLight*)l;
+ }
+ void RenderPointShadowMapCommand::runCommand()const{
+
+   if (!ENGINE.shadow_shader_->is_compiled_){
+     ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_->getVertexData().c_str(), ENGINE.shadow_shader_->getFragmentData().c_str()));
+     ENGINE.shadow_shader_->is_compiled_ = true;
+   }
+
+   if (light_->getShadowCubeMapTexture() < 0 && light_->getShadowCubeMapBuffer() < 0){
+     OpenGlInterFaz::instance().createShadoCubeMap(light_);
    }
    glViewport(0, 0, 1024, 1024);
+   glBindFramebuffer(GL_FRAMEBUFFER,light_->getShadowCubeMapBuffer());
    glClear(GL_DEPTH_BUFFER_BIT);
-   glCullFace(GL_FRONT);
+   glUseProgram(ENGINE.shadow_shader_->getProgram());
+   
+   for (int i = 0; i < 6; i++){
+     //glUniformMatrix4fv(glGetUniformLocation(ENGINE.shadow_shader_->getProgram(), ("shadowMatrices[" + std::to_string(i) + "]").c_str()), 1, GL_FALSE, glm::value_ptr(shadowTransforms[i]));
 
-
+   }
  }

@@ -10,8 +10,9 @@ DirectionalLight::DirectionalLight(){
 void DirectionalLight::setPosition(vec3 p){
   Light::setPosition(p);
   
-  mat4 light_projection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+  mat4 light_projection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 20.5f);
   mat4 light_view = glm::lookAt(getPosition(), vec3(0.0, 0.0, 0.0), vec3(0.0, 1.0, 0.0));
   mat4 light_space = light_projection * light_view;
+  light_proyection_ = light_space;
 
 }

@@ -62,9 +62,9 @@ private:
 #ifndef __RENDER_SHADOW_MAP__
 #define __RENDER_SHADOW_MAP__
 
-class RenderShadowMapCommand : public Command{
+class RenderDirectionalShadowMapCommand : public Command{
 public:
-  RenderShadowMapCommand(Light * l);
+  RenderDirectionalShadowMapCommand(Light * l);
   Light *light_;
   void runCommand()const;
 private:
@@ -73,7 +73,19 @@ private:
 };
 #endif
 
+#ifndef __RENDER_POINT_SHADOW_MAP__
+#define __RENDER_POINT_SHADOW_MAP__
 
+class RenderPointShadowMapCommand : public Command{
+public:
+  RenderPointShadowMapCommand(Light * l);
+  PointLight *light_;
+  void runCommand()const;
+private:
+
+
+};
+#endif
 //
 #ifndef __H_SEND_OBJECT_SHADOW__
 #define __H_SEND_OBJECT_SHADOW__

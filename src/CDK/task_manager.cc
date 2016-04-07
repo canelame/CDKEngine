@@ -130,26 +130,7 @@ int Task::getId(){
 	 }
    void UpdateDisplay::loadLights(){
      
-     //Directional light
-     FrameBuffer * light_depth_map = nod_->directional_light_->shadow_depth_buffer_.get();
-
-     if (light_depth_map->isLoaded()){
-
-       Texture  * d_texture = light_depth_map->getTexture().get();
-       d_texture->setFormat(Texture::kTextureFormat::kTextureFormat_Depth);
-       d_texture->setPixelType(Texture::kTexturePixelType::kTexturePixelType_Float);
-       d_texture->setMagFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
-       d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
-       d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
-       d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
-       OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map, false);
-       OpenGlInterFaz::instance().setDrawBuffer(light_depth_map->getId());
-       OpenGlInterFaz::instance().setReadBuffer(light_depth_map->getId());
-       OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map, true);
-       EngineManager::instance().depth_texture_id_ = d_texture->getID();
-       light_depth_map->setLoaded(true);
-     }
-
+     
      //More lights
      for (int i = 0; i < nod_->lights_.size(); i++){
 
@@ -170,17 +151,16 @@ int Task::getId(){
      lock();
 
      //Load lights and create their depth maps
-     //loadLights();
+     loadLights();
      //Start rendering the scene into shadow maps
      loadObjects(nod_->root_);
-     dl_->add(std::make_shared<RenderShadowMapCommand>(nod_->directional_light_.get()) );
+     loadLights();
+     dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()) );
      directionalShadowPass();
-
      //dl_->add(std::make_shared<StartShadowCommand>(0, 0));
      for (int i = 0; i < nod_->lights_.size(); i++){
-      
+     
      }
-    // loadObjects(nod_->root_);
 
      loadNode(nod_->root_);
 
@@ -234,9 +214,11 @@ int Task::getId(){
            TextureMaterial::MaterialSettings *mat_sett = (TextureMaterial::MaterialSettings*)it->second[i]->getMaterialSettings().get();
            if (mat_sett->getTextures().size()>0)dl_->add(std::make_shared<UseTextureComman>(t_material->getProgram(), mat_sett->getTextures()));
            Buffer *t_geometry_buff = it->second[i]->geometry()->getBuffer().get();
-           dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, it->second[i]->worldMat()));
-           dl_->add(std::make_shared<LightsCommand>(nod_->lights_, nod_->directional_light_));
-           dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
+           if (t_geometry_buff){
+             dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, it->second[i]->worldMat()));
+             dl_->add(std::make_shared<LightsCommand>(nod_->lights_, nod_->directional_light_));
+             dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
+           }
          }
 
        }

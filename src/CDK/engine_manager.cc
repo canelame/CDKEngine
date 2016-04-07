@@ -54,9 +54,3 @@ int EngineManager::getUniform(char*name){
   return 0;
 }
 
-/*void EngineManager::setShadowBuffer(std::shared_ptr<FrameBuffer> fb){
-
-}
-std::shared_ptr<FrameBuffer> EngineManager::getShadowBuffer(){
-
-}*/

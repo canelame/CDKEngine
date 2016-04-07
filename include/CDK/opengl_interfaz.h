@@ -9,6 +9,7 @@
 #include "CDK/buffer.h"
 #include "CDK/material.h"
 #include "frame_buffer.h"
+class PointLight;
 class OpenGlInterFaz{
 public:
 
@@ -109,7 +110,7 @@ public:
   */
   void loadDirectionalLight();
   //Return depth buffer id
-  int createShadowBuffer();
+  void  createShadoCubeMap(PointLight * pl);
   static OpenGlInterFaz& instance();
   
 private:
