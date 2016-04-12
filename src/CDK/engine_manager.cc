@@ -14,7 +14,10 @@ void EngineManager::init(){
   current_render_target_ =0;
   
   shadow_shader_ = std::make_shared<Material>();
-  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
+  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl", "");
+
+  shadow_points_shader_ = std::make_shared<Material>();
+  shadow_points_shader_->loadShader("shaders/point_shadow_v.glsl", "shaders/point_shadow_f.glsl", "shaders/point_shadow_geo.glsl");
 
 }
 int EngineManager::width(){

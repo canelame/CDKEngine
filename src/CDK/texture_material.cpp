@@ -1,7 +1,7 @@
 #include "CDK/texture_material.h"
 
 TextureMaterial::TextureMaterial(){
-  loadShader("shaders/texture_v.glsl", "shaders/texture_f.glsl");
+  loadShader("shaders/texture_v.glsl", "shaders/texture_f.glsl","");
   type_ = 0;
 };
 

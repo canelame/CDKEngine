@@ -59,7 +59,7 @@ public:
   * @param vertex_file The name of vertex GLSL file.
   * @param fragment_file he name of fragment GLSL file.
   */
-  void loadShader(const char*vertex_file, const char*fragment_file);
+  void loadShader(const char*vertex_shader, const char*fragment_shader,const char* geometry_shader);
   /**
   @brief Get current program
   @return program
@@ -91,6 +91,7 @@ public:
   bool is_compiled_=false;
   std::string vertex_data_;
   std::string fragment_data_;
+  std::string geometry_data_;
   int type_;
 private:
   

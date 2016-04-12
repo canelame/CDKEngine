@@ -56,6 +56,18 @@ private:
 
 
 };
+#ifndef __H_SHADOW_CUBE_END_COMMAND__
+#define __H_SHADOW_CUBE_END_COMMAND__
+class EndShadowCubeMapCommand : public Command{
+public:
+  EndShadowCubeMapCommand();
+
+  void runCommand()const;
+private:
+
+
+};
+#endif
 #endif
 
 

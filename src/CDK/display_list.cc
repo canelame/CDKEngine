@@ -100,7 +100,7 @@ LoadMaterialCommand::LoadMaterialCommand(Material* mat){
 	t_mat = mat;
 }
 void LoadMaterialCommand::runCommand()const{
-  OpenGlInterFaz::instance().loadMaterial(t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str());
+  OpenGlInterFaz::instance().loadMaterial(t_mat);
 	t_mat->is_compiled_ = true;
 }
 
@@ -137,7 +137,7 @@ UseMaterialCommand::UseMaterialCommand(Material* mat){
 void UseMaterialCommand::runCommand()const{
   if (!t_mat->is_compiled_){
 
-    t_mat->setProgram(OpenGlInterFaz::instance().loadMaterial(t_mat->getVertexData().c_str(), t_mat->getFragmentData().c_str()));
+    t_mat->setProgram(OpenGlInterFaz::instance().loadMaterial(t_mat));
     for (int i = 0; i < 10; i++){
       OpenGlInterFaz::instance().loadLight(i);
 
@@ -158,16 +158,16 @@ LightsCommand::LightsCommand(std::vector < std::shared_ptr< Light >> l,std::shar
 void LightsCommand::runCommand()const{
 
 
-  if (!dir_light_->getLoaded()) {
+ 
     OpenGlInterFaz::instance().sendLight(dir_light_.get(), 0, true);
     //dir_light_->setLoaded(true);
-  }
+  
 
   for (int i = 0; i < lights_.size(); i++){
-    if (!lights_[i]->getLoaded()){
+    
       OpenGlInterFaz::instance().sendLight(lights_[i].get(), i, false);
       lights_[i]->setLoaded(true);
-    }
+    
   }
   
 }
@@ -193,14 +193,14 @@ StartShadowCommand::StartShadowCommand(int depth_program,int depth_fb,std::share
 void StartShadowCommand::runCommand()const{
 
   if (!ENGINE.shadow_shader_->is_compiled_){
-    ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_->getVertexData().c_str(), ENGINE.shadow_shader_->getFragmentData().c_str()));
+    ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_.get()));
     ENGINE.shadow_shader_->is_compiled_ = true;
   }
 
-  //OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram());
+ // OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram());
   glViewport(0, 0, 1024, 1024);
   glClear(GL_DEPTH_BUFFER_BIT);
-  glCullFace(GL_FRONT);
+  
       
 
 }
@@ -224,15 +224,22 @@ void SendObjectShadow::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
    }
+ 
   OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), (unsigned int)t_geo->indiceSize());
 }
 
  EndShadowCommand::EndShadowCommand(){}
  void EndShadowCommand::runCommand()const{
-   glCullFace(GL_FRONT);
+   
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
    glViewport(0, 0, 1024, 1024);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+ }
+
+ EndShadowCubeMapCommand::EndShadowCubeMapCommand(){}
+ void EndShadowCubeMapCommand::runCommand()const{
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  
  }
 
  RenderDirectionalShadowMapCommand::RenderDirectionalShadowMapCommand(Light* l){
@@ -243,7 +250,7 @@ void SendObjectShadow::runCommand()const{
  void RenderDirectionalShadowMapCommand::runCommand()const{
    
    if (!ENGINE.shadow_shader_->is_compiled_){
-     ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_->getVertexData().c_str(), ENGINE.shadow_shader_->getFragmentData().c_str()));
+     ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_.get() ));
      ENGINE.shadow_shader_->is_compiled_ = true;
    }
 
@@ -269,9 +276,9 @@ void SendObjectShadow::runCommand()const{
      }
 
 
-     OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram(),dr_light->light_proyection_ );
      glViewport(0, 0, 1024, 1024);
      glBindFramebuffer(GL_FRAMEBUFFER,dr_light->shadow_depth_buffer_->getId());
+     OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram(), dr_light->light_proyection_);
      glClear(GL_DEPTH_BUFFER_BIT);
      
    }
@@ -285,21 +292,27 @@ void SendObjectShadow::runCommand()const{
  }
  void RenderPointShadowMapCommand::runCommand()const{
 
-   if (!ENGINE.shadow_shader_->is_compiled_){
-     ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_->getVertexData().c_str(), ENGINE.shadow_shader_->getFragmentData().c_str()));
-     ENGINE.shadow_shader_->is_compiled_ = true;
+   if (!ENGINE.shadow_points_shader_->is_compiled_){
+     ENGINE.shadow_points_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_points_shader_.get()));
+     ENGINE.shadow_points_shader_->is_compiled_ = true;
    }
 
    if (light_->getShadowCubeMapTexture() < 0 && light_->getShadowCubeMapBuffer() < 0){
      OpenGlInterFaz::instance().createShadoCubeMap(light_);
    }
-   glUseProgram(ENGINE.shadow_shader_->getProgram());
+   //
    glViewport(0, 0, 1024, 1024);
-   glBindFramebuffer(GL_FRAMEBUFFER, light_->getShadowCubeMapBuffer());
-   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
-   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, face_, light_->getShadowCubeMapTexture(), 0);
-   glDrawBuffer(GL_COLOR_ATTACHMENT0);
-  
-   //http://gamedev.stackexchange.com/questions/19461/opengl-glsl-render-to-cube-map
+   glBindFramebuffer(GL_FRAMEBUFFER,light_->getShadowCubeMapBuffer());
+   glClear(GL_DEPTH_BUFFER_BIT);
+   glUseProgram(ENGINE.shadow_points_shader_->getProgram());
+   std::vector<mat4> s_m = light_->getShadowMatrices();
+
+   for (int i = 0; i < 6; i++){
+     OpenGlInterFaz::instance().sendPointLightMatrix(0, i,s_m[i]);
+   }
+
+   
+   OpenGlInterFaz::instance().sendPointLightFar(light_->getPosition(),25.0f);
+
 
  }

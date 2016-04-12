@@ -24,10 +24,6 @@ int Window::main(int argc, char** argv){
   window->init(1024, 1024);
 
   //Init root
-  
-  
-  
-
   std::shared_ptr<Loader> loader = std::make_shared<Loader>();
   ///
   
@@ -60,16 +56,21 @@ int Window::main(int argc, char** argv){
   drawable_cube->setRotation(vec3(90.0, 0.0, 0.0));
   drawable_cube->setScale(vec3(25.0, 25.0, 25.0));
 
+
+  std::shared_ptr<Drawable> wall = std::make_shared<Drawable>();
+  wall->setGeometry(plane);
+  wall->setMaterial(mater);
+  wall->setMaterialSettings(mat_p);
   scene->addChild(drawable_cube);
   vec3 positions[10] = { vec3(0.0, 5.5f, 0.0),
-    vec3(2.0f, 2.0f, 1.0f),
-    vec3(-1.0, 2.0f, 2.0f),
-    vec3(0.0,2.0,0.0),
-    vec3(-3.0, 3.0, 10.0),
-    vec3(1.0f, .5f, 1.0f),
+    vec3(2.0f, 0.0f, 1.0f),
+    vec3(-1.0, 0.0f, 2.0f),
+    vec3(0.0,0.0,0.0),
+    vec3(-3.0, 1.0, 10.0),
+    vec3(1.0f, 1.0f, 1.0f),
     vec3(-1.0, 1.0f, 3.0f),
-    vec3(3.0, 2.0, 1.0),
-    vec3(-3.0, 3.0, 2.0) };
+    vec3(3.0, 0.0, 1.0),
+    vec3(-3.0, 0.0, 2.0) };
   for (int i = 0; i < 10; i++){
       float j = 0.2;
       drawable_cube = std::make_shared<Drawable>();
@@ -90,15 +91,21 @@ int Window::main(int argc, char** argv){
 
 
   std::shared_ptr<PointLight> l2 = std::make_shared<PointLight>();
-  l2->setPosition(vec3(0.0, -4.0, 1.0));
+  l2->setPosition(vec3(0.0, 0.0, 5.0));
   l2->setAmbientColor(vec3(1.0, 0.0, 0.0));
   l2->setSpecularColor(vec3(1.0, 0.0, 0.0));
   l2->setDifusseColor(vec3(1.0, 0.0, 0.0));
   l2->setTypeLight(Light::LightType::T_POINT_LIGHT);
-
-
-  
   scene->addLight(l2);
+
+  std::shared_ptr<PointLight> l3 = std::make_shared<PointLight>();
+  l3->setPosition(vec3(1.0, 5.0, 1.0));
+  l3->setAmbientColor(vec3(0.0, 0.0, 1.0));
+  l3->setSpecularColor(vec3(0.0, 0.0, 1.0));
+  l3->setDifusseColor(vec3(0.0, 0.0, 1.0));
+  l3->setTypeLight(Light::LightType::T_POINT_LIGHT);
+//  scene->addLight(l3);
+
   scene->root_->setPosition(vec3(0.0,0.0,0.0));
 
   //std::shared_ptr<PostProcess>render_to_text = std::make_shared<PostProcess>();

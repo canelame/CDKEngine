@@ -26,8 +26,10 @@ void PointLight::setPosition(vec3 p){
 void PointLight::computePerspectiveLight(){
   GLfloat aspect = 1024.0f / 1024.0f;
   GLfloat near = 1.0f;
-  GLfloat far = 20.5f;
+  GLfloat far = 50.0f;
   mat4 shadow_projection = glm::perspective(90.0f, aspect, near, far);
+
+  data_->shadow_matrices.clear();
 
   mat4 temp_mat;
   temp_mat = shadow_projection * glm::lookAt(getPosition(), getPosition() + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0));

@@ -10,7 +10,7 @@ PostProcess::PostProcess(){
   render_quad_ = std::make_shared<Geometry>();
   frame_buff_ = std::make_shared<FrameBuffer>();
   frame_buff_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_DepthAttachment);
-  material_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl");
+  material_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl","");
   render_quad_->createQuad();
 }
 

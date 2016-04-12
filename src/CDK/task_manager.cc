@@ -144,7 +144,7 @@ int Task::getId(){
          dl_->add(std::make_shared<SendObjectShadow>(it->second[i]->geometry()->getBuffer().get(),it->second[i]->worldMat()));
        }
      }
-     dl_->add(std::make_shared<EndShadowCommand>());
+     
    }
 
    void UpdateDisplay::runTask(){
@@ -154,22 +154,18 @@ int Task::getId(){
      //Start rendering the scene into shadow maps
      loadObjects(nod_->root_);
      //Directional light
-     dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()) );
-     directionalShadowPass();
+
      //create depthcubemaps to each point light
      for (int i = 0; i < nod_->lights_.size(); i++){
-       for (int f = 0; f < 6; f++){
-         GLuint face = GL_TEXTURE_CUBE_MAP_POSITIVE_X + f;
-         dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(),face));
-         directionalShadowPass();
-       }
+       dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(),i) );
+       directionalShadowPass();
+       dl_->add(std::make_shared<EndShadowCubeMapCommand>());
      }
 
-     //dl_->add(std::make_shared<StartShadowCommand>(0, 0));
-     for (int i = 0; i < nod_->lights_.size(); i++){
-     
-     }
 
+     dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
+     directionalShadowPass();
+     dl_->add(std::make_shared<EndShadowCommand>());
      loadNode(nod_->root_);
 
      unlock();

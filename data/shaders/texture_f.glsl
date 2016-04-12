@@ -27,7 +27,8 @@ in vec3 o_cam_pos;
 in vec4 o_light_frag;
 
 uniform sampler2D u_diffuse_texture1;
-uniform sampler2D shadow_texture;
+uniform samplerCube shadow_texture;
+
 
 uniform vec3 u_material_diff;
 uniform vec3 u_material_specular;
@@ -44,16 +45,16 @@ vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir);
 
 
 //Compute point light shadow
-float far_plane = 20.5f;
+float far_plane = 25.0f;
 float computePointLightShadow(vec3 fragPos, PointLight light){
 
 	vec3 frag_to_light = fragPos - light.position;
-	float depth_value = texture( light.depth_map, frag_to_light ).r;
+	float depth_value = texture( shadow_texture, frag_to_light ).r;
 	depth_value *= far_plane;
 
 	float current_depth_value = length( frag_to_light );
 	float bias = 0.05f;
-	float shadow = current_depth_value - bias > depth_value ? 1.0f : 0.0f;
+	float shadow = current_depth_value  > depth_value ? 1.0f : 0.0f;
 	return shadow;
 }
 
@@ -82,7 +83,7 @@ float computeShadows(vec4 posLightSpace,vec3 normal,vec3 light_dir){
 
 	return shadow;
 
-}
+}//
 
 void main(){
 	vec3 view = normalize(o_cam_pos-o_world_position.xyz);
@@ -119,7 +120,7 @@ vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 
 	
 	vec3 lightDir = normalize(l_dir.position-fragPos);
-	float diff =max(dot(normal,lightDir),0.0);
+	float diff =max(dot(lightDir,normal),0.0);
 	vec3 rf = reflect(-lightDir,normal);
 	float spec = pow(max(dot(viewDir,rf),0.0),32.0);
 
@@ -131,6 +132,8 @@ vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 	vec3 diffuse = (l_dir.diffuse_color*u_material_diff*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
 	vec3 specular = (l_dir.specular_color*u_material_specular * vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
 
-	 return  (ambient+diffuse+specular);
+	float shadow  =  computePointLightShadow(fragPos, l_dir);
+
+	 return  ( ambient + ( 1.0f - shadow) * (diffuse+specular) );
 
 }

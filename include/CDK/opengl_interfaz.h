@@ -36,7 +36,7 @@ public:
   @fragment_data Fragment shader code
   @return program created.
   */
-  int loadMaterial(const char*vertex_data, const char*fragment_data);
+  int loadMaterial(Material * mat);
 
 
   /**
@@ -109,6 +109,11 @@ public:
   /**
   */
   void loadDirectionalLight();
+
+  /**
+  */
+  void sendPointLightMatrix(const int &n_light, const int n_mat, const  mat4 mat);
+  void sendPointLightFar(vec3 pos_light, float far);
   //Return depth buffer id
   void  createShadoCubeMap(PointLight * pl);
   static OpenGlInterFaz& instance();
