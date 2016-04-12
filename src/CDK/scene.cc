@@ -8,7 +8,7 @@ Scene::Scene(){
   directional_light_->setPosition(vec3(0.0, -4.0, -1.0));
   directional_light_->setAmbientColor(vec3(0.0, 0.0, 0.0));
   directional_light_->setSpecularColor(vec3(0.0, 0.0, 0.0));
-  directional_light_->setDifusseColor(vec3(1.0, 1.0, 1.0));
+  directional_light_->setDifusseColor(vec3(1.0, 0.0, 1.0));
 
 }
 

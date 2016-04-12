@@ -65,7 +65,8 @@ struct OpenGlInterFaz::Data{
 
   ///Shadows
   GLint shadow_map_texture;
-  GLint shadow_model_= -1;
+  GLint shadow_model_s = -1;
+  GLint shadow_model_sp = -1;
   GLint light_space_ = -1;
 
   ////
@@ -220,7 +221,8 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
     if (data_->mat_s_d<0)data_->mat_s_d = glGetUniformLocation(data_->shadow_program_, "u_material_specular_d");
     if (data_->mat_a_d<0)data_->mat_a_d = glGetUniformLocation(data_->shadow_program_, "u_material_ambient_d");
     //SHADOWS
-    if (data_->shadow_model_<0)data_->shadow_model_ = glGetUniformLocation(data_->shadow_program_, "u_model");
+    if (data_->shadow_model_s<0)data_->shadow_model_s = glGetUniformLocation(data_->shadow_program_, "u_model_s");
+    if (data_->shadow_model_sp<0)data_->shadow_model_sp = glGetUniformLocation(data_->shadow_program_, "u_model_sp");
     if (data_->light_space_<0)data_->light_space_ = glGetUniformLocation(data_->shadow_program_, "light_screen");
     if (data_->light_proyection_u_<0)data_->light_proyection_u_ = glGetUniformLocation(data_->shadow_program_, "light_space_m");
     if (data_->directional_light_u<0)data_->directional_light_u = glGetUniformLocation(data_->shadow_program_, "u_directional_light.ligth_view_proyection");
@@ -278,10 +280,14 @@ void OpenGlInterFaz::useUnifor3f(const char* name, const float*data){
 
 void OpenGlInterFaz::useUniformMat4(mat4 m){
 
-  glUniformMatrix4fv(data_->shadow_model_, 1, GL_FALSE, &m[0][0]);
+  glUniformMatrix4fv(data_->shadow_model_s, 1, GL_FALSE, &m[0][0]);
 
 }
+void OpenGlInterFaz::usePointShadowModel(mat4 m){
 
+  glUniformMatrix4fv(data_->shadow_model_sp, 1, GL_FALSE, &m[0][0]);
+
+}
 void OpenGlInterFaz::useUniformUi(const char *name, int value){
   int p = glGetUniformLocation(data_->shadow_program_, name);
   const int t = { 0 };

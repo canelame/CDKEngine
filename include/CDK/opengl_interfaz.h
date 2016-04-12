@@ -116,6 +116,7 @@ public:
   void sendPointLightFar(vec3 pos_light, float far);
   //Return depth buffer id
   void  createShadoCubeMap(PointLight * pl);
+  void usePointShadowModel(mat4 m);
   static OpenGlInterFaz& instance();
   
 private:

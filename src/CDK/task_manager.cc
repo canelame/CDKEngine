@@ -137,11 +137,11 @@ int Task::getId(){
      }
    }
 
-   void UpdateDisplay::directionalShadowPass(){
+   void UpdateDisplay::directionalShadowPass(bool is_directional){
      for (std::map<Material*, std::vector<Drawable*>>::iterator it = objects_order_by_program_.begin();
        it != objects_order_by_program_.end(); it++){
        for (int i = 0; i < it->second.size(); i++){
-         dl_->add(std::make_shared<SendObjectShadow>(it->second[i]->geometry()->getBuffer().get(),it->second[i]->worldMat()));
+         dl_->add(std::make_shared<SendObjectShadow>(it->second[i]->geometry()->getBuffer().get(),it->second[i]->worldMat(),is_directional));
        }
      }
      
@@ -158,13 +158,13 @@ int Task::getId(){
      //create depthcubemaps to each point light
      for (int i = 0; i < nod_->lights_.size(); i++){
        dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(),i) );
-       directionalShadowPass();
+       directionalShadowPass(false);
        dl_->add(std::make_shared<EndShadowCubeMapCommand>());
      }
 
 
      dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
-     directionalShadowPass();
+     directionalShadowPass(true);
      dl_->add(std::make_shared<EndShadowCommand>());
      loadNode(nod_->root_);
 

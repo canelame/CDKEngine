@@ -68,7 +68,7 @@ public:
   void loadNode(std::shared_ptr<Node>node);
   void loadObjects(std::shared_ptr<Node>node);
 private:
-  void directionalShadowPass();
+  void directionalShadowPass(bool is_directional);
   void loadLights();
  std::shared_ptr<Scene> nod_;
 	DisplayList* dl_;

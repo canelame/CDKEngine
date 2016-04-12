@@ -213,13 +213,15 @@ void DisplayList::renderScene(){
 }
 
 
-SendObjectShadow::SendObjectShadow(Buffer * g,mat4 m){
+SendObjectShadow::SendObjectShadow(Buffer * g,mat4 m,bool is_directional){
   m_ = m;
   t_geo = g;
+  is_directional_ = is_directional;
 }
 
 void SendObjectShadow::runCommand()const{
-  OpenGlInterFaz::instance().useUniformMat4(m_);
+  is_directional_  ? OpenGlInterFaz::instance().useUniformMat4(m_) : OpenGlInterFaz::instance().usePointShadowModel(m_) ;
+  
   if (t_geo->isDirty()){
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);

@@ -103,13 +103,14 @@ private:
 #define __H_SEND_OBJECT_SHADOW__
 class SendObjectShadow : public Command{
 public:
-  SendObjectShadow(Buffer *g,mat4 m);
+  SendObjectShadow(Buffer *g,mat4 m,bool is_directional);
 
   SendObjectShadow(){}
   void runCommand()const;
 private:
   mat4 m_;
   mutable  Buffer* t_geo;
+  bool is_directional_;
 };
 
 #endif
