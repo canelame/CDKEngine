@@ -145,11 +145,9 @@ void OpenGlInterFaz::useMaterial( Material &mat,vec3 color_amb, vec3 color_diff,
     
       glUniform1i(glGetUniformLocation(mat.getProgram(), "u_diffuse_texture1"), 0);
       glUniform1i(glGetUniformLocation(mat.getProgram(), "u_directional_light.depth_map"), 1);
-    
-        glUniform1i(glGetUniformLocation(mat.getProgram(), "shadow_texture" ), 2);
-      
-      
+      glUniform1i(glGetUniformLocation(mat.getProgram(), "shadow_texture" ), 2);  
     }
+
     if (data_->type == 1){
       if (data_->mat_a_d > -1)glUniform3f(data_->mat_a_d, color_amb.x, color_amb.y, color_amb.z);
       if (data_->mat_d_d > -1)glUniform3f(data_->mat_d_d, color_diff.x, color_diff.y, color_diff.z);
@@ -242,7 +240,7 @@ void OpenGlInterFaz::drawGeometry( int vao,unsigned int indices){
  // printf("Draw elements: %d indices\n",shadow_index_.size());
   glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)0);
-  glBindVertexArray(0);
+  //glBindVertexArray(0);
 }
 
 void OpenGlInterFaz::compileShader(GLuint shader){
@@ -707,10 +705,10 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light,bool is_directioal){
   }else{
     DirectionalLight *dir_l = (DirectionalLight*)light;
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D ,dir_l->shadow_depth_buffer_->getTexture()->getID());
+    glBindTexture(GL_TEXTURE_2D ,dir_l->getShadowMap()->getTexture()->getID());
 
      if (data_->directional_light_u > -1){
-      glUniformMatrix4fv(data_->directional_light_u, 1, GL_FALSE, &dir_l->light_proyection_[0][0]);
+      glUniformMatrix4fv(data_->directional_light_u, 1, GL_FALSE, &dir_l->getLightProyection()[0][0]);
     }
     //Is directional
     if (data_->u_directional_l.l_pos >= 0){

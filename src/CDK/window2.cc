@@ -7,7 +7,8 @@
 #include "ImGui\imgui_impl_glfw_gl3.h"
 #include "CDK/gui_interface.h"
 #include "CDK/engine_manager.h"
-
+#include "GL\glew.h"
+#include "GLFW\glfw3.h"
 void key_callback(GLFWwindow*window, int key, int scancode , int action, int mods){
  
   if (action == GLFW_PRESS){
@@ -71,17 +72,18 @@ bool Window::init(unsigned int width, unsigned int height){
 		printf("Error to create new window.\n");
 		return false;
 	}
-
+  
   //Set ViewPort
 
   ImGui_ImplGlfwGL3_Init(window_s_->main_window_, true);
  
   glfwMakeContextCurrent(window_s_->main_window_);
+  glewExperimental = GL_TRUE;
   glfwSetKeyCallback(window_s_->main_window_, key_callback);
   glfwSetCursorPosCallback(window_s_->main_window_, mouse_callback);
   glfwSetFramebufferSizeCallback(window_s_->main_window_, framebuffer_size_callback);
-	//Init GLEW
-	glewExperimental = GL_TRUE;
+
+
 
 	if (glewInit()!=GLEW_OK){
 	printf("Error to init GLEW.\n");
@@ -107,4 +109,8 @@ void Window::swap(){
 void Window::finish(){
   glfwDestroyWindow(window_s_->main_window_);
 	glfwTerminate();
+}
+
+double Window::time(){
+  return glfwGetTime();
 }
