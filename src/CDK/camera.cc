@@ -75,7 +75,7 @@ void Camera::render(Scene *node){
      data_->dl_cam_->clear();
      data_->dl_cam_.swap(data_->dl_copy_);
 
-//     GuInterface::instance().draw(node);
+     GuInterface::instance().draw(node->root_);
  
 }
 void Camera::FpsCameraUpdate(){

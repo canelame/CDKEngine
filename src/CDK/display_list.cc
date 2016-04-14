@@ -159,9 +159,7 @@ void LightsCommand::runCommand()const{
 
 
  
-    OpenGlInterFaz::instance().sendLight(dir_light_.get(), 0, true);
-    //dir_light_->setLoaded(true);
-  
+  OpenGlInterFaz::instance().sendLight(dir_light_.get(), 0, true);
 
   for (int i = 0; i < lights_.size(); i++){
     
@@ -234,7 +232,7 @@ void SendObjectShadow::runCommand()const{
  void EndShadowCommand::runCommand()const{
    
    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   glViewport(0, 0, 1024, 1024);
+   glViewport(0, 0, EngineManager::instance().width(), EngineManager::instance().height());
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
  }
 

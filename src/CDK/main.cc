@@ -92,11 +92,11 @@ int Window::main(int argc, char** argv){
 
   std::shared_ptr<PointLight> l2 = std::make_shared<PointLight>();
   l2->setPosition(vec3(0.0, 0.0, 5.0));
-  l2->setAmbientColor(vec3(1.0, 0.0, 0.0));
-  l2->setSpecularColor(vec3(1.0, 0.0, 0.0));
-  l2->setDifusseColor(vec3(1.0, 0.0, 0.0));
+  l2->setAmbientColor(vec3(1.0, 1.0, 1.0));
+  l2->setSpecularColor(vec3(1.0, 1.0, 1.0));
+  l2->setDifusseColor(vec3(1.0, 1.0, 1.0));
   l2->setTypeLight(Light::LightType::T_POINT_LIGHT);
-  //scene->addLight(l2);
+  scene->addLight(l2);
 
   std::shared_ptr<PointLight> l3 = std::make_shared<PointLight>();
   l3->setPosition(vec3(1.0, 0.0, 1.0));
