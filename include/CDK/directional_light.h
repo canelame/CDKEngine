@@ -4,12 +4,13 @@
 class DirectionalLight : public Light{
 
 public:
-  std::shared_ptr<FrameBuffer> shadow_depth_buffer_;
-  mat4 light_proyection_;
+
+
   void setPosition(vec3 p);
   DirectionalLight();
-
+  mat4 getLightProyection();
+  FrameBuffer * getShadowMap();
 private:
-
-
+  mat4 light_proyection_;
+  std::shared_ptr<FrameBuffer> shadow_depth_buffer_;
 };

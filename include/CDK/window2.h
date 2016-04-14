@@ -2,8 +2,7 @@
 *  @author Alejandro Canela 2015
 *  Class Window
 */
-#include "GL\glew.h"
-#include "GLFW\glfw3.h"
+
 #include "types.h"
 #include "input.h"
 class Window{
@@ -20,6 +19,11 @@ public:
 	void swap();
 	void finish();
 	void clearScreen(vec3 color);
+  /**
+  @brief This function return the time elapsed since window was initialized.
+  @return Return time in seconds
+  */
+  double time();
   ///Main to rewrite by the user
   static int main(int argc, char **argv);
   ~Window(){};

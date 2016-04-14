@@ -16,3 +16,11 @@ void DirectionalLight::setPosition(vec3 p){
   light_proyection_ = light_space;
 
 }
+
+mat4 DirectionalLight::getLightProyection(){
+  return light_proyection_;
+}
+
+FrameBuffer* DirectionalLight::getShadowMap(){
+  return shadow_depth_buffer_.get();
+}

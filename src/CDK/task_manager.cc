@@ -156,11 +156,12 @@ int Task::getId(){
      //Directional light
 
      //create depthcubemaps to each point light
+     /*
      for (int i = 0; i < nod_->lights_.size(); i++){
        dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(),i) );
        directionalShadowPass(false);
        dl_->add(std::make_shared<EndShadowCubeMapCommand>());
-     }
+     }*/
 
 
      dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));

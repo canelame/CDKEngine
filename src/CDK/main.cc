@@ -115,6 +115,7 @@ int Window::main(int argc, char** argv){
 //    window->clearScreen(vec3(0.3, 0.2, 0.1));
   
     scene->directional_light_->setPosition(vec3(scene->directional_light_->getPosition().x , 10.0, 1.0));
+    scene->directional_light_->setPosition(vec3( (cos(window->time()) *10.0f)*0.5+0.5, (sin(window->time())*3.0) *0.5+0.5, 1.0));
   //  render_to_text->begin();
     scene->render();
    // render_to_text->end();

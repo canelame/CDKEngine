@@ -258,7 +258,7 @@ void SendObjectShadow::runCommand()const{
 
      DirectionalLight * dr_light = (DirectionalLight*)light_;
      //Directional light
-     FrameBuffer * light_depth_map = dr_light->shadow_depth_buffer_.get();
+     FrameBuffer * light_depth_map = dr_light->getShadowMap();
 
      if (!light_depth_map->isLoaded()){
 
@@ -277,8 +277,8 @@ void SendObjectShadow::runCommand()const{
 
 
      glViewport(0, 0, 1024, 1024);
-     glBindFramebuffer(GL_FRAMEBUFFER,dr_light->shadow_depth_buffer_->getId());
-     OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram(), dr_light->light_proyection_);
+     glBindFramebuffer(GL_FRAMEBUFFER, dr_light->getShadowMap()->getId());
+     OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram(), dr_light->getLightProyection());
      glClear(GL_DEPTH_BUFFER_BIT);
      
    }
