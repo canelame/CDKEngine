@@ -11,7 +11,7 @@ EngineManager& EngineManager::instance(){
 void EngineManager::init(){
   width_ = 0;
   height_ = 0;
-  current_render_target_ =0;
+
   
   shadow_shader_ = std::make_shared<Material>();
   shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl", "");
@@ -38,18 +38,6 @@ void EngineManager::setHeight(int h){
 
 void EngineManager::setWindowModified(bool value){
   window_size_modified_ = value;
-}
-
-void EngineManager::setRenderTarget(FrameBuffer*fb){
-  current_render_target_ = fb;
-}
-
-FrameBuffer* EngineManager::getRenderTarget(){
-  return current_render_target_;
-}
-
-void EngineManager::addUniform(char*name, int value){
-  loaded_uniforms_.insert(std::pair<char*, int>(name, value));
 }
 
 int EngineManager::getUniform(char*name){

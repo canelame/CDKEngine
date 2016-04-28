@@ -6,6 +6,7 @@
 #include "CDK/camera.h"
 #include "CDK/texture_material.h"
 #include "CDK/point_light.h"
+#include "CDK/spot_light.h"
 #include "CDK/node.h"
 #include "CDK/loader.h"
 #include "glm\glm.hpp"
@@ -13,7 +14,7 @@
 #include "post_process.h"
 #include "CDK/gui_interface.h"
 #include "CDK/scene.h"
-
+#include "terrain.h"
 
 std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 
@@ -28,6 +29,7 @@ int Window::main(int argc, char** argv){
   ///
   
   ///CREATE OBJECTS
+  std::shared_ptr<Terrain> terrain = std::shared_ptr<Terrain>();
 
   std::shared_ptr<Geometry> plane = std::make_shared<Geometry>();
   plane->createQuad();
@@ -94,17 +96,17 @@ int Window::main(int argc, char** argv){
   l2->setPosition(vec3(0.0, 0.0, 5.0));
   l2->setAmbientColor(vec3(1.0, 1.0, 1.0));
   l2->setSpecularColor(vec3(1.0, 1.0, 1.0));
-  l2->setDifusseColor(vec3(1.0, 1.0, 1.0));
+  l2->setDifusseColor(vec3(1.0, 0.0, 1.0));
   l2->setTypeLight(Light::LightType::T_POINT_LIGHT);
   scene->addLight(l2);
 
-  std::shared_ptr<PointLight> l3 = std::make_shared<PointLight>();
+  std::shared_ptr<SpotLight> l3 = std::make_shared<SpotLight>();
   l3->setPosition(vec3(1.0, 0.0, 1.0));
   l3->setAmbientColor(vec3(0.0, 0.0, 1.0));
   l3->setSpecularColor(vec3(0.0, 0.0, 1.0));
   l3->setDifusseColor(vec3(0.0, 0.0, 1.0));
-  l3->setTypeLight(Light::LightType::T_POINT_LIGHT);
-  scene->addLight(l3);
+  l3->setTypeLight(Light::LightType::T_SPOT_LIGHT);
+  //scene->addLight(l3);
 
   scene->root_->setPosition(vec3(0.0,0.0,0.0));
 

@@ -7,7 +7,7 @@ layout(location=2) in vec2 uv;
 uniform mat4 u_projection_m;
 uniform mat4 u_model_m;
 uniform mat4 u_view_m;
-uniform mat4 directional_light_space_m;
+
 
 
 

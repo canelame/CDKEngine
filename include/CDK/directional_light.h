@@ -4,8 +4,6 @@
 class DirectionalLight : public Light{
 
 public:
-
-
   void setPosition(vec3 p);
   DirectionalLight();
   mat4 getLightProyection();

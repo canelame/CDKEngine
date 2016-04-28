@@ -12,7 +12,7 @@
 * @author Alejandro Canela Méndez 2015
 * @brief This class controls geometry generation. 
 * You can load from obj, wwhit this form you can load several shapes.
-* Otherwise you can load geometry whit loadAttributes, passing the values in the function.
+*
 * REMEMBER TO USE A UNIQUE METHOD TO LOAD ATTRIBUTE VALUES.
 */
 
@@ -22,6 +22,11 @@ class Drawable;
 class Geometry  {
 public:
 
+  enum DrawMode{
+    kDrawModeTriangles = 0,
+    kDrawModeStripTriangles,
+    kDrawModePoints,
+  };
   
 	Geometry();
 	~Geometry(){};
@@ -41,8 +46,9 @@ public:
   * @param uv Uv attributes.
   * @index Index values for each vertex.
   */
-  void loadAttributes(std::shared_ptr<float*>loatpositions, std::shared_ptr<float*>normals, std::shared_ptr<float*>uvs,
-    std::shared_ptr<uint32*> indexes);
+  void loadData(std::unique_ptr<char[]>data);
+  void loadData(std::vector<float> positions, std::vector<float> normals
+                ,std::vector<float> uvs, std::vector<unsigned int> indices);
   /**
   @brief Get geometry buffer
   @return Buffer

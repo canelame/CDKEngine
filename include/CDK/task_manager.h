@@ -45,6 +45,7 @@ private:
 #ifndef __H_UPDATE_LIST__
 #define __H_UPDATE_LIST__
 #include "display_list.h"
+#include "texture_material.h"
 #include "scene.h"
 #include <map>
 #include <vector>
@@ -78,7 +79,8 @@ private:
   bool cam_loaded_;
   std::map <Material*,std::vector<Drawable*>> objects_order_by_program_;
   
-
+  std::vector<Light> point_lights;
+  std::vector<Light> spot_lights;
   std::vector<vec3> shadow_models_;
 };
 #endif

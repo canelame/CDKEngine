@@ -5,15 +5,18 @@ struct Light{
 	vec3 diffuse_color;
 	vec3 specular_color;
 	float sh;
-	int type;//0 none 1 pint 2 direction
+	int type;//0 none 1 pint 2 direction 3 spot
 	sampler2D depth_map;
 	mat4 ligth_view_proyection;
+	//Only used to spot lights
+	vec3 direction;
+	float cone_angle;
+
 };
 
 struct SpotLight{
 	vec3 position;
-	vec3 direction;
-	float cone_angle;
+	
 
 	vec3 ambient_color;
 	vec3 diffuse_color;
@@ -52,8 +55,8 @@ uniform vec3 u_material_ambient;
 uniform float u_shinn;
 
 
-uniform PointLight lights[10];
-uniform Light u_directional_light;
+ uniform PointLight lights[10];
+ uniform Light u_directional_light;
 
 
 vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir);
@@ -148,43 +151,38 @@ vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 
 }
 
-/*vec3 computeSpotLight(SpotLight light, vec3 frag_pos, vec3 normal ){
+vec3 computeSpotLight(Light light, vec3 frag_pos, vec3 normal,vec3 view_dir ){
 	vec3 light_direction = normalize( light.position - frag_pos);
 	float angle_light = dot( light_direction , normalize(-light.direction) );
 
 	if( angle_light > light.cone_angle){
 
-		float diff =max(dot(lightDir,normal),0.0);
-		vec3 rf = reflect(-lightDir,normal);
-		float spec = pow(max(dot(viewDir,rf),0.0),32.0);
+		float diff = max( dot(light_direction,normal) ,0.0);
+		vec3 rf = reflect(-light_direction,normal);
+		float spec = pow(max(dot(view_dir,rf),0.0),32.0);
 
 		//attenuyuation
-		float distance = length(l_dir.position-fragPos);
+		float distance = length(light.position-frag_pos);
 		float attenuation = 1.0/(1.0f+0.09*distance+0.032*(distance*distance));
 
-		vec3 ambient = (l_dir.ambient_color*u_material_ambient*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
-		vec3 diffuse = (l_dir.diffuse_color*u_material_diff*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
-		vec3 specular = (l_dir.specular_color*u_material_specular * vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
+		vec3 ambient = (light.ambient_color*u_material_ambient*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
+		vec3 diffuse = (light.diffuse_color*u_material_diff*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
+		vec3 specular = (light.specular_color*u_material_specular * vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
 
 		//float shadow = computeShadows(light.ligth_view_proyection * o_world_position , normal , light_direction);
-		return ambient + ( (1.0f - shadow) * (diffuse+specular) ) ;
+		return ambient + ( (1.0f ) * (diffuse+specular) ) ;
 	}
 
-}*/
+}
 
 
 
 
 void main(){
 	vec3 view = normalize(o_cam_pos-o_world_position.xyz);
-	
 	color.xyz+=computeDirectionLight( u_directional_light,o_normal,view);
-	for(int i=0;i<10;i++){
-		if(lights[i].type == 1){
-			color.xyz+= computePointLight(lights[i],o_normal,o_world_position.xyz,view);
-		}else if (lights[i].type ==3){
-			//color.xyz += computeSpotLight(lights[i],o_world_position.xyz,o_normal);
-		}	
+	for(int i = 0 ; i< 10;i++){
+		color.xyz += computePointLight(lights[i],o_normal ,o_world_position.xyz,view);
 	}
 
 }

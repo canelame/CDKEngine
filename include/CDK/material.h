@@ -93,19 +93,40 @@ public:
   std::string fragment_data_;
   std::string geometry_data_;
   int type_;
+
+  /**
+  */
+  void setUniformUiValue(const char* uniform_name, unsigned int val);
+  /**
+  */
+  void setUniformIValue(const char* uniform_name,  int val);
+  /**
+  */
+  void setUniformFValue(const char* uniform_name, float val);
+  /**
+  */
+  void setUniformMat4Value(const char* uniform_name, mat4 val);
+  /**
+  */
+  void setUniformMat3Value(const char* uniform_name, mat3 val);
+  /**
+  */
+  void setUniform3fValue(const char* uniform_name, vec3 val);
+  void setUniform3fValue(const char* uniform_name, float v1 ,float v2, float v3);
+  /**
+  */
+  int getUniformLocation(const char * name);
+
 private:
-  
+  //This two vectors are use to store uniforms, i used 2 vectors to discard std::map
+  //Firs vector are for names and the seconds for the uniform position
+  std::vector<std::string> uniforms_names;
+  std::vector<int > uniforms_values;
+  int findUniform(const char * name);
   void useMaterial();
   void compileShader(GLuint shader)const;
   unsigned int program_;
-  
-
-
-  
-
-
-
-
+  friend class OpenGlInterFaz;
 
 };
 
