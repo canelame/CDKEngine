@@ -173,9 +173,9 @@ int Task::getId(){
      }
 
 
-    // dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
-     //directionalShadowPass(true);
-     //dl_->add(std::make_shared<EndShadowCommand>());
+     dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
+     directionalShadowPass(true);
+     dl_->add(std::make_shared<EndShadowCommand>());
      loadNode(nod_->root_);
 
      unlock();

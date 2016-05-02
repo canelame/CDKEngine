@@ -1,13 +1,10 @@
 #include "terrain.h"
-
+#include "CDK\texture_material.h"
 
 Terrain::Terrain(){
   terrain_mesh_ = std::make_shared<Geometry>();
-  terrain_material_ = std::make_shared < Material>();
+  terrain_material_ = std::make_shared <TextureMaterial >();
   drawable_terrain_ = std::make_shared<Drawable>();
-  terrain_material_->loadShader("shaders/terrain_v.glsl", "shaders/terrain_f.glsl", "");
-  terrain_mesh_->setDrawGeometryMode(1);
-  terrain_mat_settings_ = std::make_shared < Material::MaterialSettings>();
 }
 Terrain::~Terrain(){
 
@@ -28,7 +25,6 @@ void Terrain::loadHeightMapTexture(const char* file_name){
   height_map_height_ = height_map_->getHeigth();
   inc_ptr = height_map_->getBpp();
   row_step_ = inc_ptr * height_map_width_;
-  
 }
 
 void Terrain::create(){
@@ -44,15 +40,18 @@ void Terrain::create(){
   float textureU = float(height_map_width_) * 0.1f;
   float textureV = float(height_map_height_) * 0.1f;
 
+  unsigned char *data = height_map_->getData();
 
   for (int y = 0; y < height_map_height_; y++){
     for (int x = 0; x < height_map_width_; x++){
       float new_x = float(x) / float(height_map_width_ - 1);
       float new_y = float(y) / float(height_map_height_ - 1);
-      float new_height = float(*height_map_->getData() + row_step_ * y + x*inc_ptr) / 255.0f;
+
+      
+      float new_height = float( *data + row_step_ * y + x*inc_ptr) / 255.0f;
       terrain_position.push_back(-0.5f + new_x);
       terrain_position.push_back(new_height);
-      terrain_position.push_back(new_y);
+      terrain_position.push_back(-0.5f + new_y);
       //Uvs
       terrain_uvs.push_back(textureU * new_x);
       terrain_uvs.push_back(textureV * new_y);
@@ -121,7 +120,7 @@ void Terrain::create(){
   }
 
   //We finally can compute noramls
-  std::vector<std::vector<vec3>> final_normals = std::vector<std::vector<vec3>>(
+/*  std::vector<std::vector<vec3>> final_normals = std::vector<std::vector<vec3>>(
                         height_map_height_, std::vector<vec3>(height_map_width_));
 
   for (int y = 0; y < height_map_height_; y++){
@@ -155,24 +154,32 @@ void Terrain::create(){
 
     }
   }
-  //End computing normals
+  */
+  const unsigned int terrain_width = height_map_width_;
+  const unsigned int terrain_height = height_map_height_;
 
-  //fill indices
-  std::vector< unsigned int > indices;
-  unsigned int primitive_restart_index = height_map_height_ * height_map_width_;
-  for (int y = 0; y < height_map_height_; ++y){
-    for (int x = 0; x < height_map_width_; ++x){
-      for (int i = 0; i < 2; i++){
-        int row = i + (1 - i);
-        unsigned int index = row * height_map_width_ + x;
-        indices.push_back(index);
-      }
-
+  //2 triangles per quad, each pixel represents a triangle
+  const unsigned int num_triangles = (terrain_width - 1) * (terrain_height - 1) * 2;
+  std::vector<unsigned int> indices;
+  //Each triangle have 3 vertex
+  indices.resize(num_triangles * 3);
+  int index = 0;
+  for (int y = 0; y < (terrain_height -1); y++){
+    for (int x = 0; x < (terrain_width - 1); x++){
+      int vertex_index = (y * terrain_width) + x;
+      //1 triangle
+      indices[index++] = vertex_index;
+      indices[index++] = vertex_index + terrain_width + 1;
+      indices[index++] = vertex_index + 1;
+      //2 triangle 
+      indices[index++] = vertex_index;
+      indices[index++] = vertex_index + terrain_width;
+      indices[index++] = vertex_index + terrain_width + 1;
     }
-    indices.push_back(primitive_restart_index);
   }
+
   terrain_mesh_->getBuffer()->setAttributeSize(terrain_position.size() / 3,
-    terrain_normal.size() / 3,
+    0,
     terrain_uvs.size() / 2, 0, 0,
     indices.size());
   terrain_mesh_->loadData(terrain_position, terrain_normal, terrain_uvs,indices);

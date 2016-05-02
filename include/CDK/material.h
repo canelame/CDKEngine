@@ -122,6 +122,7 @@ private:
   //Firs vector are for names and the seconds for the uniform position
   std::vector<std::string> uniforms_names;
   std::vector<int > uniforms_values;
+
   int findUniform(const char * name);
   void useMaterial();
   void compileShader(GLuint shader)const;

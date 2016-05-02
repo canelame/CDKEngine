@@ -79,7 +79,6 @@ int Material::findUniform(const char * name){
 }
 
 void Material::setUniformMat4Value(const char* uniform_name, mat4 val){
-  
   OpenGlInterFaz::instance().useUniformMat4(findUniform(uniform_name), val);
 }
 /**
