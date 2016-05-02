@@ -15,6 +15,7 @@ typedef char int16;
 
 typedef glm::vec3 vec3;
 typedef glm::mat4 mat4;
+typedef glm::mat3 mat3;
 #endif
 
 

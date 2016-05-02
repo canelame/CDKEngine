@@ -26,22 +26,7 @@ private:
 
 ///SHADOWS COMMAND CLASS
 
-#ifndef __H_SHADOW_COMMAND__
-#define __H_SHADOW_COMMAND__
-class StartShadowCommand : public Command{
-public:
-  StartShadowCommand(int depth_program,int depth_fb,std::shared_ptr<Light> lights=nullptr);
 
-  StartShadowCommand(){}
-  void runCommand()const;
-private:
-  int shader_program_;
-  mutable int fb_id_;
- std::shared_ptr<Light> lights_;
-
-};
-
-#endif
 
 ///SHADOWS COMMAND CLASS
 
@@ -98,6 +83,21 @@ private:
 
 };
 #endif
+
+#ifndef __RENDER_SPOT_SHADOW_MAP__
+#define __RENDER_SPOT_SHADOW_MAP__
+#include "spot_light.h"
+class RenderSpotShadowMapCommand : public Command{
+public:
+  RenderSpotShadowMapCommand(Light * l, int face);
+  SpotLight *light_;
+  void runCommand()const;
+private:
+
+
+};
+#endif
+
 //
 #ifndef __H_SEND_OBJECT_SHADOW__
 #define __H_SEND_OBJECT_SHADOW__
@@ -210,14 +210,35 @@ private:
 #include "opengl_interfaz.h"
 class UseMaterialCommand : public Command{
 public:
-	UseMaterialCommand(Material* mat);
+	UseMaterialCommand(Material *mat);
   UseMaterialCommand(){}
 	void runCommand()const;
 private:
+  Material *material_;
+
+};
+#endif
+
+#ifndef __H_USE_MATERIAL_UNIFORMS_COMMAND__
+#define __H_USE_MATERIAL_UNIFORMS_COMMAND__
+#include "command.h"
+#include "material.h"
+#include "opengl_interfaz.h"
+class UseMaterialUniformsCommand : public Command{
+public:
+  UseMaterialUniformsCommand( Material* mat,Material::MaterialSettings *mat_s,
+    mat4 projection,mat4 view,mat4 model, std::vector<std::shared_ptr<Light>> geo, Light *dir_light);
+  UseMaterialUniformsCommand(){}
+  void runCommand()const;
+private:
   Material::MaterialSettings *mat_set_;
-  Material *t_mat;
-  mutable const char* v_data;
-  mutable const char* f_data;
+  Material * mat_;
+  Light*  dir_light_;
+  mat4 projection_;
+  mat4 model_;
+  mat4 view_;
+  std::vector<std::shared_ptr<Light>> lights_;
+
 
 };
 #endif

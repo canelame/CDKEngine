@@ -17,17 +17,11 @@ struct Buffer::Data {
 };
 void Buffer::loadData(std::unique_ptr<char[]>buffer_data){
   data_->data = std::move(buffer_data);
-
-
 }
 
 Buffer::Buffer(float*positions, float*normals, float*uvs,
   unsigned int* indexes){
   data_ = new Data;
- /* data_->positions = std::make_shared<float*>(positions);
-  data_->normals = std::make_shared<float*>(normals);
-  data_->uvs = std::make_shared<float*>(uvs);
-  data_->indices = std::make_shared<unsigned int*>(indexes);*/
 }
 Buffer::Buffer(){
   data_ = new Data;

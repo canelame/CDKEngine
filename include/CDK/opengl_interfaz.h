@@ -9,10 +9,12 @@
 #include "CDK/buffer.h"
 #include "CDK/material.h"
 #include "frame_buffer.h"
+
+
 class PointLight;
 class OpenGlInterFaz{
 public:
-
+  
   /**
   @brief Use geometry whit VAO equals to vao variables
   @param vao VAO of the geometry to use
@@ -28,7 +30,7 @@ public:
   @brief Use a specific material
   @param Program of the material to use
   */
-  void useMaterial(Material &mat, vec3 color_amb, vec3 color_diff, vec3 color_spe);
+  void useMaterial(int program_id);
   /**
   @brief Load material shader .
   @param mat Current material pointer.
@@ -47,15 +49,22 @@ public:
   /**
   @brief
   */
-  void useUniformMat4(mat4 m);
+  void useUniformMat4(int position,mat4 m);
+  void useUniformMat3(int position, mat3 m);
   /**
   @brief
   */
-  void useUnifor3f(const char *name, const float *data);
+  void useUnifor3f(int position, const float *data);
   /**
   @brief
   */
-  void useUniformUi(const char *name,int value);
+  void useUniformUi(int position, unsigned int value);
+
+  void useUniformI(int position, unsigned int value);
+  /**
+  @brief
+  */
+  void useUniformF(int position, float value);
   /**
   @brief
   */
@@ -63,18 +72,18 @@ public:
   /**
   @brief
   */
-  void useTexture(int pro,int n_text,std::string u_name,int texture_id);
+  void useTexture(int position,int texture_id);
   /**
   @brief
   */
-  void drawGeometry(int vao,unsigned int indices);
+  void drawGeometry(int vao, unsigned int indice);
   /**
   @brief
   */
   void loadLight(int num_light);
   /**
   */
-  void sendLight( Light *light,int num_light,bool is_directional);
+  void sendLight( Light *light,Material * mat,int num_light,bool is_directional);
   /**
   @brief
   */
@@ -118,7 +127,16 @@ public:
   void  createShadoCubeMap(PointLight * pl);
   void usePointShadowModel(mat4 m);
   static OpenGlInterFaz& instance();
+  /**
+  */
+  void useDiffuseMaterial(Material * mat);
+  void useTextureMaterial(Material *mat,Material::MaterialSettings *mat_sett,
+                         mat4 cam_view, mat4 cam_proy, mat4 model , Light *dir_light ,std::vector<std::shared_ptr<Light>> lights);
+  void useShadowMapMaterial(Material* shadow_map_material, mat4 light_projection_mat);
   
+  /**
+  */
+  int draw_mode_;
 private:
  
   struct Data;

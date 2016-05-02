@@ -120,3 +120,6 @@ void Texture::setPixelType(Texture::kTexturePixelType format){
   data_->pixel_type = format;
 }
 
+int Texture::getBpp(){
+  return data_->comp;
+}

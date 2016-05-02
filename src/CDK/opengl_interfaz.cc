@@ -1,9 +1,9 @@
 #include "CDK/opengl_interfaz.h"
 #include "CDK/display_list.h"
-#include "CDK/material.h"
 #include "CDK/texture.h"
 #include "CDK/directional_light.h"
 #include  "CDK/point_light.h"
+
 OpenGlInterFaz* OpenGlInterFaz::instance_ = nullptr;
 OpenGlInterFaz& OpenGlInterFaz::instance(){
   if (instance_ == NULL){
@@ -23,6 +23,9 @@ struct LightUniforms{
   GLint proyection_matrix = -1;
   GLint faces_mat[6];
   GLint texture = -1;
+
+  GLint direction_s = -1;
+  GLint cone_angle_s = -1;
 };
 struct OpenGlInterFaz::Data{
    GLuint shadow_texture_;
@@ -79,6 +82,8 @@ struct OpenGlInterFaz::Data{
   GLint p_light_pos = -1;
   GLint mat_point_proy[6];
 
+  //SPot 
+
   };
 
 OpenGlInterFaz::OpenGlInterFaz(){
@@ -134,25 +139,8 @@ void OpenGlInterFaz::loadBuffer(Buffer *buff){
 void OpenGlInterFaz::setLightProyection(mat4 mat){
   data_->light_proyection_=mat;
 }
-void OpenGlInterFaz::useMaterial( Material &mat,vec3 color_amb, vec3 color_diff, vec3 color_spe){
-    data_->type = mat.type_;
-    glUseProgram(mat.getProgram());
-
-    if (data_->type== 0){
-      if (data_->mat_a > -1)glUniform3f(data_->mat_a, color_amb.x, color_amb.y, color_amb.z);
-      if (data_->mat_d > -1) glUniform3f(data_->mat_d, color_diff.x, color_diff.y, color_diff.z);
-      if (data_->mat_s > -1)glUniform3f(data_->mat_s, color_spe.x, color_spe.y, color_spe.z);
-    
-      glUniform1i(glGetUniformLocation(mat.getProgram(), "u_diffuse_texture1"), 0);
-      glUniform1i(glGetUniformLocation(mat.getProgram(), "u_directional_light.depth_map"), 1);
-      glUniform1i(glGetUniformLocation(mat.getProgram(), "shadow_texture" ), 2);  
-    }
-
-    if (data_->type == 1){
-      if (data_->mat_a_d > -1)glUniform3f(data_->mat_a_d, color_amb.x, color_amb.y, color_amb.z);
-      if (data_->mat_d_d > -1)glUniform3f(data_->mat_d_d, color_diff.x, color_diff.y, color_diff.z);
-      if (data_->mat_s_d > -1)glUniform3f(data_->mat_s_d, color_spe.x, color_spe.y, color_spe.z);
-    }
+void OpenGlInterFaz::useMaterial( int program_id){
+    glUseProgram(program_id);
 }
 int OpenGlInterFaz::loadMaterial(Material *mat){
 
@@ -200,14 +188,30 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
   else{ 
     glDeleteShader(data_->shadow_vertex_shader_);
     glDeleteShader(data_->shadow_fragment_shader_);  
+    GLint num_uniforms;
+    glGetProgramiv(data_->shadow_program_, GL_ACTIVE_UNIFORMS, &num_uniforms);
+    GLint max_length;
+    glGetProgramiv(data_->shadow_program_, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_length);
+    GLsizei buff_info_size = 0;
+    GLint size = 0;
+    GLenum type;
+    std::unique_ptr<char[]> uniform_name = std::unique_ptr<char[]>(new char[max_length]);
+    for (int i = 0; i < num_uniforms; i++){
+      glGetActiveUniform(data_->shadow_program_, i, max_length, &lenght, &size, &type, &uniform_name[0]);
+      mat->uniforms_names.push_back(std::string(&uniform_name[0]));
+      mat->uniforms_values.push_back(i);
+      printf("");
+    }
+
+
     //TEXTURE_UNIFORMS
-    if (data_->proyec_pos<0)data_->proyec_pos = glGetUniformLocation(data_->shadow_program_, "u_projection_m");
+  /*  if (data_->proyec_pos<0)data_->proyec_pos = glGetUniformLocation(data_->shadow_program_, "u_projection_m");
     if (data_->model_pos<0)data_->model_pos = glGetUniformLocation(data_->shadow_program_, "u_model_m");
     if (data_->view_pos<0)data_->view_pos = glGetUniformLocation(data_->shadow_program_, "u_view_m");
 
     if (data_->mat_d<0)data_->mat_d = glGetUniformLocation(data_->shadow_program_, "u_material_diff");
     if (data_->mat_s<0)data_->mat_s = glGetUniformLocation(data_->shadow_program_, "u_material_specular");
-    if (data_->mat_a<0)data_->mat_a = glGetUniformLocation(data_->shadow_program_, "u_material_ambient");
+    if (data_->mat_a<0)data_->mat_a = glGetUniformLocation(data_->shadow_program_, "u_material_ambient");*/
 
     
     //DIFFUSE UNIFORMS
@@ -226,6 +230,7 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
     if (data_->directional_light_u<0)data_->directional_light_u = glGetUniformLocation(data_->shadow_program_, "u_directional_light.ligth_view_proyection");
     if (data_->far_plane<0)data_->far_plane = glGetUniformLocation(data_->shadow_program_, "far_plane");
     if (data_->p_light_pos<0)data_->p_light_pos = glGetUniformLocation(data_->shadow_program_, "light_pos");
+    
     for (int i = 0; i < 6; i++){
       if (data_->mat_point_proy[i] < 0){
         data_->mat_point_proy[i] = glGetUniformLocation(data_->shadow_program_, ("shadow_matrices[" + std::to_string(i) + "]").c_str());
@@ -237,10 +242,27 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
 }
 
 void OpenGlInterFaz::drawGeometry( int vao,unsigned int indices){
- // printf("Draw elements: %d indices\n",shadow_index_.size());
+ 
   glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)0);
-  //glBindVertexArray(0);
+  GLenum primitive;
+  switch (draw_mode_)
+  {
+  case 0:
+    primitive = GL_TRIANGLES;
+    break;
+  case 1:
+    primitive = GL_TRIANGLE_STRIP;
+    break;
+  case 2:
+    primitive = GL_POINTS;
+    break;
+  default:
+    primitive = GL_TRIANGLES;
+    break;
+  }
+
+	glDrawElements(primitive, indices, GL_UNSIGNED_INT, (void*)0);
+  glBindVertexArray(0);
 }
 
 void OpenGlInterFaz::compileShader(GLuint shader){
@@ -269,30 +291,47 @@ void OpenGlInterFaz::compileShader(GLuint shader){
 }
 
 
-void OpenGlInterFaz::useUnifor3f(const char* name, const float*data){
-  GLint pos = glGetUniformLocation(data_->shadow_program_, name);
-	if (pos >= 0){
-		glUniform3fv(pos, 1, data);
+void OpenGlInterFaz::useUnifor3f(int position, const float*data){
+
+	if (position >= 0){
+		glUniform3fv(position, 1, data);
 	}
 }
 
-void OpenGlInterFaz::useUniformMat4(mat4 m){
+void OpenGlInterFaz::useUniformMat4(int program,mat4 m){
 
-  glUniformMatrix4fv(data_->shadow_model_s, 1, GL_FALSE, &m[0][0]);
+  glUniformMatrix4fv(program, 1, GL_FALSE, &m[0][0]);
+  //glUniformMatrix4fv(data_->shadow_model_s, 1, GL_FALSE, &m[0][0]);
 
 }
+
+void OpenGlInterFaz::useUniformMat3(int program, mat3 m){
+
+  glUniformMatrix3fv(program, 1, GL_FALSE, &m[0][0]);
+
+}
+
 void OpenGlInterFaz::usePointShadowModel(mat4 m){
 
   glUniformMatrix4fv(data_->shadow_model_sp, 1, GL_FALSE, &m[0][0]);
 
 }
-void OpenGlInterFaz::useUniformUi(const char *name, int value){
-  int p = glGetUniformLocation(data_->shadow_program_, name);
-  const int t = { 0 };
-  if (p >= 0){
-    glUniform1iv(data_->shadow_program_, 1, t);
-  }
+void OpenGlInterFaz::useUniformUi(int position, unsigned int value){
+
+    glUniform1ui(position, value);
+  
 }
+
+void OpenGlInterFaz::useUniformF(int position, float value){
+
+  glUniform1f(position, value);
+
+}
+
+void OpenGlInterFaz::useUniformI(int position, unsigned int value){
+  glUniform1i(position, value);
+}
+
 
 
 void OpenGlInterFaz::bindFrameBuffer(int fb_id,FrameBuffer::kFramebufferBindType type){
@@ -498,9 +537,9 @@ void OpenGlInterFaz::loadTexture(std::shared_ptr<Texture> m){
     
 }
 
-void OpenGlInterFaz::useTexture(int pro,int n_text,std::string u_name,int texture_id){
+void OpenGlInterFaz::useTexture(int position , int texture_id){
  
-  glActiveTexture(GL_TEXTURE0);
+  glActiveTexture(GL_TEXTURE0 + position);
   glBindTexture(GL_TEXTURE_2D, texture_id); 
 
 }
@@ -521,9 +560,9 @@ void OpenGlInterFaz::loadLight(int num_light){
     if (data_->u_lights[num_light].l_sh < 0)data_->u_lights[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].sh").c_str());
     if (data_->u_lights[num_light].l_t < 0)data_->u_lights[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].type").c_str());
     if (data_->u_lights[num_light].texture < 0)data_->u_lights[num_light].texture = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].depth_map").c_str());
-    
-    
-   
+
+ //   if (data_->u_lights[num_light].direction_s < 0)data_->u_lights[num_light].direction_s = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].direction").c_str());
+   // if (data_->u_lights[num_light].cone_angle_s < 0)data_->u_lights[num_light].cone_angle_s = glGetUniformLocation(data_->shadow_program_, ("lights[" + std::to_string(num_light) + "].cone_angle").c_str());
 
     //DIFFUSE
     if (data_->u_lights_d[num_light].l_pos < 0)data_->u_lights_d[num_light].l_pos = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].position").c_str());
@@ -532,6 +571,8 @@ void OpenGlInterFaz::loadLight(int num_light){
     if (data_->u_lights_d[num_light].l_dc < 0)data_->u_lights_d[num_light].l_dc = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].diffuse_color").c_str());
     if (data_->u_lights_d[num_light].l_sh < 0)data_->u_lights_d[num_light].l_sh = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].sh").c_str());
     if (data_->u_lights_d[num_light].l_t < 0)data_->u_lights_d[num_light].l_t = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].type").c_str());
+   // if (data_->u_lights_d[num_light].direction_s < 0)data_->u_lights_d[num_light].direction_s = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].direction").c_str());
+  //  if (data_->u_lights_d[num_light].cone_angle_s < 0)data_->u_lights_d[num_light].cone_angle_s = glGetUniformLocation(data_->shadow_program_, ("lights_d[" + std::to_string(num_light) + "].cone_angle").c_str());
 
 
   
@@ -624,7 +665,7 @@ void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
   glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
 }
-void OpenGlInterFaz::sendLight( Light *light,int num_light,bool is_directioal){
+void OpenGlInterFaz::sendLight(Light *light, Material *mat, int num_light ,bool is_directional){
 
   
   
@@ -636,41 +677,46 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light,bool is_directioal){
   vec3 ambient_c = light->getAmbientColor();
   float shin = light->getShinenes();
   int type = light->getType();
-  if (!is_directioal){
+  if (!is_directional){
 
+    mat->setUniform3fValue( ("lights[" + std::to_string(num_light) + "].position").c_str(), 
+                            position.x,position.y,position.z);
 
+    mat->setUniform3fValue(("lights[" + std::to_string(num_light) + "].ambient_color").c_str(),
+      ambient_c.x, ambient_c.y, ambient_c.z);
+
+    mat->setUniform3fValue(("lights[" + std::to_string(num_light) + "].specular_color").c_str(),
+      specular_c.x, specular_c.y, specular_c.z);
+
+    mat->setUniform3fValue(("lights[" + std::to_string(num_light) + "].diffuse_color").c_str(),
+      diffuse_c.x, diffuse_c.y, diffuse_c.z);
+
+    mat->setUniformFValue( ("lights[" + std::to_string(num_light) + "].sh").c_str() ,
+      shin);
+
+    mat->setUniformIValue(("lights[" + std::to_string(num_light) + "].type").c_str(),
+     type);
+
+    mat->setUniformIValue(("lights[" + std::to_string(num_light) + "].depth_map").c_str(),
+     1);
+      
     if (data_->type == 0){
-      if (data_->u_lights[num_light].l_pos >= 0){
-        glUniform3f(data_->u_lights[num_light].l_pos, position.x, position.y, position.z);
+     
+      switch (type)
+      {
+      case 1:
+      //point
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, ((PointLight*)light)->getShadowCubeMapTexture());
+        break;
+
+      case 3:
+
+        //spot
+      default:
+        break;
       }
 
-
-      if (data_->u_lights[num_light].l_ac >= 0){
-        glUniform3f(data_->u_lights[num_light].l_ac, ambient_c.x, ambient_c.y, ambient_c.z);
-      }
-
-
-      if (data_->u_lights[num_light].l_sc >= 0){
-
-        glUniform3f(data_->u_lights[num_light].l_sc, specular_c.x, specular_c.y, specular_c.z);
-      }
-
-
-      if (data_->u_lights[num_light].l_dc >= 0){
-        glUniform3f(data_->u_lights[num_light].l_dc, diffuse_c.x, diffuse_c.y, diffuse_c.z);
-      }
-
-
-      if (data_->u_lights[num_light].l_sh >= 0){
-        glUniform1f(data_->u_lights[num_light].l_sh, shin);
-      }
-
-
-      if (data_->u_lights[num_light].l_t >= 0){
-        glUniform1i(data_->u_lights[num_light].l_t, type);
-      }
-      glActiveTexture(GL_TEXTURE2);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, ((PointLight*)light)->getShadowCubeMapTexture());
 
     }
     //DIFFUSE
@@ -706,6 +752,28 @@ void OpenGlInterFaz::sendLight( Light *light,int num_light,bool is_directioal){
     DirectionalLight *dir_l = (DirectionalLight*)light;
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D ,dir_l->getShadowMap()->getTexture()->getID());
+
+
+    mat->setUniform3fValue(("lights[" + std::to_string(num_light) + "].position").c_str(),
+      position.x, position.y, position.z);
+
+    mat->setUniform3fValue(("lights[" + std::to_string(num_light) + "].ambient_color").c_str(),
+      ambient_c.x, ambient_c.y, ambient_c.z);
+
+    mat->setUniform3fValue(("lights[" + std::to_string(num_light) + "].specular_color").c_str(),
+      specular_c.x, specular_c.y, specular_c.z);
+
+    mat->setUniform3fValue(("lights[" + std::to_string(num_light) + "].diffuse_color").c_str(),
+      diffuse_c.x, diffuse_c.y, diffuse_c.z);
+
+    mat->setUniformFValue(("lights[" + std::to_string(num_light) + "].sh").c_str(),
+      shin);
+
+    mat->setUniformIValue(("lights[" + std::to_string(num_light) + "].type").c_str(),
+      type);
+
+    mat->setUniformIValue(("lights[" + std::to_string(num_light) + "].depth_map").c_str(),
+
 
      if (data_->directional_light_u > -1){
       glUniformMatrix4fv(data_->directional_light_u, 1, GL_FALSE, &dir_l->getLightProyection()[0][0]);
@@ -823,4 +891,68 @@ void OpenGlInterFaz::sendPointLightFar(vec3 pos_light, float far){
   if (data_->p_light_pos > 0){
     glUniform3f(data_->p_light_pos, pos_light.x, pos_light.y, pos_light.z);
   }
+}
+
+void OpenGlInterFaz::useDiffuseMaterial(Material * mat){
+}
+#include "CDK/texture_cache.h"
+void OpenGlInterFaz::useTextureMaterial(Material *mat, Material::MaterialSettings *mat_sett,
+                                        mat4 cam_view, mat4 cam_proy, mat4 model,
+                                        Light *dir_light, std::vector<std::shared_ptr<Light>> lights){
+
+  glUseProgram(mat->getProgram());
+  vec3 color_amb = mat_sett->getAmbientColor();
+  vec3 color_diff = mat_sett->getAmbientColor();
+  vec3 color_spe = mat_sett->getAmbientColor();
+  mat->setUniform3fValue("u_material_ambient", color_amb.x, color_amb.y, color_amb.z);
+  mat->setUniform3fValue("u_material_diff", color_diff.x, color_diff.y, color_diff.z);
+  mat->setUniform3fValue("u_material_specular", color_spe.x, color_spe.y, color_spe.z);
+
+   mat->setUniformUiValue( "u_directional_light.depth_map", 1);
+   mat->setUniformUiValue( "shadow_texture_point", 2);
+   mat->setUniformUiValue( "shadow_texture_spot", 3);
+
+  TextureMaterial::MaterialSettings *text_mat_s = (TextureMaterial::MaterialSettings*)mat_sett;
+  std::vector<std::string> textures = text_mat_s->getTextures();
+  //Send lights
+
+  sendLight(dir_light, mat, 0, true);
+  for (int i = 0; i < lights.size(); i++){
+   sendLight(lights[i].get(),mat, i, false);
+    lights[i]->setLoaded(true);
+  }
+
+  //Uses textures
+
+  int num_diffuse_t = 1;
+  int num_specular_t = 1;
+  for (int i = 0; i < textures.size(); i++){
+    std::shared_ptr<Texture> current_texture = TextureCache::instance().getTexture(textures[i].c_str());
+    if (!current_texture->getLoaded()){
+      OpenGlInterFaz::instance().loadTexture(current_texture);
+      current_texture->setLoaded(true);
+    }
+    std::string type;
+    std::string type_name = current_texture->getType();
+    std::stringstream ssn;
+    if (type_name == "diffuse"){
+      type = "u_diffuse_texture";
+      ssn << num_diffuse_t;
+      num_diffuse_t++;
+    }
+    else  if (type_name == "specular"){
+      type = "u_specular_texture";
+      ssn << num_specular_t;
+      num_specular_t++;
+    }
+    OpenGlInterFaz::instance().useTexture(mat->getUniformLocation((type + ssn.str()).c_str()), current_texture->getID());
+
+  }
+
+}
+
+  void OpenGlInterFaz::useShadowMapMaterial(Material* shadow_map_material, mat4 light_projection_mat){
+  glUseProgram(shadow_map_material->getProgram());
+  shadow_map_material->setUniformMat4Value("light_screen", light_projection_mat);
+
 }

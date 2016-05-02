@@ -9,6 +9,7 @@ struct Geometry::Data{
   bool loaded_ = false;
   mutable bool used_ = false;
   std::shared_ptr<Buffer> geo_buff_;
+  DrawMode drawing_mode_;
 
 };
 Geometry::Geometry(){
@@ -18,10 +19,9 @@ Geometry::Geometry(){
 }
 
 
-void Geometry::loadAttributes(std::shared_ptr<float*>positions, std::shared_ptr<float*>normals, std::shared_ptr<float*>uvs,
-  std::shared_ptr<uint32*> indexes){
+void Geometry::loadData(std::unique_ptr<char[]>data){
 
-  data_->geo_buff_->loadData(positions, normals, uvs, indexes);
+  data_->geo_buff_->loadData(std::move(data));
 }
 
 
@@ -168,15 +168,20 @@ void Geometry::createCube(){
       16, 17, 18, 16, 18, 19,
       20, 21, 22, 20, 22, 23};
 
-  int total_size = ((72 + 72 + 48)*sizeof(float)+36*sizeof(unsigned int));
-  std::unique_ptr<char[]> t_buff = std::unique_ptr<char[]>(new char[total_size]);
+  std::vector<float> positions, normals_v, uvs_v;
+  std::vector<unsigned int> indices;
+  for (int i = 0; i < 72; i++){
+    positions.push_back(vertices[i]);
+    normals_v.push_back(normals[i]);
+  }
+  for (int i = 0; i < 48; i++){
+    uvs_v.push_back(uvs[i]);
+  }
+  for (int i = 0; i < 36; i++){
+    indices.push_back(indexes_cube[i]);
+  }
+  loadData(positions, normals_v, uvs_v, indices);
 
-  memcpy(t_buff.get(), &vertices[0], 72 * sizeof(float));
-  memcpy(&t_buff.get()[72 * sizeof(float)], &normals[0], 72 * sizeof(float));
-  memcpy(&t_buff.get()[144 * sizeof(float)], &uvs[0], 48 * sizeof(float));
-  memcpy(&t_buff.get()[192 * sizeof(float)], &indexes_cube[0], 36 * sizeof(unsigned int));
-  data_->geo_buff_->setAttributeSize(72, 72, 48, 0, 0, 36);
-  data_->geo_buff_->loadData(std::move(t_buff));
 }
 
 void Geometry::createQuad(){
@@ -219,3 +224,22 @@ void Geometry::createQuad(){
     data_->geo_buff_->loadData(std::move(t_buff));
 
 }
+
+void Geometry::loadData(std::vector<float> positions, std::vector<float> normals
+  , std::vector<float> uvs, std::vector<unsigned int> indices){
+  int total_size = (positions.size() + normals.size() + uvs.size()) * sizeof(float);
+  total_size += (indices.size() * sizeof(unsigned int));
+  std::unique_ptr<char[]> t_buff = std::unique_ptr<char[]>(new char[total_size]);
+
+  memcpy(t_buff.get(), &positions[0], positions.size() * sizeof(float));
+  memcpy(&t_buff.get()[positions.size() * sizeof(float)], &normals[0], normals.size() * sizeof(float));
+  memcpy(&t_buff.get()[ (positions.size() + normals.size()) * sizeof(float)], &uvs[0], uvs.size() * sizeof(float));
+  memcpy(&t_buff.get()[ (positions.size() + normals.size()+uvs.size() ) * sizeof(float)], &indices[0], indices.size() * sizeof(unsigned int));
+  data_->geo_buff_->setAttributeSize(positions.size(), normals.size(), uvs.size(), 0, 0, indices.size());
+  data_->geo_buff_->loadData(std::move(t_buff));
+  
+
+}
+
+
+

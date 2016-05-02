@@ -36,7 +36,7 @@ UseTextureComman::UseTextureComman(int pro,std::vector<std::string>textures){
 
 
 void UseTextureComman::runCommand()const{
-  int num_diffuse_t = 1;
+  /*int num_diffuse_t = 1;
   int num_specular_t = 1;
   for (int i = 0; i < textures_.size(); i++){ 
     std::shared_ptr<Texture> current_texture = TextureCache::instance().getTexture(textures_[i].c_str());
@@ -59,7 +59,7 @@ void UseTextureComman::runCommand()const{
         OpenGlInterFaz::instance().useTexture(program_mat_, i, (type + ssn.str()), current_texture->getID());
     }
 
-  }
+  }*/
 
 }
 
@@ -122,33 +122,67 @@ void DrawCommand::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
   }
+  
+
   OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_);
 
 }
 
 ///////// USE_MATERIAL_COMMAND CLASS/////////
 ////////////////////////////////////////////
-UseMaterialCommand::UseMaterialCommand(Material* mat){
-	t_mat = mat;
- 
+UseMaterialCommand::UseMaterialCommand(Material *mat){
+  material_ = mat;
 
 }
 
 void UseMaterialCommand::runCommand()const{
-  if (!t_mat->is_compiled_){
+  if (!material_->is_compiled_){
 
-    t_mat->setProgram(OpenGlInterFaz::instance().loadMaterial(t_mat));
+    material_->setProgram(OpenGlInterFaz::instance().loadMaterial(material_));
     for (int i = 0; i < 10; i++){
       OpenGlInterFaz::instance().loadLight(i);
-
+      OpenGlInterFaz::instance().loadDirectionalLight();
     }
-    OpenGlInterFaz::instance().loadDirectionalLight();
-    t_mat->is_compiled_ = true;
+
+    material_->is_compiled_ = true;
   }
-  OpenGlInterFaz::instance().useMaterial(*t_mat, vec3(1.0), vec3(1.0), vec3(1.0));
+  OpenGlInterFaz::instance().useMaterial(material_->getProgram());
+
+
+  //OpenGlInterFaz::instance().useMaterial(*t_mat, vec3(1.0), vec3(1.0), vec3(1.0));
   
 }
+///////////////////////////////////////////////////
+UseMaterialUniformsCommand::UseMaterialUniformsCommand(Material* mat, Material::MaterialSettings *mat_s,
+  mat4 projection, mat4 view, mat4 model, std::vector<std::shared_ptr<Light>> lights, Light *dir_light){
 
+  mat_set_ = mat_s;
+  mat_ = mat;
+  projection = projection_;
+  model_ = model;
+  view_ = view;
+  dir_light_ = dir_light;
+  lights_ = lights;
+}
+
+void UseMaterialUniformsCommand::runCommand()const{
+
+  switch (mat_->type_){
+  case 0:
+    OpenGlInterFaz::instance().useTextureMaterial(mat_, mat_set_, view_,projection_, model_,
+      dir_light_, lights_);
+    break;
+  case 1:
+    OpenGlInterFaz::instance().useDiffuseMaterial(mat_);
+    break; 
+  default:
+    break;
+  }
+ 
+
+}
+
+///////////////////////////////////////////////////
 
 LightsCommand::LightsCommand(std::vector < std::shared_ptr< Light >> l,std::shared_ptr<Light>dir_light){
   lights_ = l;
@@ -157,16 +191,12 @@ LightsCommand::LightsCommand(std::vector < std::shared_ptr< Light >> l,std::shar
 
 void LightsCommand::runCommand()const{
 
+/*  OpenGlInterFaz::instance().sendLight(dir_light_.get(), 0, true);
 
- 
-  OpenGlInterFaz::instance().sendLight(dir_light_.get(), 0, true);
-
-  for (int i = 0; i < lights_.size(); i++){
-    
+  for (int i = 0; i < lights_.size(); i++){ 
       OpenGlInterFaz::instance().sendLight(lights_[i].get(), i, false);
       lights_[i]->setLoaded(true);
-    
-  }
+  }*/
   
 }
 /////////////////////////FRAMEBUFFER///////////////////////
@@ -181,27 +211,7 @@ void UseFrameBuffer::runCommand()const{
 
 }
 
-//SHAdow class
-StartShadowCommand::StartShadowCommand(int depth_program,int depth_fb,std::shared_ptr<Light> lights){
-  shader_program_ = depth_program;
-  lights_ = lights;
-  fb_id_ = depth_fb;
-}
 
-void StartShadowCommand::runCommand()const{
-
-  if (!ENGINE.shadow_shader_->is_compiled_){
-    ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_.get()));
-    ENGINE.shadow_shader_->is_compiled_ = true;
-  }
-
- // OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram());
-  glViewport(0, 0, 1024, 1024);
-  glClear(GL_DEPTH_BUFFER_BIT);
-  
-      
-
-}
 
 void DisplayList::renderScene(){
 
@@ -218,8 +228,14 @@ SendObjectShadow::SendObjectShadow(Buffer * g,mat4 m,bool is_directional){
 }
 
 void SendObjectShadow::runCommand()const{
-  is_directional_  ? OpenGlInterFaz::instance().useUniformMat4(m_) : OpenGlInterFaz::instance().usePointShadowModel(m_) ;
-  
+  if (is_directional_){
+    ENGINE.shadow_shader_->setUniformMat4Value("u_model_s",m_);
+  }
+  else{
+    //OpenGlInterFaz::instance().usePointShadowModel(m_);
+    ENGINE.shadow_points_shader_->setUniformMat4Value("u_model_sp",m_);
+  }
+
   if (t_geo->isDirty()){
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
@@ -278,7 +294,8 @@ void SendObjectShadow::runCommand()const{
 
      glViewport(0, 0, 1024, 1024);
      glBindFramebuffer(GL_FRAMEBUFFER, dr_light->getShadowMap()->getId());
-     OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram(), dr_light->getLightProyection());
+   //  OpenGlInterFaz::instance().renderShadows(ENGINE.shadow_shader_->getProgram(), dr_light->getLightProyection());
+     OpenGlInterFaz::instance().useShadowMapMaterial(ENGINE.shadow_shader_.get(), dr_light->getLightProyection());
      glClear(GL_DEPTH_BUFFER_BIT);
      
    }
@@ -316,3 +333,4 @@ void SendObjectShadow::runCommand()const{
 
 
  }
+

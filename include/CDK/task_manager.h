@@ -78,7 +78,8 @@ private:
   bool cam_loaded_;
   std::map <Material*,std::vector<Drawable*>> objects_order_by_program_;
   
-
+  std::vector<Light> point_lights;
+  std::vector<Light> spot_lights;
   std::vector<vec3> shadow_models_;
 };
 #endif

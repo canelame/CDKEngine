@@ -9,6 +9,8 @@ ESAT 2016
 */
 class Texture{
 public:
+#define DIFFUSE_TEXTURE_TYPE 20
+#define SPECULAR_TEXTURE_TYPE 30
   enum kTexturePixelType{
     kTexturePixelType_UByte=0,
     kTexturePixelType_Byte,
@@ -126,6 +128,9 @@ public:
   */
   kTexturePixelType getPixelType();
   void setPixelType(kTexturePixelType type);
+  /**
+  */
+  int getBpp();
 private:
   struct Data;
 	Data *data_;
