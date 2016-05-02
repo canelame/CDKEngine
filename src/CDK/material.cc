@@ -2,7 +2,7 @@
 
 #include "CDK/task_manager.h"
 
-
+#include "CDK/public_opengl_library.h"
 Material::Material(){
 
 }
@@ -68,7 +68,14 @@ int Material::findUniform(const char * name){
     }
     ++index;
   }
-  return -1;
+  //If is not at the list, we find at the 
+ int position = OpenglInterfazPublic::instace().getUniformLocation(program_,(char*)name);
+ if (position >= 0){
+   uniforms_names.push_back(name);
+   uniforms_values.push_back(position);
+   return position;
+ }
+ return -1;
 }
 
 void Material::setUniformMat4Value(const char* uniform_name, mat4 val){

@@ -114,94 +114,8 @@ private:
 };
 
 #endif
-///USE LIGHT COMMAND CLASS
-#ifndef __H_LIGHTS_COMMAND__
-#define __H_LIGHTS_COMMAND__  
-#include "command.h"
-#include "light.h"
-#include <vector>
-#include "opengl_interfaz.h"
-class LightsCommand : public Command{
-public:
-  LightsCommand(std::vector<std::shared_ptr<Light>> geo,std::shared_ptr<Light>dir_light);
 
 
-  void runCommand()const;
-
-
-private:
-  mutable std::vector<std::shared_ptr<Light>> lights_;
-  std::shared_ptr<Light> dir_light_;
-};
-#endif
-///LOAD MATERIAL COMMMAND CLASS
-#ifndef __H_LOAD_MAT_COMMAND__
-#define __H_LOAD_MAT_COMMAND__
-#include "command.h"
-#include "material.h"
-#include "opengl_interfaz.h"
-class LoadMaterialCommand : public Command{
-public:
-	LoadMaterialCommand(Material* mat);
-	void runCommand()const;
-	Material*  getMaterial();
-private:
-	Material *t_mat;
-
-};
-#endif
-///LOAD TEXTURE COMMAND CLASS
-#ifndef __H_LOAD_TEXTURE_COMMAND__
-#define __H_LOAD_TEXTURE_COMMAND__
-#include "command.h"
-#include "texture_material.h"
-#include "opengl_interfaz.h"
-
-class LoadTextureCommand : public Command{
-public:
-	LoadTextureCommand( TextureMaterial::MaterialSettings*mat);
-	void runCommand()const;
-
-private:
-	TextureMaterial::MaterialSettings *t_mat;
-	 bool delete_ = false;
-
-};
-#endif
-//USE TEXTURE COMMAND CLASS
-#ifndef __H_USE_TEXTURE_COMMAND__
-#define __H_USE_TEXTURE_COMMAND__
-#include "command.h"
-#include "material.h"
-#include "opengl_interfaz.h"
-class UseTextureComman : public Command {
-public:
-	UseTextureComman(int pro,std::vector<std::string>textures);
-	void runCommand()const;
-private:
-  std::vector<std::string> textures_;
-  int program_mat_;
-};
-#endif
-
-
-/// USE CAMERA COMMAND CLASS
-#ifndef __H_USE_CAM_COMMAND__
-#define __H_USE_CAM_COMMAND__
-#include "command.h"
-#include "camera.h"
-#include "opengl_interfaz.h"
-class UseCameraCommand : public Command {
-public:
-  UseCameraCommand(mat4 cam_proyec, mat4 cam_view, mat4 m_mm);
-  void runCommand()const;
-private:
-  mat4 proyec_m_;
-  mat4 view_m_;
-  mat4 model_n_;
-  
-};
-#endif
 ///USE MATERIAL COMMAND CLASS
 #ifndef __H_USE_MATERIAL_COMMAND__
 #define __H_USE_MATERIAL_COMMAND__
@@ -241,22 +155,7 @@ private:
 
 
 };
-#endif
-//////////////////////////////////
-#ifndef __H_USE_FRAME_BUFFER__
-#define __H_USE_FRAME_BUFFER__
-#include "command.h"
-#include "frame_buffer.h"
-#include "opengl_interfaz.h"
-class UseFrameBuffer : public Command{
-public:
-  UseFrameBuffer(FrameBuffer *fb);
-  void runCommand()const;
-private:
-  FrameBuffer* frame_buff_;
 
-
-};
 #endif
 /////////////////////////////////////////////////// END OF DISPLAY LIST TASK HEADER //////////////////////////////
 

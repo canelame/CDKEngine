@@ -68,6 +68,10 @@ void Geometry::createTriangle(){
 
 
 }
+void Geometry::setDrawGeometryMode(int mode){
+  data_->geo_buff_->setDrawMode(mode);
+}
+
 void Geometry::createCube(){
   std::vector<float>vertex;
   std::vector<float>normal;

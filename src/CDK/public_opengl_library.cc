@@ -1,6 +1,6 @@
 #include "CDK/public_opengl_library.h"
 #include "GL\glew.h"
-#include "CDK/opengl_interfaz.h"
+OpenglInterfazPublic* OpenglInterfazPublic::instance_ptr_ = nullptr;
 OpenglInterfazPublic::OpenglInterfazPublic(){
 }
 
@@ -15,6 +15,7 @@ void OpenglInterfazPublic::useMaterial(unsigned int id){
   glUseProgram((GLuint)id);
 }
 
-void OpenglInterfazPublic::setDrawMode(int mode){
-  OpenGlInterFaz::instance().draw_mode_ = mode;
+
+int OpenglInterfazPublic::getUniformLocation(int program, char * name){
+  return glGetUniformLocation(program, name);
 }

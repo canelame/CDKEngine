@@ -2,7 +2,6 @@
 #define __H_OPENGL_INTERFAZ__
 
 #include <memory>
-#include "GL\glew.h"
 #include <vector>
 #include "types.h"  
 #include <memory>
@@ -40,7 +39,6 @@ public:
   */
   int loadMaterial(Material * mat);
 
-
   /**
   @brief Compile shader passed as parameter
   @param shader Shader to compile
@@ -48,99 +46,179 @@ public:
   void compileShader(GLuint shader);
   /**
   @brief
+  @param
+  @return
   */
   void useUniformMat4(int position,mat4 m);
+  /**
+  @brief
+  @param
+  @return
+  */
   void useUniformMat3(int position, mat3 m);
   /**
   @brief
+  @param
+  @return
   */
   void useUnifor3f(int position, const float *data);
   /**
   @brief
+  @param
+  @return
   */
   void useUniformUi(int position, unsigned int value);
-
+  /**
+  @brief
+  @param
+  @return
+  */
   void useUniformI(int position, unsigned int value);
   /**
   @brief
+  @param
+  @return
   */
   void useUniformF(int position, float value);
   /**
   @brief
+  @param
+  @return
   */
 	void loadTexture(std::shared_ptr<Texture> m);
   /**
   @brief
+  @param
+  @return
   */
   void useTexture(int position,int texture_id);
   /**
   @brief
+  @param
+  @return
   */
-  void drawGeometry(int vao, unsigned int indice);
+  void drawGeometry(int vao, unsigned int indice, int draw_mode);
   /**
   @brief
+  @param
+  @return
   */
   void loadLight(int num_light);
   /**
+  @brief
+  @param
+  @return
   */
   void sendLight( Light *light,Material * mat,int num_light,bool is_directional);
   /**
   @brief
-  */
-
-  void useCamera(mat4 proyection, mat4 model, mat4 view);
-  /**
+  @param
+  @return
   */
   void createFrameBuffer(FrameBuffer &fb, bool use_render_buffer);
   /**
+  @brief
+  @param
+  @return
   */
   void renderFrameBuffer(FrameBuffer &fb);
   /**
+  @brief
+  @param
+  @return
   */
   void bindFrameBuffer(int fb_id,FrameBuffer::kFramebufferBindType type);
-
   /**
+  @brief
+  @param
+  @return
   */
   void setDrawBuffer(int fb_id);
   /**
- */
+  @brief
+  @param
+  @return
+  */
   void setReadBuffer(int fb_id);
+  /**
+  @brief
+  @param
+  @return
+  */
   ~OpenGlInterFaz(){};
   /**
+  @brief
+  @param
+  @return
   */
   void renderShadows(int program,mat4 light_proyection_space);
-  /**
-  */
-  void setDepthRenderTarget(int value);
-  /**
-  */
-  void setLightProyection(mat4 mat);
-  /**
-  */
-  void loadDirectionalLight();
 
   /**
+  @brief
+  @param
+  @return
+  */
+  void setLightProyection(mat4 mat);
+
+  /**
+  @brief
+  @param
+  @return
   */
   void sendPointLightMatrix(const int &n_light, const int n_mat, const  mat4 mat);
+  /**
+  @brief
+  @param
+  @return
+  */
   void sendPointLightFar(vec3 pos_light, float far);
-  //Return depth buffer id
+  /**
+  @brief
+  @param
+  @return
+  */
   void  createShadoCubeMap(PointLight * pl);
+  /**
+  @brief
+  @param
+  @return
+  */
   void usePointShadowModel(mat4 m);
+  /**
+  @brief
+  @param
+  @return
+  */
   static OpenGlInterFaz& instance();
   /**
+  @brief
+  @param
+  @return
   */
   void useDiffuseMaterial(Material * mat);
+  /**
+  @brief
+  @param
+  @return
+  */
   void useTextureMaterial(Material *mat,Material::MaterialSettings *mat_sett,
                          mat4 cam_view, mat4 cam_proy, mat4 model , Light *dir_light ,std::vector<std::shared_ptr<Light>> lights);
-  void useShadowMapMaterial(Material* shadow_map_material, mat4 light_projection_mat);
-  
   /**
+  @brief
+  @param
+  @return
   */
-  int draw_mode_;
+  void useShadowMapMaterial(Material* shadow_map_material, mat4 light_rojection_mat);
+  /**
+  @brief
+  @param
+  @return
+  */
+  void useShadowCubeMapMaterial(Material * mat,vec3 li);
+
 private:
- 
   struct Data;
- static OpenGlInterFaz *instance_;
+  static OpenGlInterFaz *instance_;
 	OpenGlInterFaz();
   Data *data_;
   friend class Buffer;

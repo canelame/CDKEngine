@@ -13,6 +13,7 @@ struct Buffer::Data {
   int num_bitan_vertex_;
   int num_indices_;
 
+  int draw_mode_;
   GLuint vao_;
 };
 void Buffer::loadData(std::unique_ptr<char[]>buffer_data){
@@ -25,6 +26,7 @@ Buffer::Buffer(float*positions, float*normals, float*uvs,
 }
 Buffer::Buffer(){
   data_ = new Data;
+  
 };
 void Buffer::setAttributeSize(int p, int n, int uv, int t, int bt, int i){
   data_->num_position_vertex_ = p;
@@ -70,4 +72,13 @@ void Buffer::setDirty(bool d){ data_->dirty_ = d; }
 
 void Buffer::setVAO(GLuint v){
   data_->vao_ = v;
+}
+
+
+void Buffer::setDrawMode(int mode){
+  data_->draw_mode_ = mode;
+}
+
+int Buffer::getDrawMode(){
+  return data_->draw_mode_;
 }

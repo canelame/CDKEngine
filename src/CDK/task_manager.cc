@@ -157,7 +157,7 @@ int Task::getId(){
        switch (nod_->lights_[i]->getType())
        {
        case Light::LightType::T_POINT_LIGHT:
-        // dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(), i));
+         //dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(), i));
          //directionalShadowPass(false);
          //dl_->add(std::make_shared<EndShadowCubeMapCommand>());
          break;
@@ -173,9 +173,9 @@ int Task::getId(){
      }
 
 
-     dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
-     directionalShadowPass(true);
-     dl_->add(std::make_shared<EndShadowCommand>());
+    // dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
+     //directionalShadowPass(true);
+     //dl_->add(std::make_shared<EndShadowCommand>());
      loadNode(nod_->root_);
 
      unlock();
@@ -219,17 +219,13 @@ int Task::getId(){
          //Use program
          Material *t_material = it->first;
          dl_->add(std::make_shared<UseMaterialCommand>(t_material));
-
          //Render all objects that use this program
          for (int i = 0; i < it->second.size(); i++){
            TextureMaterial::MaterialSettings *mat_sett = (TextureMaterial::MaterialSettings*)it->second[i]->getMaterialSettings().get();
            dl_->add(std::make_shared<UseMaterialUniformsCommand>(t_material,mat_sett,proyex_mat_,view_mat_, 
                                         it->second[i]->worldMat(),nod_->lights_,nod_->directional_light_.get() ));
-
            Buffer *t_geometry_buff = it->second[i]->geometry()->getBuffer().get();
            if (t_geometry_buff){
-          //   dl_->add(std::make_shared<UseCameraCommand>(proyex_mat_, view_mat_, it->second[i]->worldMat()));
-           //  dl_->add(std::make_shared<LightsCommand>(nod_->lights_, nod_->directional_light_));
              dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
            }
          }

@@ -55,8 +55,8 @@ uniform vec3 u_material_ambient;
 uniform float u_shinn;
 
 
-uniform PointLight lights[10];
-uniform Light u_directional_light;
+ uniform PointLight lights[10];
+ uniform Light u_directional_light;
 
 
 vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir);
@@ -180,14 +180,9 @@ vec3 computeSpotLight(Light light, vec3 frag_pos, vec3 normal,vec3 view_dir ){
 
 void main(){
 	vec3 view = normalize(o_cam_pos-o_world_position.xyz);
-	
 	color.xyz+=computeDirectionLight( u_directional_light,o_normal,view);
-	for(int i=0;i<10;i++){
-		if(lights[i].type == 1){
-			color.xyz+= computePointLight(lights[i],o_normal,o_world_position.xyz,view);
-		}else if (lights[i].type ==3){
-			//color.xyz += computeSpotLight(lights[i],o_world_position.xyz,o_normal,view);
-		}	
+	for(int i = 0 ; i< 10;i++){
+		color.xyz += computePointLight(lights[i],o_normal ,o_world_position.xyz,view);
 	}
 
 }

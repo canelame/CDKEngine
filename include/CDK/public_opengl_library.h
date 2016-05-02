@@ -3,14 +3,14 @@ class OpenglInterfazPublic {
 #define CDK_DRAW_MODE_STRIP_TRIANGLES 1
 #define CDK_DRAW_MODE_POINTS 2
 
-  OpenglInterfazPublic * instance_ptr_;
+  static OpenglInterfazPublic * instance_ptr_;
  //set ONE OF DEGINES
-  
-public:
-
-  OpenglInterfazPublic & instace();
   OpenglInterfazPublic();
   ~OpenglInterfazPublic();
+public:
+
+  static OpenglInterfazPublic & instace();
+
 
   //funcitons
   /**
@@ -21,5 +21,8 @@ public:
   @brief Use this function to change the way which geometry is drawed
     by default is set to CDK_GL_TRIANGLES
   */
-  void setDrawMode(int mode);
+
+  /**
+  */
+  int getUniformLocation(int program, char * name);
 };

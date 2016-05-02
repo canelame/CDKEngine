@@ -45,6 +45,7 @@ private:
 #ifndef __H_UPDATE_LIST__
 #define __H_UPDATE_LIST__
 #include "display_list.h"
+#include "texture_material.h"
 #include "scene.h"
 #include <map>
 #include <vector>
