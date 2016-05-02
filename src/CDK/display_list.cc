@@ -47,9 +47,7 @@ void DrawCommand::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
   }
-  
-
-  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_);
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_,t_geo->getDrawMode());
 
 }
 
@@ -129,7 +127,7 @@ void SendObjectShadow::runCommand()const{
     t_geo->setDirty(false);
    }
  
-  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), (unsigned int)t_geo->indiceSize());
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), (unsigned int)t_geo->indiceSize(),t_geo->getDrawMode());
 }
 
  EndShadowCommand::EndShadowCommand(){}

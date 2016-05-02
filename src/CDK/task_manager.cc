@@ -157,9 +157,9 @@ int Task::getId(){
        switch (nod_->lights_[i]->getType())
        {
        case Light::LightType::T_POINT_LIGHT:
-         dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(), i));
-         directionalShadowPass(false);
-         dl_->add(std::make_shared<EndShadowCubeMapCommand>());
+         //dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(), i));
+         //directionalShadowPass(false);
+         //dl_->add(std::make_shared<EndShadowCubeMapCommand>());
          break;
          case Light::LightType::T_SPOT_LIGHT:
           /* dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
@@ -173,9 +173,9 @@ int Task::getId(){
      }
 
 
-     dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
-     directionalShadowPass(true);
-     dl_->add(std::make_shared<EndShadowCommand>());
+    // dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
+     //directionalShadowPass(true);
+     //dl_->add(std::make_shared<EndShadowCommand>());
      loadNode(nod_->root_);
 
      unlock();

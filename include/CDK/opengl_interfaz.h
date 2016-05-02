@@ -97,7 +97,7 @@ public:
   @param
   @return
   */
-  void drawGeometry(int vao, unsigned int indice);
+  void drawGeometry(int vao, unsigned int indice, int draw_mode);
   /**
   @brief
   @param

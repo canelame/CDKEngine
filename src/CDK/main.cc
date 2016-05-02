@@ -29,8 +29,11 @@ int Window::main(int argc, char** argv){
   ///
   
   ///CREATE OBJECTS
-  std::shared_ptr<Terrain> terrain = std::shared_ptr<Terrain>();
-
+  std::shared_ptr<Terrain> terrain = std::make_shared<Terrain>();
+  terrain->loadHeightMapTexture("textures/height_map.png");
+  terrain->create();
+  terrain->drawable_terrain_->setScale(vec3(50.0, 50.0, 50.0));
+  terrain->drawable_terrain_->setPosition(vec3(0.0, 0.0, 0.0));
   std::shared_ptr<Geometry> plane = std::make_shared<Geometry>();
   plane->createQuad();
 
@@ -63,7 +66,7 @@ int Window::main(int argc, char** argv){
   wall->setGeometry(plane);
   wall->setMaterial(mater);
   wall->setMaterialSettings(mat_p);
-  scene->addChild(drawable_cube);
+  scene->addChild(terrain->drawable_terrain_);
   vec3 positions[10] = { vec3(0.0, 5.5f, 0.0),
     vec3(2.0f, 0.0f, 1.0f),
     vec3(-1.0, 0.0f, 2.0f),
@@ -83,7 +86,7 @@ int Window::main(int argc, char** argv){
       drawable_cube->setScale(vec3(0.5));
       drawable_cube->setPosition(positions[i]);
       //drawable_cube->setRotation(vec3(10.0,0.0,60.0));
-      scene->addChild(drawable_cube);
+     // scene->addChild(drawable_cube);
   }
 
   //////////////////////
@@ -116,8 +119,11 @@ int Window::main(int argc, char** argv){
     scene->camera_->FpsCameraUpdate();
 //    window->clearScreen(vec3(0.3, 0.2, 0.1));
   
-    scene->directional_light_->setPosition(vec3(scene->directional_light_->getPosition().x , 10.0, 1.0));
-    scene->directional_light_->setPosition(vec3( (cos(window->time()) *10.0f)*0.5+0.5, (sin(window->time())*3.0) *0.5+0.5, 1.0));
+    //scene->directional_light_->setPosition(vec3(scene->directional_light_->getPosition().x , 10.0, 1.0));
+   // scene->directional_light_->setPosition(vec3( (cos(window->time()) *10.0f)*0.5+0.5, (sin(window->time())*3.0) *0.5+0.5, 1.0));
+    terrain->drawable_terrain_->material()->setUniformMat4Value("u_mat_projec",scene->camera_->getProyection());
+    terrain->drawable_terrain_->material()->setUniformMat4Value("u_mat_model",terrain->drawable_terrain_->modelMat());
+    terrain->drawable_terrain_->material()->setUniformMat4Value("u_mat_view",scene->camera_->getView());
   //  render_to_text->begin();
     scene->render();
    // render_to_text->end();

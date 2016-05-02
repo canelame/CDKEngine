@@ -3,8 +3,15 @@
 
 Terrain::Terrain(){
   terrain_mesh_ = std::make_shared<Geometry>();
+  terrain_material_ = std::make_shared < Material>();
+  drawable_terrain_ = std::make_shared<Drawable>();
+  terrain_material_->loadShader("shaders/terrain_v.glsl", "shaders/terrain_f.glsl", "");
+  terrain_mesh_->setDrawGeometryMode(1);
+  terrain_mat_settings_ = std::make_shared < Material::MaterialSettings>();
 }
+Terrain::~Terrain(){
 
+}
 int Terrain::getHeight(){
   return height_map_height_;
 }
@@ -58,8 +65,8 @@ void Terrain::create(){
   */
   std::vector< std::vector< vec3>> v_normals[2];//" triangles
   for (int i = 0; i < 2; i++){
-    v_normals[i] = std::vector< std::vector<vec3>>(height_map_height_ -1,
-      std::vector<vec3>(height_map_width_ - 1));
+    v_normals[i] = std::vector< std::vector<vec3>>(height_map_height_ ,
+      std::vector<vec3>(height_map_width_ ));
   }
   //Compute triangles
   for (int y = 0; y < height_map_height_; y++){
@@ -71,8 +78,8 @@ void Terrain::create(){
       int vertex_z_0_1 = vertex_x_0_1 + 2;
         //Vertex 2
       int vertex_x_0_2 = (3 * (x + ((y + 1) * height_map_width_))) ;
-      int vertex_y_0_2 = vertex_y_0_2 + 1;
-      int vertex_z_0_2 = vertex_y_0_2 + 2;
+      int vertex_y_0_2 = vertex_x_0_2 + 1;
+      int vertex_z_0_2 = vertex_x_0_2 + 2;
         //Vertex 3
       int vertex_x_0_3 = (3 * ((x + 1) + ((y + 1) * height_map_width_)));
       int vertex_y_0_3 = vertex_x_0_3 + 1;
@@ -117,8 +124,8 @@ void Terrain::create(){
   std::vector<std::vector<vec3>> final_normals = std::vector<std::vector<vec3>>(
                         height_map_height_, std::vector<vec3>(height_map_width_));
 
-  for (int y = 0; y < height_map_height_; ++y){
-    for (int x = 0; y < height_map_width_; ++x){
+  for (int y = 0; y < height_map_height_; y++){
+    for (int x = 0; x < height_map_width_; x++){
       vec3 final_normal = vec3(0.0);
       //Check up-left triangle
       if (x != 0 && y != 0){
@@ -141,9 +148,10 @@ void Terrain::create(){
         final_normal += v_normals[1][y][x - 1];
       }
       final_normal = glm::normalize(final_normal);
-      terrain_normal[x + (y * height_map_width_) ] = final_normal.x;
-      terrain_normal[x + (y * height_map_width_)+1] = final_normal.y;
-      terrain_normal[x + (y * height_map_width_)+2] = final_normal.z;
+      
+      terrain_normal.push_back(final_normal.x);
+      terrain_normal.push_back( final_normal.y);
+      terrain_normal.push_back( final_normal.z);
 
     }
   }
@@ -160,100 +168,15 @@ void Terrain::create(){
         indices.push_back(index);
       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
     indices.push_back(primitive_restart_index);
   }
+  terrain_mesh_->getBuffer()->setAttributeSize(terrain_position.size() / 3,
+    terrain_normal.size() / 3,
+    terrain_uvs.size() / 2, 0, 0,
+    indices.size());
   terrain_mesh_->loadData(terrain_position, terrain_normal, terrain_uvs,indices);
 
-
+  drawable_terrain_->setGeometry(terrain_mesh_);
+  drawable_terrain_->setMaterial(terrain_material_);
 }

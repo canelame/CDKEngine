@@ -192,17 +192,20 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
 
 }
 
-void OpenGlInterFaz::drawGeometry( int vao,unsigned int indices){
+void OpenGlInterFaz::drawGeometry( int vao,unsigned int indices, int draw_mode){
  
   glBindVertexArray(vao);
-  /*GLenum primitive;
-  switch (draw_mode_)
+  GLenum primitive;
+  switch (draw_mode)
   {
   case 0:
     primitive = GL_TRIANGLES;
     break;
   case 1:
     primitive = GL_TRIANGLE_STRIP;
+    glEnable(GL_PRIMITIVE_RESTART);
+    glPrimitiveRestartIndex(400*400);
+    indices = (399) * 800 + 399;
     break;
   case 2:
     primitive = GL_POINTS;
@@ -210,9 +213,9 @@ void OpenGlInterFaz::drawGeometry( int vao,unsigned int indices){
   default:
     primitive = GL_TRIANGLES;
     break;
-  }*/
-
-  glDrawElements(GL_TRIANGLES, indices, GL_UNSIGNED_INT, (void*)0);
+  }
+  
+  glDrawElements(primitive, indices, GL_UNSIGNED_INT, (void*)0);
   glBindVertexArray(0);
 }
 

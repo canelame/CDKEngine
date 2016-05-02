@@ -63,6 +63,14 @@ public:
   void createCube();
   void createQuad();
 
+  /**
+  @brief Set the primite which the geometry will be rendered.
+  The values are defines at src/CDK/buffer.h file,
+  The posibles values are; CDK_TRIANGLES, CDK_STRIP_TRIANGLES,
+  CDK_POINTS
+  */
+  void setDrawGeometryMode(int mode);
+
 private:
   struct Data;
   Data *data_;

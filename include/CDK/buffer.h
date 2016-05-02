@@ -15,7 +15,9 @@
 class Buffer{
 
 public:
-
+#define CDK_TRIANGLES
+#define CDK_STRIP_TRIANGLES
+#define CDK_POINTS
   Buffer(float*positions, float*normals, float*uvs,
     unsigned int* indexes);
   Buffer();
@@ -129,9 +131,45 @@ public:
   * @return number of inideces
   */
   int indiceSize();
+  /**
+  @brief Load data whit unique_ptr char buffer
+  The order ir:
+  vertex1.x,
+  vertex1.y
+  vertex1.z
 
+  vertex2.x
+  vertex2.z
+  ...
+  normal1.x
+  normal1.y
+  normal1.z
+  .....
+  uvs1.x
+  uvs1.y
+  uvs1.z
+  ....
+  Indices : 0,1,2 ...
+  @param buffer_data the data buffer
+  */
   void loadData(std::unique_ptr<char[]>buffer_data);
+  /**
+  @brief Get pointer to current buffer data
+  @return pointer to data
+  */
   char* getData();
+  /**
+  @brief Set how geomtry buffer will renderer
+  @param mode Is one of the avaliable modes of draw mode difnes
+  */
+  void setDrawMode(int mode);
+  
+  /**
+  @brief Get the current buffer drawing mode
+  return define value 
+  */
+
+  int getDrawMode();
 private:
   struct Data;
   Data *data_;
