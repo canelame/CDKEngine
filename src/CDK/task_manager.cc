@@ -120,7 +120,7 @@ int Task::getId(){
 	 //UPDATE_DISPLAY_LIST_TASK
    UpdateDisplay::UpdateDisplay(DisplayList*dl, Scene *n,bool loaded){
      dl_ = dl;
-     nod_ = std::make_shared<Scene>(*n);
+     nod_ = n;
      cam_loaded_ = loaded;
      proyex_mat_ = nod_->camera_->getProyection();
      view_mat_ = nod_->camera_->getView();
@@ -139,7 +139,8 @@ int Task::getId(){
      for (std::map<Material*, std::vector<Drawable*>>::iterator it = objects_order_by_program_.begin();
        it != objects_order_by_program_.end(); it++){
        for (int i = 0; i < it->second.size(); i++){
-         dl_->add(std::make_shared<SendObjectShadow>(it->second[i]->geometry()->getBuffer().get(),it->second[i]->worldMat(),is_directional));
+         Geometry *t_geo =  it->second[i]->geometry().get();
+         if (t_geo){ dl_->add(std::make_shared<SendObjectShadow>(it->second[i]->geometry()->getBuffer().get(), it->second[i]->worldMat(), is_directional)); }
        }
      }
      
@@ -150,33 +151,53 @@ int Task::getId(){
 
 
      //Start rendering the scene into shadow maps
-     loadObjects(nod_->root_);
-    
+     if (nod_ == nullptr)return;
+     if (nod_->root_ == nullptr || nod_->camera_ == nullptr)return;
+     
+       loadObjects(nod_->root_);
 
-     for (int i = 0; i < nod_->lights_.size(); i++){
-       switch (nod_->lights_[i]->getType())
-       {
-       case Light::LightType::T_POINT_LIGHT:
-         //dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(), i));
-         //directionalShadowPass(false);
-         //dl_->add(std::make_shared<EndShadowCubeMapCommand>());
-         break;
-         case Light::LightType::T_SPOT_LIGHT:
-          /* dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
-           directionalShadowPass(false);
-           dl_->add(std::make_shared<EndShadowCommand>());*/
+       dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
+     directionalShadowPass(true);
+       dl_->add(std::make_shared<EndShadowCommand>());
+
+       for (int i = 0; i < nod_->lights_.size(); i++){
+         switch (nod_->lights_[i]->getType())
+         {
+         case Light::LightType::T_POINT_LIGHT:
+          dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(), i));
+          directionalShadowPass(false);
+          dl_->add(std::make_shared<EndShadowCubeMapCommand>());
            break;
-       default:
-         break;
+         case Light::LightType::T_SPOT_LIGHT:
+           /* dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
+            directionalShadowPass(false);
+            dl_->add(std::make_shared<EndShadowCommand>());*/
+           break;
+         default:
+           break;
+         }
+
        }
 
-     }
+       // if (!nod_->directional_light_->getLoaded()){
 
+       //  }
+       Composer * composer = EngineManager::instance().getMainComposer();
+       if (&composer != NULL){
+         for (int i = 0; i < composer->size(); i++){
+           PostProcess *c_effect = composer->getEffect(i);
+           dl_->add(std::make_shared<PostProcessBegin>(
+             &c_effect->getFrameBuffer(),
+             &c_effect->getMaterial()
+             ));
+           loadNode(nod_->root_);
+         }
 
-     dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
-     directionalShadowPass(true);
-     dl_->add(std::make_shared<EndShadowCommand>());
-     loadNode(nod_->root_);
+       }else{
+         loadNode(nod_->root_);
+       }
+       
+    
 
      unlock();
    }
@@ -223,14 +244,14 @@ int Task::getId(){
          for (int i = 0; i < it->second.size(); i++){
            TextureMaterial::MaterialSettings *mat_sett = (TextureMaterial::MaterialSettings*)it->second[i]->getMaterialSettings().get();
            dl_->add(std::make_shared<UseMaterialUniformsCommand>(t_material,mat_sett,proyex_mat_,view_mat_, 
-                                        it->second[i]->worldMat(),nod_->lights_,nod_->directional_light_.get() ));
-           Buffer *t_geometry_buff = it->second[i]->geometry()->getBuffer().get();
-           if (t_geometry_buff){
-             dl_->add(std::make_shared<DrawCommand>(t_geometry_buff));
+                                       it->second[i]->worldMat(),nod_->lights_,nod_->directional_light_.get() ));
+           if (it->second[i]->geometry()){
+             dl_->add(std::make_shared<DrawCommand>(it->second[i]->geometry()->getBuffer().get()));
            }
          }
 
        }
+       
      finished_ = true;
 
    }

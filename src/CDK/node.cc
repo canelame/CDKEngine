@@ -29,6 +29,7 @@ std::shared_ptr<Node> Node::getParent(){
 
 void Node::setParent(std::shared_ptr<Node>p){
   data_->parent_ = p;
+  setDirtyNode(true);
 }
 void Node::addChild(std::shared_ptr<Node>d){
   if (d == NULL){
@@ -45,7 +46,7 @@ void Node::addChild(std::shared_ptr<Node>d){
     d->data_->parent_ = std::make_shared<Node>(*this);
     data_->node_list_.push_back(d);
   }
-  
+  setDirtyNode(true);
 }
 void Node::removeChild(unsigned int index){
   if (!data_->node_list_.empty()){
@@ -60,6 +61,7 @@ void Node::removeChild(unsigned int index){
     }
     data_->node_list_.erase(data_->node_list_.begin() + index);
   }
+  setDirtyNode(true);
 }
 std::shared_ptr<Node> Node::childAt(int index){
   if (index < data_->node_list_.size()){
@@ -137,9 +139,11 @@ mat4 Node::worldMat(){
 
 void Node::setWorldMat(mat4 w_m){
   data_->world_transform_ = w_m;
+  setDirtyNode(true);
 }
 void Node::setModelMat(mat4 w_m){
   data_->model_mat_ = w_m;
+  setDirtyNode(true);
 }
 void  Node::calculateModel(){
   data_->dirty_node_ = true;
@@ -148,11 +152,13 @@ void  Node::calculateModel(){
   data_->model_mat_ = glm::rotate(data_->model_mat_, glm::radians(data_->rotation_.x), vec3(1.0, 0.0, 0.0));
   data_->model_mat_ = glm::rotate(data_->model_mat_, glm::radians(data_->rotation_.y), vec3(0.0, 1.0, 0.0));
   data_->model_mat_ = glm::rotate(data_->model_mat_, glm::radians(data_->rotation_.z), vec3(0.0, 0.0, 1.0));
-
+  setDirtyNode(true);
 }
 
 void Node::setDirtyNode(bool value){
+  if (this == nullptr)return;
   data_->dirty_node_ = value;
+  data_->parent_->setDirtyNode(value);
 }
 bool Node::getDirtyNode(){
   return data_->dirty_node_;
@@ -160,6 +166,7 @@ bool Node::getDirtyNode(){
 
 void Node::addLight(std::shared_ptr<Light> l){
   data_->lights.push_back(l);
+  setDirtyNode(true);
 }
 
 std::vector<std::shared_ptr<Light>> Node::getLigths(){

@@ -8,9 +8,6 @@ uniform mat4 u_projection_m;
 uniform mat4 u_model_m;
 uniform mat4 u_view_m;
 
-
-
-
 out vec2 o_uv;
 out vec3 o_normal;
 out vec4 o_world_position;

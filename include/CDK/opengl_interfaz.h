@@ -1,6 +1,12 @@
 #ifndef __H_OPENGL_INTERFAZ__
 #define __H_OPENGL_INTERFAZ__
 
+#define TEXTURE_DIRECTION_LIGHT 0
+#define TEXTURE_POINT_LIGHT 1
+#define TEXTURE_MATERIAL_I 2
+#define MATERIAL_TEXTURE 10
+#define MATERIAL_DIFFUSE 20
+
 #include <memory>
 #include <vector>
 #include "types.h"  
@@ -29,7 +35,7 @@ public:
   @brief Use a specific material
   @param Program of the material to use
   */
-  void useMaterial(int program_id);
+  void useMaterial(Material*mat);
   /**
   @brief Load material shader .
   @param mat Current material pointer.
@@ -61,7 +67,7 @@ public:
   @param
   @return
   */
-  void useUnifor3f(int position, const float *data);
+  void useUnifor3f(int position, vec3 data);
   /**
   @brief
   @param
@@ -97,19 +103,14 @@ public:
   @param
   @return
   */
-  void drawGeometry(int vao, unsigned int indice, int draw_mode);
+  void drawGeometry(int vao, unsigned int indice);
   /**
   @brief
   @param
   @return
   */
   void loadLight(int num_light);
-  /**
-  @brief
-  @param
-  @return
-  */
-  void sendLight( Light *light,Material * mat,int num_light,bool is_directional);
+
   /**
   @brief
   @param
@@ -195,7 +196,8 @@ public:
   @param
   @return
   */
-  void useDiffuseMaterial(Material * mat);
+  void useDiffuseMaterial(Material *mat, Material::MaterialSettings *mat_sett,
+    mat4 cam_view, mat4 cam_proy, mat4 model, Light *dir_light, std::vector<std::shared_ptr<Light>> lights);
   /**
   @brief
   @param
@@ -215,8 +217,15 @@ public:
   @return
   */
   void useShadowCubeMapMaterial(Material * mat,vec3 li);
+  /**
+  */
+  void getUniformInfo(int program, int index,std::string &name, int &out_location,
+    Material::UniformTypes &out_type);
+  int getUniformIndex(int program, const char*name);
 
+  void useMaterialUniforms(Material * material);
 private:
+  int shadow_texture_position = 2;
   struct Data;
   static OpenGlInterFaz *instance_;
 	OpenGlInterFaz();
@@ -224,6 +233,7 @@ private:
   friend class Buffer;
   friend class Camera;
   friend class Material;
+  friend class Light;
  
 
 };

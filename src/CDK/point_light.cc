@@ -10,6 +10,7 @@ struct PointLight::Data{
 };
 PointLight::PointLight(){
   data_ = new Data;
+  type = 1;
 }
 PointLight::~PointLight(){}
 

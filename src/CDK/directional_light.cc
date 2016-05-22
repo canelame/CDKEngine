@@ -6,6 +6,7 @@ DirectionalLight::DirectionalLight(){
   setTypeLight(LightType::T_DIRECTION_LIGHT);
   shadow_depth_buffer_ = std::make_shared<FrameBuffer>();
   shadow_depth_buffer_->setAttachment(FrameBuffer::kFrameBufferAttachment::kFrameBufferAttachment_DepthAttachment);
+  type = 2;
 }
 void DirectionalLight::setPosition(vec3 p){
   Light::setPosition(p);

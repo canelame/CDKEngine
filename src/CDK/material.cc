@@ -3,8 +3,9 @@
 #include "CDK/task_manager.h"
 
 #include "CDK/public_opengl_library.h"
+#include <string>
 Material::Material(){
-
+  uniforms_loaded_ = false;
 }
 
 void Material::loadShader(const char *vertex_file, const char* fragment_file, const char *geometry_shader){
@@ -59,58 +60,105 @@ std::string Material::getVertexData(){
   return vertex_data_; 
 }
 
-int Material::findUniform(const char * name){
+Material::UniformData* Material::findUniform(const char * name){
  
   int index = 0;
-  while (uniforms_names.size() > index ){
-    if (uniforms_names[index] == name){   
-      return  uniforms_values[index];
+  while (uniforms_.size() > index ){
+    if (uniforms_[index].name_ == name){   
+      if (uniforms_[index].location_ < 0){
+        int loc = OpenglInterfazPublic::instace().getUniformLocation(program_,(char*)name);
+        uniforms_[index].location_ = loc;
+      }
+      return  &uniforms_[index];
     }
     ++index;
   }
   //If is not at the list, we find at the 
- int position = OpenglInterfazPublic::instace().getUniformLocation(program_,(char*)name);
- if (position >= 0){
-   uniforms_names.push_back(name);
-   uniforms_values.push_back(position);
-   return position;
+ //int position = OpenglInterfazPublic::instace().getUniformLocation(program_,(char*)name);
+  int i = OpenGlInterFaz::instance().getUniformIndex(program_, name);
+ if (i >= 0){
+   GLint num_uniforms;
+   Material::UniformTypes t_u;
+   std::string name;
+   int location = -1;
+   OpenGlInterFaz::instance().getUniformInfo(program_,i, name, location, t_u);
+
+   Material::UniformData temp_uniform;
+   temp_uniform.name_ = name;
+   temp_uniform.location_ = location;
+   temp_uniform.type_ = t_u;
+   uniforms_.push_back(temp_uniform);
+   return &uniforms_[uniforms_.size()-1];
+
  }
- return -1;
+ //If is not at the opengl active uniforms, we search by name
+
+ return nullptr;
 }
 
-void Material::setUniformMat4Value(const char* uniform_name, mat4 val){
-  OpenGlInterFaz::instance().useUniformMat4(findUniform(uniform_name), val);
+void Material::setUniformMat4Value(const char* uniform_name, mat4 *val){
+  
+ // OpenGlInterFaz::instance().useUniformMat4(findUniform(uniform_name), val);
+  UniformData * uniform_ptr = findUniform(uniform_name);
+  if (uniform_ptr != nullptr){
+    uniform_ptr->data_ = (val);
+  }
 }
 /**
 */
-void Material::setUniformMat3Value(const char* uniform_name, mat3 val){
-  OpenGlInterFaz::instance().useUniformMat3(findUniform(uniform_name), val);
+void Material::setUniformMat3Value(const char* uniform_name, mat3 *val){
+ // OpenGlInterFaz::instance().useUniformMat3(findUniform(uniform_name), val);
+  UniformData * uniform_ptr = findUniform(uniform_name);
+  if (uniform_ptr != nullptr){
+    uniform_ptr->data_ = (val);
+  }
 }
 /**
 */
-void Material::setUniform3fValue(const char* uniform_name, vec3 val){
-  float data[3] = { val.x, val.y, val.z };
-  OpenGlInterFaz::instance().useUnifor3f(findUniform(uniform_name), data);
-}
-void Material::setUniform3fValue(const char* uniform_name, float v1, float v2, float v3){
-  float data[3] = {v1,v2,v3};
-  OpenGlInterFaz::instance().useUnifor3f(findUniform(uniform_name), data);
-}
+void Material::setUniform3fValue(const char* uniform_name, vec3 *val){
 
-void Material::setUniformUiValue(const char* uniform_name, unsigned int val){
-  OpenGlInterFaz::instance().useUniformUi(findUniform(uniform_name),val);
+  //OpenGlInterFaz::instance().useUnifor3f(findUniform(uniform_name), data);
+  UniformData * uniform_ptr = findUniform(uniform_name);
+  if (uniform_ptr != nullptr){
+    uniform_ptr->data_ = (val);
+  }
+ }
+
+
+void Material::setUniformUiValue(const char* uniform_name, unsigned int *val){
+ // OpenGlInterFaz::instance().useUniformUi(findUniform(uniform_name),val);
+  UniformData * uniform_ptr = findUniform(uniform_name);
+  if (uniform_ptr != nullptr){
+    uniform_ptr->data_ = (val);
+  }
 }
 /**
 */
-void Material::setUniformIValue(const char* uniform_name, int val){
-  OpenGlInterFaz::instance().useUniformI(findUniform(uniform_name), val);
+void Material::setUniformIValue(const char* uniform_name, int *val){
+ // OpenGlInterFaz::instance().useUniformI(findUniform(uniform_name), val);
+  UniformData * uniform_ptr = findUniform(uniform_name);
+  if (uniform_ptr != nullptr){
+    uniform_ptr->data_ = (val);
+  }
+
 }
 /**
 */
-void Material::setUniformFValue(const char* uniform_name, float val){
-  OpenGlInterFaz::instance().useUniformF(findUniform(uniform_name), val);
+void Material::setUniformFValue(const char* uniform_name, float *val){
+ // OpenGlInterFaz::instance().useUniformF(findUniform(uniform_name), val);
+  UniformData * uniform_ptr = findUniform(uniform_name);
+  if (uniform_ptr != nullptr){
+    uniform_ptr->data_ = (val);
+  }
 }
 
 int Material::getUniformLocation(const char*name){
-  return findUniform(name);
+ 
+  Material::UniformData *t_ud = findUniform(name);
+  if (t_ud != nullptr){
+    int location = t_ud->location_;
+    if (location >= 0) return location;
+  }
+  
+  return -1;
 }

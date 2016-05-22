@@ -7,41 +7,65 @@ EngineManager& EngineManager::instance(){
   }
   return *instance_;
 }
+struct EngineManager::Data{
+  std::shared_ptr<ShadowMapMaterial>  shadow_shader_;
+  std::shared_ptr<CubeShadowMaterial>  shadow_points_shader_;
+ Composer * main_composer_;
+  int width_;
+  int height_;
 
-void EngineManager::init(){
-  width_ = 0;
-  height_ = 0;
+};
+EngineManager::EngineManager(){
 
-  
-  shadow_shader_ = std::make_shared<Material>();
-  shadow_shader_->loadShader("shaders/shadow_v.glsl", "shaders/shadow_f.glsl", "");
-
-  shadow_points_shader_ = std::make_shared<Material>();
-  shadow_points_shader_->loadShader("shaders/point_shadow_v.glsl", "shaders/point_shadow_f.glsl", "shaders/point_shadow_geo.glsl");
+  data_ = new Data();
 
 }
+void EngineManager::init(){
+    data_->width_ = 0;
+  data_->height_ = 0;
+  data_->shadow_shader_ = std::make_shared<ShadowMapMaterial>();
+  data_->shadow_points_shader_ = std::make_shared<CubeShadowMaterial>();
+  last_display_list_ = std::make_shared<DisplayList>();
+ //main_composer_ = std::make_shared < Composer >() ;
+}
 int EngineManager::width(){
-  return width_;
+  return data_->width_;
 }
 
 int EngineManager::height(){
-  return height_;
+  return data_->height_;
 }
 
 void EngineManager::setWidth(int w){
-  width_ = w;
+  data_->width_ = w;
 }
 
 void EngineManager::setHeight(int h){
-  height_ = h;
+  data_->height_ = h;
 }
 
 void EngineManager::setWindowModified(bool value){
   window_size_modified_ = value;
 }
 
-int EngineManager::getUniform(char*name){
- // loaded_uniforms_.find(name);
-  return 0;
+ShadowMapMaterial* EngineManager::getShadowMap(){
+  return data_->shadow_shader_.get();
+
+}
+CubeShadowMaterial* EngineManager::getCubeShadowMap(){
+  return data_->shadow_points_shader_.get();
 }
 
+Composer * EngineManager::getMainComposer(){
+  if (data_->main_composer_ != nullptr){
+  return (Composer*)data_->main_composer_;
+  }
+  
+}
+
+void EngineManager::setMainComposer( const Composer* comp){
+  if (data_->main_composer_ == nullptr){
+    data_->main_composer_ = (Composer* )comp;
+  }
+ 
+}

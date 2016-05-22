@@ -37,6 +37,7 @@ public:
     vec3 specular_color_;
     vec3 ambient_color_;
     vec3 sh_;
+    bool loaded_;
 
     MaterialSettings( ){     
         ambient_color_ = vec3(1.0);
@@ -45,12 +46,24 @@ public:
     }
 
 
-    void setDiffuseColor(vec3 value){ diffuse_color_ = value; }
-    void setSpecularColor(vec3 value){ specular_color_ = value; }
-    void setAmbientColor(vec3 value){ ambient_color_ = value; }
-    vec3 getDiffuseColor(){ return diffuse_color_; }
-    vec3 getSpecularColor(){ return specular_color_; }
-    vec3 getAmbientColor(){ return ambient_color_; }
+    void setDiffuseColor(vec3 value){ 
+      diffuse_color_ = value;
+    }
+    void setSpecularColor(vec3 value){
+      specular_color_ = value; 
+    }
+    void setAmbientColor(vec3 value){ 
+      ambient_color_ = value;
+    }
+    vec3 getDiffuseColor(){ 
+      return diffuse_color_; 
+    }
+    vec3 getSpecularColor(){ 
+      return specular_color_; 
+    }
+    vec3 getAmbientColor(){ 
+      return ambient_color_;
+    }
   };
   Material();
 
@@ -96,38 +109,73 @@ public:
 
   /**
   */
-  void setUniformUiValue(const char* uniform_name, unsigned int val);
+  void setUniformUiValue(const char* uniform_name, unsigned int *val);
   /**
   */
-  void setUniformIValue(const char* uniform_name,  int val);
+  void setUniformIValue(const char* uniform_name,  int *val);
   /**
   */
-  void setUniformFValue(const char* uniform_name, float val);
+  void setUniformFValue(const char* uniform_name, float *val);
   /**
   */
-  void setUniformMat4Value(const char* uniform_name, mat4 val);
+  void setUniformMat4Value(const char* uniform_name, mat4 *val);
   /**
   */
-  void setUniformMat3Value(const char* uniform_name, mat3 val);
+  void setUniformMat3Value(const char* uniform_name, mat3 *val);
   /**
   */
-  void setUniform3fValue(const char* uniform_name, vec3 val);
-  void setUniform3fValue(const char* uniform_name, float v1 ,float v2, float v3);
+  void setUniform3fValue(const char* uniform_name, vec3 *val);
+
   /**
   */
   int getUniformLocation(const char * name);
 
-private:
+
+  protected:
+
+  enum UniformTypes{
+    kUniformTypesInt,
+    kUniformTypesUInt,
+    kUniformTypesFloat,
+    kUniformTypes3vFloat,
+    kUniformTypesMat3,
+    kUniformTypesMat4,
+    kUniformTypesSampler2D,
+    kUniformTypesCubeSampler
+  };
+  struct UniformData{
+    std::string name_;
+    UniformTypes type_;
+    int location_;
+    void *data_;
+    UniformData(){}
+    UniformData(char*name, UniformTypes ut, int location, void *data){
+      name_ = name; type_ = ut;  location_ = location; data_ = data;
+    }
+  };
   //This two vectors are use to store uniforms, i used 2 vectors to discard std::map
   //Firs vector are for names and the seconds for the uniform position
   std::vector<std::string> uniforms_names;
   std::vector<int > uniforms_values;
+  UniformTypes value_type_;
+  std::vector<UniformData> uniforms_;
+  bool uniforms_loaded_;
+  /**
+  
+  */
 
-  int findUniform(const char * name);
+  UniformData* findUniform(const char * name);
+  /**
+  */
+  private:
   void useMaterial();
+  /**
+  */
   void compileShader(GLuint shader)const;
+
   unsigned int program_;
   friend class OpenGlInterFaz;
+  
 
 };
 

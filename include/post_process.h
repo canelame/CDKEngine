@@ -18,7 +18,7 @@ public:
   void init();
   std::shared_ptr<Buffer> getQuad();
   Material& getMaterial();
-
+  FrameBuffer& getFrameBuffer();
   void begin();
   void end();
   void render();

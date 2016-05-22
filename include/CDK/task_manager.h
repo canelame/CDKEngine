@@ -2,6 +2,7 @@
 #define __H_TASK__
 #include <queue>
 #include "types.h"
+#define DIRTY_NODE 0
 class Task{
 	/**
 	* @author Alejandro Canela Mendez 2015.
@@ -71,7 +72,7 @@ public:
 private:
   void directionalShadowPass(bool is_directional);
   void loadLights();
- std::shared_ptr<Scene> nod_;
+ Scene* nod_;
 	DisplayList* dl_;
   mat4 proyex_mat_;
   mat4 model_mat_;

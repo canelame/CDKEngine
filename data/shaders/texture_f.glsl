@@ -16,8 +16,6 @@ struct Light{
 
 struct SpotLight{
 	vec3 position;
-	
-
 	vec3 ambient_color;
 	vec3 diffuse_color;
 	vec3 specular_color;
@@ -123,7 +121,7 @@ vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir){
 	vec3 diffuse = l_dir.diffuse_color*diff*u_material_diff* vec3(texture(u_diffuse_texture1,o_uv));
 	vec3 specular = l_dir.specular_color *spec*u_material_specular* vec3(texture(u_diffuse_texture1,o_uv));
 	float shadow = computeShadows(directional_light_proyection,normal,lightDir);
-	vec3 lighting = ( ambient +(1.0-shadow)*  (diffuse + specular));
+	vec3 lighting = ( ambient +( 1.0 - shadow ) *  (diffuse + specular));
 	return  lighting;
 
 
@@ -147,7 +145,7 @@ vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 
 	float shadow  =  computePointLightShadow(fragPos, l_dir);
 
-	 return  ( ambient + ( 1.0f - shadow) * (diffuse+specular) );
+	return  ( ambient + ( 1.0f - shadow ) * (diffuse+specular) );
 
 }
 

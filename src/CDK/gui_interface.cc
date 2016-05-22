@@ -166,18 +166,18 @@ void GuInterface::transformPanel(Node &node){
     //Position
     vec3 pos_node = node.position();
     float n_pos[3] = { pos_node.x, pos_node.y, pos_node.z };
-    if (ImGui::SliderFloat3("Position:", n_pos, 0.0, 200.0, "%1.0f")){
+    if (ImGui::InputFloat3("Position:", n_pos)){
       node.setPosition(vec3(n_pos[0], n_pos[1], n_pos[2]));
     }
     //Scale
     vec3 sclae_node = node.scale();
     float n_scale[3] = { sclae_node.x, sclae_node.y, sclae_node.z };
-    if (ImGui::SliderFloat3("Scale:", n_scale, 0.0, 200.0, "%1.0f")){
+    if (ImGui::InputFloat3("Scale:", n_scale)){
      node.setScale(vec3(n_scale[0], n_scale[1], n_scale[2]));
     }
     vec3 rotate_node = node.rotation();
     float n_rotate[3] = { rotate_node.x, rotate_node.y, rotate_node.z };
-    if (ImGui::SliderFloat3("Rotation:", n_rotate, 0.0, 360.0, "%1.0f")){
+    if (ImGui::InputFloat3("Rotation:",n_rotate)){
       node.setRotation(vec3(n_rotate[0], n_rotate[1], n_rotate[2]));
     }
 

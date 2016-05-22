@@ -1,7 +1,10 @@
-#
-#include "material.h"
+#include "CDK/cube_shadowmap_material.h"
+#include "shadow_material.h"
+#include "display_list.h"
+#include "composer.h"
 class EngineManager{
 public:
+  friend class Material;
   bool window_size_modified_ = false;
 static  EngineManager& instance();
 /**
@@ -24,25 +27,26 @@ void setHeight(int h);
 /**
 */
 void setWindowModified(bool value);
-void addUniform(char *name, int location);
- int getUniform(char *name);
 
 
-std::shared_ptr<Material>  shadow_shader_;
-std::shared_ptr<Material>  shadow_points_shader_;
-int shadow_buffer_created_ = false;
-int depth_bufer_id_;
-int depth_texture_id_;
-int draw_mode_;
+
 private:
- EngineManager(){};
- int width_;
- int height_;
-
-
-
-
-
+ struct Data;
+ Data *data_;
+ EngineManager();
+ std::shared_ptr<DisplayList> last_display_list_;
  static EngineManager * instance_;
+ Composer * getMainComposer();
+ void setMainComposer(const Composer* comp);
+ ShadowMapMaterial* getShadowMap();
+ CubeShadowMaterial* getCubeShadowMap();
+ void setMainComposer();
 
+
+ friend class Camera;
+ friend class SendObjectShadow;
+ friend class RenderDirectionalShadowMapCommand;
+ friend class RenderPointShadowMapCommand;
+ friend class Composer;
+ friend class UpdateDisplay;
 };

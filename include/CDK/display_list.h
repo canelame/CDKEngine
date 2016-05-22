@@ -19,7 +19,7 @@ public:
 private:
   Buffer *t_geo;
   int indices_size_;
-  GLuint vao_;
+  int vao_;
 };
 #endif
 
@@ -64,6 +64,7 @@ public:
   RenderDirectionalShadowMapCommand(Light * l);
   Light *light_;
   void runCommand()const;
+  void useMaterial();
 private:
 
 
@@ -157,6 +158,42 @@ private:
 };
 
 #endif
+
+#ifndef __H_BEGIN_POSTPROCESS__
+#define __H_BEGIN_POSTPROCESS__
+#include "command.h"
+#include "../post_process.h"
+#include "opengl_interfaz.h"
+class PostProcessBegin : public Command{
+public:
+  PostProcessBegin(FrameBuffer* fb,Material * mat);
+  PostProcessBegin();
+  void runCommand()const;
+private:
+
+  FrameBuffer *fb_ptr_;
+  Material * material_;
+
+};
+#endif
+
+#ifndef __H_END_POSTPROCESS__
+#define __H_END_POSTPROCESS__
+#include "command.h"
+#include "material.h"
+#include "opengl_interfaz.h"
+class PostProcessEnd : public Command{
+public:
+  PostProcessEnd();
+ ~ PostProcessEnd(){}
+  void runCommand()const;
+private:
+
+
+
+};
+
+#endif
 /////////////////////////////////////////////////// END OF DISPLAY LIST TASK HEADER //////////////////////////////
 
 
@@ -218,6 +255,8 @@ private:
   std::shared_ptr<Material> shadow_shader_;
 
 	List listCommand_;
+
+  List post_process_commands_;
   List shadowList_;
 
 };

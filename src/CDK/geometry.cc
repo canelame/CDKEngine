@@ -236,7 +236,7 @@ void Geometry::loadData(std::vector<float> positions, std::vector<float> normals
   std::unique_ptr<char[]> t_buff = std::unique_ptr<char[]>(new char[total_size]);
 
   memcpy(t_buff.get(), &positions[0], positions.size() * sizeof(float));
-  memcpy(&t_buff.get()[positions.size() * sizeof(float)], &normals[0], normals.size() * sizeof(float));
+ if(normals.size()!=0) memcpy(&t_buff.get()[positions.size() * sizeof(float)], &normals[0], normals.size() * sizeof(float));
   memcpy(&t_buff.get()[ (positions.size() + normals.size()) * sizeof(float)], &uvs[0], uvs.size() * sizeof(float));
   memcpy(&t_buff.get()[ (positions.size() + normals.size()+uvs.size() ) * sizeof(float)], &indices[0], indices.size() * sizeof(unsigned int));
   data_->geo_buff_->setAttributeSize(positions.size(), normals.size(), uvs.size(), 0, 0, indices.size());

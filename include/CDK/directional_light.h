@@ -8,7 +8,9 @@ public:
   DirectionalLight();
   mat4 getLightProyection();
   FrameBuffer * getShadowMap();
+  
 private:
+
   mat4 light_proyection_;
   std::shared_ptr<FrameBuffer> shadow_depth_buffer_;
 };

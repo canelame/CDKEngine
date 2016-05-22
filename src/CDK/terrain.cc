@@ -1,10 +1,11 @@
 #include "terrain.h"
-#include "CDK\texture_material.h"
+#include "../terrain_mat.h"
 
 Terrain::Terrain(){
   terrain_mesh_ = std::make_shared<Geometry>();
-  terrain_material_ = std::make_shared <TextureMaterial >();
-  drawable_terrain_ = std::make_shared<Drawable>();
+  terrain_material_ = std::make_shared <TerrainMaterial >();
+  
+
 }
 Terrain::~Terrain(){
 
@@ -17,6 +18,39 @@ int Terrain::getWidth(){
   return height_map_width_;
 }
 
+
+
+void Terrain::setPosition(vec3 &data){
+  Node::setPosition(data);
+  terrain_material_->setUniformMat4Value("u_mat_model", &modelMat());
+}
+void Terrain::setPosition(const float* data){
+  Node::setPosition(data);
+  terrain_material_->setUniformMat4Value("u_mat_model",&modelMat());
+}
+
+
+void Terrain::setRotation(vec3 &data){
+  Node::setPosition(data);
+  terrain_material_->setUniformMat4Value("u_mat_model", &modelMat());
+}
+void Terrain::setRotation(const float* data){
+  Node::setPosition(data);
+  terrain_material_->setUniformMat4Value("u_mat_model", &modelMat());
+}
+
+
+
+void Terrain::setScale(const float* data){
+  Node::setPosition(data);
+  terrain_material_->setUniformMat4Value("u_mat_model", &modelMat());
+}
+void Terrain::setScale(vec3 &data){
+  Node::setPosition(data);
+  terrain_material_->setUniformMat4Value("u_mat_model", &modelMat());
+}
+
+
 void Terrain::loadHeightMapTexture(const char* file_name){
   height_map_ = std::make_shared<Texture>();
   height_map_->loadTexture(file_name, "diffuse");
@@ -24,7 +58,7 @@ void Terrain::loadHeightMapTexture(const char* file_name){
   height_map_width_ = height_map_->getWidth();
   height_map_height_ = height_map_->getHeigth();
   inc_ptr = height_map_->getBpp();
-  row_step_ = inc_ptr * height_map_width_;
+  row_step_ = inc_ptr * (height_map_width_);
 }
 
 void Terrain::create(){
@@ -39,22 +73,28 @@ void Terrain::create(){
 
   float textureU = float(height_map_width_) * 0.1f;
   float textureV = float(height_map_height_) * 0.1f;
+  float terrainWidth = (height_map_width_ - 1) ;
+ float terrainHeight = (height_map_height_ - 1) ;
+
+  float halfTerrainWidth = terrainWidth * 0.5f;
+  float halfTerrainHeight = terrainHeight * 0.5f;
 
   unsigned char *data = height_map_->getData();
-
-  for (int y = 0; y < height_map_height_; y++){
-    for (int x = 0; x < height_map_width_; x++){
-      float new_x = float(x) / float(height_map_width_ - 1);
-      float new_y = float(y) / float(height_map_height_ - 1);
-
+  
+  for (int y = 0; y < height_map_width_; y++){
+    for (int x = 0; x < height_map_height_; x++){
       
-      float new_height = float( *data + row_step_ * y + x*inc_ptr) / 255.0f;
-      terrain_position.push_back(-0.5f + new_x);
-      terrain_position.push_back(new_height);
-      terrain_position.push_back(-0.5f + new_y);
+      float s = float(x) / float(height_map_width_ - 1);
+      float t = float(y) / float(height_map_height_ - 1);
+
+      float new_heigth = (float)(data[ (row_step_*y+x)+(x*inc_ptr)])/255.0f;
+      
+      terrain_position.push_back( (-0.5f+s));
+      terrain_position.push_back((new_heigth));
+      terrain_position.push_back((-0.5+t));
       //Uvs
-      terrain_uvs.push_back(textureU * new_x);
-      terrain_uvs.push_back(textureV * new_y);
+      terrain_uvs.push_back( s+(height_map_width_*0.1));
+      terrain_uvs.push_back( t+(height_map_height_*0.1));
     }
   }
   //Normals.
@@ -120,7 +160,7 @@ void Terrain::create(){
   }
 
   //We finally can compute noramls
-/*  std::vector<std::vector<vec3>> final_normals = std::vector<std::vector<vec3>>(
+  std::vector<std::vector<vec3>> final_normals = std::vector<std::vector<vec3>>(
                         height_map_height_, std::vector<vec3>(height_map_width_));
 
   for (int y = 0; y < height_map_height_; y++){
@@ -148,42 +188,85 @@ void Terrain::create(){
       }
       final_normal = glm::normalize(final_normal);
       
-      terrain_normal.push_back(final_normal.x);
-      terrain_normal.push_back( final_normal.y);
-      terrain_normal.push_back( final_normal.z);
+     // terrain_normal.push_back(final_normal.x);
+      //terrain_normal.push_back( final_normal.y);
+      //terrain_normal.push_back( final_normal.z);
 
     }
   }
-  */
+  
   const unsigned int terrain_width = height_map_width_;
   const unsigned int terrain_height = height_map_height_;
 
   //2 triangles per quad, each pixel represents a triangle
-  const unsigned int num_triangles = (terrain_width - 1) * (terrain_height - 1) * 2;
+  const unsigned int num_triangles = (terrain_width - 1) * (terrain_height - 1);
   std::vector<unsigned int> indices;
   //Each triangle have 3 vertex
-  indices.resize(num_triangles * 3);
+  indices.resize(num_triangles * 6);
   int index = 0;
-  for (int y = 0; y < (terrain_height -1); y++){
-    for (int x = 0; x < (terrain_width - 1); x++){
-      int vertex_index = (y * terrain_width) + x;
-      //1 triangle
-      indices[index++] = vertex_index;
-      indices[index++] = vertex_index + terrain_width + 1;
-      indices[index++] = vertex_index + 1;
-      //2 triangle 
-      indices[index++] = vertex_index;
-      indices[index++] = vertex_index + terrain_width;
-      indices[index++] = vertex_index + terrain_width + 1;
+  for (int x = 0; x < (terrain_width -1); x++){
+    for (int z = 0; z < (terrain_height - 1); z++){
+      int a = (x * terrain_width) + z;
+      int b = ((x + 1) * terrain_width) + z;
+      int c = (x * terrain_width) + (z + 1);
+      int d = ((x + 1) * terrain_width) + (z + 1);
+
+      indices[index++] = a;
+      indices[index++] = b;
+      indices[index++] = c;
+
+      indices[index++] = b;
+      indices[index++] = d;
+      indices[index++] = c;
+
+
+
+
     }
   }
 
-  terrain_mesh_->getBuffer()->setAttributeSize(terrain_position.size() / 3,
-    0,
-    terrain_uvs.size() / 2, 0, 0,
+  terrain_mesh_->getBuffer()->setAttributeSize(terrain_position.size(),
+    terrain_normal.size(),
+    terrain_uvs.size() , 0, 0,
     indices.size());
   terrain_mesh_->loadData(terrain_position, terrain_normal, terrain_uvs,indices);
 
-  drawable_terrain_->setGeometry(terrain_mesh_);
-  drawable_terrain_->setMaterial(terrain_material_);
+
+  setGeometry(terrain_mesh_);
+  setMaterial(terrain_material_);
+}
+
+float Terrain::getMapHeight(unsigned char*data , int num_bytes){
+
+  switch (num_bytes)
+  {
+  case 1:
+  {
+    return (unsigned char)(data[0]) / (float)0xff;
+  }
+  break;
+  case 2:
+  {
+    return (unsigned short)(data[1] << 8 | data[0]) / (float)0xffff;
+  }
+  break;
+  case 3:
+  {
+    return (unsigned short)(data[2] << 12 | data[1] << 8) / (float)0xffffff;
+  }
+  break;
+  case 4:
+  {
+    return (unsigned int)(data[3] << 24 | data[2] << 16 | data[1] << 8 | data[0]) / (float)0xffffffff;
+  }
+  break;
+  default:
+  {
+    
+  }
+  break;
+  }
+
+  return 0.0f;
+
 }

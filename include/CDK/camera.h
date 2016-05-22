@@ -76,10 +76,15 @@ public:
 
   void setLoaded(bool value);
   bool getLoaded();
+  friend class UpdateDisplay;
 private:
   struct Data;
   ///Internal Data
   Data *data_;
+  void setDirty(bool value){
+    dirty_ = value; 
+  }
+    bool dirty_; 
   /**
   @brief Load node and puts into the display list.
   @param node Root node

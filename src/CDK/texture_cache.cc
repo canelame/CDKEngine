@@ -17,7 +17,10 @@ void TextureCache::addTexture(std::shared_ptr<Texture>texture){
 
 std::shared_ptr<Texture>TextureCache::getTexture(const char* name){
   
-if(textures_.count(name)>0)  return textures_.at(name);
+  if (textures_.count(name) > 0){
+    return textures_.at(name);
+  }  
+  return nullptr;
 }
 
 bool TextureCache::textureExists(const char *name){

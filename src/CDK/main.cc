@@ -4,7 +4,7 @@
 #include "CDK/window2.h"
 #include "CDK/geometry.h"
 #include "CDK/camera.h"
-#include "CDK/texture_material.h"
+
 #include "CDK/point_light.h"
 #include "CDK/spot_light.h"
 #include "CDK/node.h"
@@ -15,7 +15,8 @@
 #include "CDK/gui_interface.h"
 #include "CDK/scene.h"
 #include "terrain.h"
-
+#include "../terrain_mat.h"
+#include "CDK/diffuse_material.h"
 std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 
 
@@ -33,8 +34,10 @@ int Window::main(int argc, char** argv){
   terrain->loadHeightMapTexture("textures/height_map.png");
   terrain->create();
 
-  terrain->drawable_terrain_->setScale(vec3(50.0, 50.0, 50.0));
-  terrain->drawable_terrain_->setPosition(vec3(0.0, 0.0, 0.0));
+  terrain->setScale(vec3(1.0,1.0, 1.0));
+  terrain->setRotation(vec3(180.0, 0.0, 0.0));
+  terrain->setPosition(vec3(0.0,0.0, 0.0));
+
   std::shared_ptr<Geometry> plane = std::make_shared<Geometry>();
   plane->createQuad();
 
@@ -42,17 +45,20 @@ int Window::main(int argc, char** argv){
   cube->createCube();
 
   std::shared_ptr<Drawable> drawable_cube;
-  std::shared_ptr<TextureMaterial> mater = std::make_shared<TextureMaterial>();
-  std::shared_ptr<TextureMaterial::MaterialSettings> mat_s = std::make_shared<TextureMaterial::MaterialSettings>();
-  mat_s->diffuse_color_ = vec3(0.0, 0.0, 0.0);
-  mat_s->ambient_color_ = vec3(1.0);
-  mat_s->specular_color_ = vec3(1.0);
-  mat_s->addTexture("textures/container.jpg");
+
+
+  
   std::shared_ptr<Texture> texture_cube = loader->loadTexture("textures/container.jpg","diffuse");
   std::shared_ptr<Texture> texture_plane = loader->loadTexture("textures/wall.jpg", "diffuse");
 
-  std::shared_ptr<TextureMaterial::MaterialSettings> mat_p = std::make_shared<TextureMaterial::MaterialSettings>();
-  mat_p->addTexture("textures/wall.jpg");
+  std::shared_ptr< MaterialDiffuse::MaterialSettings> mat_p = std::make_shared<MaterialDiffuse::MaterialSettings>();
+  mat_p->diffuse_color_ = vec3(0.0, 0.5, 0.0);
+  mat_p->ambient_color_ = vec3(0.0);
+  mat_p->specular_color_ = vec3(0.5);
+  std::shared_ptr<MaterialDiffuse> mater = std::make_shared<MaterialDiffuse>();
+
+  // mat_p->addTexture("textures/container.jpg");
+
   drawable_cube = std::make_shared<Drawable>();
   drawable_cube->setName("Plane");
   drawable_cube->setGeometry(plane);
@@ -60,17 +66,20 @@ int Window::main(int argc, char** argv){
   drawable_cube->setPosition(vec3(0.0, 0.0, 0.0));
   drawable_cube->setRotation(vec3(90.0, 0.0, 0.0));
   drawable_cube->setScale(vec3(25.0, 25.0, 25.0));
+  drawable_cube->setMaterial(mater);
 
 
-  std::shared_ptr<Drawable> wall = std::make_shared<Drawable>();
-  wall->setGeometry(plane);
-  wall->setMaterial(mater);
-  wall->setMaterialSettings(mat_p);
+
+  //terrain->setMaterial(mater);
+  drawable_cube->setMaterialSettings(mat_p);
+  
 
 
-  terrain->drawable_terrain_->setMaterial(mater);
-  terrain->drawable_terrain_->setMaterialSettings(mat_p);
-  scene->addChild(terrain->drawable_terrain_);
+  scene->addChild(drawable_cube);
+  terrain->setMaterial(mater);
+  terrain->setMaterialSettings(mat_p);
+
+ // scene->addChild(terrain);
   vec3 positions[10] = { vec3(0.0, 5.5f, 0.0),
     vec3(2.0f, 0.0f, 1.0f),
     vec3(-1.0, 0.0f, 2.0f),
@@ -81,16 +90,20 @@ int Window::main(int argc, char** argv){
     vec3(3.0, 0.0, 1.0),
     vec3(-3.0, 0.0, 2.0) };
   for (int i = 0; i < 10; i++){
-      float j = 0.2;
+    float j = 0.2; 
+    mat_p = std::make_shared<MaterialDiffuse::MaterialSettings>();
+    mat_p->diffuse_color_ = vec3(1.0, 1.0, 0.0);
+    mat_p->ambient_color_ = vec3(0.5,0.5,0.5);
+    mat_p->specular_color_ = vec3(1.0,1.0,1.0);
       drawable_cube = std::make_shared<Drawable>();
       drawable_cube->setName("cube");
       drawable_cube->setGeometry(cube);
       drawable_cube->setMaterial(mater);
-      drawable_cube->setMaterialSettings(mat_s);
+      drawable_cube->setMaterialSettings(mat_p);
       drawable_cube->setScale(vec3(0.5));
       drawable_cube->setPosition(positions[i]);
-      //drawable_cube->setRotation(vec3(10.0,0.0,60.0));
-     // scene->addChild(drawable_cube);
+    //  drawable_cube->setRotation(vec3(10.0,0.0,60.0));
+      scene->addChild(drawable_cube);
   }
 
   //////////////////////
@@ -101,34 +114,25 @@ int Window::main(int argc, char** argv){
 
   std::shared_ptr<PointLight> l2 = std::make_shared<PointLight>();
   l2->setPosition(vec3(0.0, 0.0, 5.0));
-  l2->setAmbientColor(vec3(1.0, 1.0, 1.0));
-  l2->setSpecularColor(vec3(1.0, 1.0, 1.0));
-  l2->setDifusseColor(vec3(1.0, 0.0, 1.0));
+  l2->setAmbientColor(vec3(1.0, 0.0, 0.0));
+  l2->setSpecularColor(vec3(1.0, 0.0, 0.0));
+  l2->setDifusseColor(vec3(1.0, 0.0, 0.0));
   l2->setTypeLight(Light::LightType::T_POINT_LIGHT);
   scene->addLight(l2);
 
-  std::shared_ptr<SpotLight> l3 = std::make_shared<SpotLight>();
-  l3->setPosition(vec3(1.0, 0.0, 1.0));
-  l3->setAmbientColor(vec3(0.0, 0.0, 1.0));
-  l3->setSpecularColor(vec3(0.0, 0.0, 1.0));
-  l3->setDifusseColor(vec3(0.0, 0.0, 1.0));
-  l3->setTypeLight(Light::LightType::T_SPOT_LIGHT);
-  //scene->addLight(l3);
+
 
   scene->root_->setPosition(vec3(0.0,0.0,0.0));
 
-  //std::shared_ptr<PostProcess>render_to_text = std::make_shared<PostProcess>();
+  std::shared_ptr<PostProcess>render_to_text = std::make_shared<PostProcess>();
   glEnable(GL_DEPTH_TEST);
+ 
   while (window->processEvents()){
     scene->camera_->FpsCameraUpdate();
-//    window->clearScreen(vec3(0.3, 0.2, 0.1));
-  
-    //scene->directional_light_->setPosition(vec3(scene->directional_light_->getPosition().x , 10.0, 1.0));
-   // scene->directional_light_->setPosition(vec3( (cos(window->time()) *10.0f)*0.5+0.5, (sin(window->time())*3.0) *0.5+0.5, 1.0));
-  //  render_to_text->begin();
+ //   render_to_text->begin();
     scene->render();
-   // render_to_text->end();
-    //GuInterface::instance().draw(Scene.root);
+  //  render_to_text->end();
+
     window->swap();
     
 

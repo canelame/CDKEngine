@@ -100,8 +100,11 @@ public:
 
   bool isDirty();
   void setDirty(bool value);
-
+  friend class OpenGlInterFaz;
+  protected:
+    int type = 0;
 private:
+
   struct Data;
   Data *data_;
 };

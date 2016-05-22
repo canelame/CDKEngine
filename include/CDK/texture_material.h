@@ -1,17 +1,18 @@
 #include "material.h"
+#include "CDK/texture.h"
 class TextureMaterial : public Material{
 
 public:
 
-
-
   TextureMaterial();
 
-
   class MaterialSettings : public Material::MaterialSettings{
+
+  protected:
+    std::vector<std::string > texture_;
   public:
 
-    std::vector<std::string > texture_;
+   
     /**
     @Brief Return the texture placed at i
     @return Texture of material on index i
@@ -30,4 +31,5 @@ public:
     void addTexture(const char*name);
     std::vector<std::string> getTextures();
   };
+  friend class Material;
 };

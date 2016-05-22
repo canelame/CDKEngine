@@ -6,7 +6,9 @@ in vec2 o_uv;
 in vec3 o_camera_position;
 
 
-uniform sampler2D terrain_texture;
+uniform sampler2D terrain_texture1;
+uniform sampler2D terrain_texture2;
+uniform sampler2D terrain_texture3;
 
 
 void main(){

@@ -39,7 +39,7 @@ DrawCommand::DrawCommand(Buffer *g){
 	
 		t_geo = g;
     indices_size_ = t_geo->indiceSize();
-
+    vao_ = t_geo->getVAO();
 }
 
 void DrawCommand::runCommand()const{
@@ -47,7 +47,7 @@ void DrawCommand::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
   }
-  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_,t_geo->getDrawMode());
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_);
 
 }
 
@@ -63,8 +63,8 @@ void UseMaterialCommand::runCommand()const{
     material_->setProgram(OpenGlInterFaz::instance().loadMaterial(material_));
     material_->is_compiled_ = true;
   }
-  OpenGlInterFaz::instance().useMaterial(material_->getProgram());
-
+  OpenGlInterFaz::instance().useMaterial(material_);
+ // glUseProgram(material_->getProgram());
 
   
 }
@@ -89,9 +89,11 @@ void UseMaterialUniformsCommand::runCommand()const{
       dir_light_, lights_);
     break;
   case 1:
-    OpenGlInterFaz::instance().useDiffuseMaterial(mat_);
+    OpenGlInterFaz::instance().useDiffuseMaterial(mat_, mat_set_, view_, projection_, model_,
+      dir_light_, lights_);
     break; 
   default:
+    OpenGlInterFaz::instance().useMaterialUniforms(mat_);
     break;
   }
  
@@ -116,10 +118,12 @@ SendObjectShadow::SendObjectShadow(Buffer * g,mat4 m,bool is_directional){
 
 void SendObjectShadow::runCommand()const{
   if (is_directional_){
-    ENGINE.shadow_shader_->setUniformMat4Value("u_model_s",m_);
+    int location = ENGINE.getShadowMap()->getUniformLocation("u_model_s");
+    OpenGlInterFaz::instance().useUniformMat4(location, m_);
   }
   else{
-    ENGINE.shadow_points_shader_->setUniformMat4Value("u_model_sp",m_);
+    int location = ENGINE.getCubeShadowMap()->getUniformLocation("u_model_sp");
+      OpenGlInterFaz::instance().useUniformMat4(location,m_);
   }
 
   if (t_geo->isDirty()){
@@ -127,7 +131,7 @@ void SendObjectShadow::runCommand()const{
     t_geo->setDirty(false);
    }
  
-  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), (unsigned int)t_geo->indiceSize(),t_geo->getDrawMode());
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), (unsigned int)t_geo->indiceSize());
 }
 
  EndShadowCommand::EndShadowCommand(){}
@@ -147,13 +151,15 @@ void SendObjectShadow::runCommand()const{
  RenderDirectionalShadowMapCommand::RenderDirectionalShadowMapCommand(Light* l){
    light_ = l;
  }
- 
+ void RenderDirectionalShadowMapCommand::useMaterial(){
+  
+ }
 #include "CDK/directional_light.h"
  void RenderDirectionalShadowMapCommand::runCommand()const{
    
-   if (!ENGINE.shadow_shader_->is_compiled_){
-     ENGINE.shadow_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_shader_.get() ));
-     ENGINE.shadow_shader_->is_compiled_ = true;
+   if (!ENGINE.getShadowMap()->is_compiled_){
+     ENGINE.getShadowMap()->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.getShadowMap()));
+     ENGINE.getShadowMap()->is_compiled_ = true;
    }
 
    if (light_->getType() == Light::T_DIRECTION_LIGHT){
@@ -172,15 +178,16 @@ void SendObjectShadow::runCommand()const{
        d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
        d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
        OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map, false);
-
+       ENGINE.getShadowMap()->setUniformMat4Value("light_screen", &dr_light->getLightProyection());
        light_depth_map->setLoaded(true);
      }
      glViewport(0, 0, 1024, 1024);
      OpenGlInterFaz::instance().bindFrameBuffer(dr_light->getShadowMap()->getId(),
                                                  FrameBuffer::kFramebufferBindType::
                                                  kFramebufferBindType_FrameBuffer);
-     OpenGlInterFaz::instance().useMaterial(ENGINE.shadow_shader_->getProgram());
-     ENGINE.shadow_shader_->setUniformMat4Value("light_screen", dr_light->getLightProyection());
+     OpenGlInterFaz::instance().useMaterial(ENGINE.getShadowMap());
+     int loca_proj_light = ENGINE.getShadowMap()->getUniformLocation("light_screen");
+     OpenGlInterFaz::instance().useUniformMat4(loca_proj_light, dr_light->getLightProyection());
      glClear(GL_DEPTH_BUFFER_BIT);
      
    }
@@ -194,25 +201,60 @@ void SendObjectShadow::runCommand()const{
  }
  void RenderPointShadowMapCommand::runCommand()const{
 
-   if (!ENGINE.shadow_points_shader_->is_compiled_){
-     ENGINE.shadow_points_shader_->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.shadow_points_shader_.get())); 
-     ENGINE.shadow_points_shader_->is_compiled_ = true;
+   if (!ENGINE.getCubeShadowMap()->is_compiled_){
+     ENGINE.getCubeShadowMap()->setProgram(OpenGlInterFaz::instance().loadMaterial(ENGINE.getCubeShadowMap()));
+     ENGINE.getCubeShadowMap()->is_compiled_ = true;
    }
 
    if (light_->getShadowCubeMapTexture() < 0 && light_->getShadowCubeMapBuffer() < 0){
      OpenGlInterFaz::instance().createShadoCubeMap(light_);
    }
    //
+
+
+
    glViewport(0, 0, 1024, 1024);
    OpenGlInterFaz::instance().bindFrameBuffer(light_->getShadowCubeMapBuffer(),
      FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
-   glClear(GL_DEPTH_BUFFER_BIT);
-   OpenGlInterFaz::instance().useMaterial(ENGINE.shadow_points_shader_->getProgram());
-   std::vector<mat4> s_m = light_->getShadowMatrices();
-   for (int i = 0; i < 6; i++){
-     ENGINE.shadow_points_shader_->setUniformMat4Value(("shadow_matrices[" + std::to_string(i) + "]").c_str() , s_m[i]);
-   }
-   ENGINE.shadow_points_shader_->setUniform3fValue("light_pos",light_->getPosition());
-   ENGINE.shadow_points_shader_->setUniformFValue("far_plane",25.0f);
+
+   OpenGlInterFaz::instance().useMaterial(ENGINE.getCubeShadowMap());
+   
+     std::vector<mat4> s_m = light_->getShadowMatrices();
+     //Set correct values to uniforms
+     for (int i = 0; i < 6; i++){
+       int u_pos = ENGINE.getCubeShadowMap()->getUniformLocation(("shadow_matrices[" + std::to_string(i) + "]").c_str());
+       OpenGlInterFaz::instance().useUniformMat4(u_pos, s_m[i]);
+     }
+
+     int l_p = ENGINE.getCubeShadowMap()->getUniformLocation("light_pos");
+     if (l_p >= 0){
+       OpenGlInterFaz::instance().useUnifor3f(l_p,light_->getPosition() );
+     }
+
+     int l_fp = ENGINE.getCubeShadowMap()->getUniformLocation("far_plane");
+     if (l_fp >= 0){
+       OpenGlInterFaz::instance().useUniformF(l_fp, 25.0);
+     }
+
+     glClear(GL_DEPTH_BUFFER_BIT);
  }
 
+ PostProcessBegin::PostProcessBegin(){
+   glViewport(0, 0, 1024, 1024);
+
+   if (!fb_ptr_->isLoaded()){
+     OpenGlInterFaz::instance().createFrameBuffer(*fb_ptr_, true);
+     material_->setProgram(OpenGlInterFaz::instance().loadMaterial(material_));
+   }
+
+
+   OpenGlInterFaz::instance().bindFrameBuffer(fb_ptr_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+   glClear(GL_DEPTH_BUFFER_BIT);
+ }
+ PostProcessBegin::PostProcessBegin(FrameBuffer* fb, Material * mat){
+   fb_ptr_ = fb;
+   material_ = mat;
+ }
+ void PostProcessBegin::runCommand()const{
+ 
+ }
