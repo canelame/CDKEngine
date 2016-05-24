@@ -182,14 +182,18 @@ int Task::getId(){
        // if (!nod_->directional_light_->getLoaded()){
 
        //  }
+
        Composer * composer = EngineManager::instance().getMainComposer();
-       if (&composer != NULL){
-         for (int i = 0; i < composer->size(); i++){
-           PostProcess *c_effect = composer->getEffect(i);
-           dl_->add(std::make_shared<PostProcessBegin>(
-             &c_effect->getFrameBuffer(),
-             &c_effect->getMaterial()
-             ));
+       if (composer ){
+
+         if (composer->size() > 0){
+           dl_->add(std::make_shared<ComposePostProcess>(composer));
+           loadNode(nod_->root_);
+           //Render composer
+
+           dl_->add(std::make_shared<RenderComposer>(composer));
+         }
+         else{
            loadNode(nod_->root_);
          }
 

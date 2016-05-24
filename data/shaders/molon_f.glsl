@@ -2,7 +2,7 @@
 in vec2 TexCoords;
 out vec4 color;
 
-uniform sampler2D u_pp_texture;
+uniform sampler2D u_wb_texture;
 vec2 window_size =vec2(1024,768);
 
 vec2 center = vec2(window_size.x/2.0,window_size.y/2.0);
@@ -22,12 +22,15 @@ vec4 guapo( ){
 		tc = vec2(dot(tc,vec2(c,-s)),dot(tc,vec2(s,c)));
 	}
 	tc+=center;
-	vec3 color_ = texture(u_pp_texture,tc/tw_size).rgb;
+	vec3 color_ = texture(u_wb_texture,tc/tw_size).rgb;
 	return vec4(color_,1.0);
 }
 
 
 void main()
 {
+    //color = texture(u_wb_texture, TexCoords);
+    //float average = 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
+    //color = vec4(average, average, average, 1.0);
     color = guapo();
  }

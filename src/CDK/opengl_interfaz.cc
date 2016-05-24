@@ -99,6 +99,8 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
       }
 
     }
+    mat->is_compiled_ = true;
+    mat->setProgram( data_->shadow_program_);
     return data_->shadow_program_;
   }
 

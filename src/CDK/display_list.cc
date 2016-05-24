@@ -64,8 +64,6 @@ void UseMaterialCommand::runCommand()const{
     material_->is_compiled_ = true;
   }
   OpenGlInterFaz::instance().useMaterial(material_);
- // glUseProgram(material_->getProgram());
-
   
 }
 ///////////////////////////////////////////////////
@@ -240,21 +238,90 @@ void SendObjectShadow::runCommand()const{
  }
 
  PostProcessBegin::PostProcessBegin(){
+
+ }
+ PostProcessBegin::PostProcessBegin(FrameBuffer* fb, PostProcess * mat){
+   //fb_ptr_ = fb;
+   post_p_ = mat;
+   fb_ptr_ = fb;
+ }
+ void PostProcessBegin::runCommand()const{
+
+
    glViewport(0, 0, 1024, 1024);
+
 
    if (!fb_ptr_->isLoaded()){
      OpenGlInterFaz::instance().createFrameBuffer(*fb_ptr_, true);
-     material_->setProgram(OpenGlInterFaz::instance().loadMaterial(material_));
+   }
+   OpenGlInterFaz::instance().bindFrameBuffer(fb_ptr_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+   glClear(GL_COLOR_BUFFER_BIT);
+
+ 
+  
+  
+ }
+
+
+ PostProcessEnd::PostProcessEnd(PostProcess* post_p_scene, FrameBuffer* last_fb){
+   post_p_ = post_p_scene;
+   last_fb_ = &post_p_->getFrameBuffer();
+ }
+ void PostProcessEnd::runCommand()const{
+   Material * mat = &post_p_->getMaterial();
+   if (last_fb_->isLoaded() == false){
+     mat->setProgram(OpenGlInterFaz::instance().loadMaterial(mat));
    }
 
 
-   OpenGlInterFaz::instance().bindFrameBuffer(fb_ptr_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
-   glClear(GL_DEPTH_BUFFER_BIT);
+
+  /* OpenGlInterFaz::instance().bindFrameBuffer(0, FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+
+   OpenGlInterFaz::instance().useMaterial(composer_material_.get());
+
+   if (pos_texture0 >= 0){
+     OpenGlInterFaz::instance().useUniformI(pos_texture0, TEXTURE_LOCATION + 0);
+     //OpenGlInterFaz::instance().useTexture(TEXTURE_LOCATION + 0, effects_list_[0]->getFrameBuffer().getTexture()->getID());
+     OpenGlInterFaz::instance().useTexture(TEXTURE_LOCATION + 0, aux_target_->getTexture()->getID());
+   }
+   Buffer * buff = render_quad_->getBuffer().get();
+   if (buff->isDirty()){
+     OpenGlInterFaz::instance().loadBuffer(buff);
+
+     buff->setDirty(false);
+   }
+   OpenGlInterFaz::instance().drawGeometry((unsigned int)buff->getVAO(), 6);
+ */
  }
- PostProcessBegin::PostProcessBegin(FrameBuffer* fb, Material * mat){
-   fb_ptr_ = fb;
-   material_ = mat;
+
+ RenderComposer::RenderComposer(Composer * comp){
+   composer_ = comp;
  }
- void PostProcessBegin::runCommand()const{
+
+ void RenderComposer::runCommand()const{
+   composer_->render();
+ }
+
+ ComposePostProcess::ComposePostProcess(Composer* composer){
+   composer_ = composer;
+ }
+ ComposePostProcess::ComposePostProcess(){
  
+ }
+ void ComposePostProcess::runCommand()const{
+ 
+
+   glViewport(0, 0, 1024, 1024);
+   FrameBuffer *t_f = composer_->aux_target_.get();
+   
+   if ( !composer_->aux_target_->isLoaded() ){
+     OpenGlInterFaz::instance().createFrameBuffer(*t_f, true);
+     //Material * mat = &post_p_->getMaterial();
+     //FrameBuffer *pp_ = &post_p_->getFrameBuffer();
+    // OpenGlInterFaz::instance().createFrameBuffer(*pp_, true);
+     //mat->setProgram(OpenGlInterFaz::instance().loadMaterial(&post_p_->getMaterial()));
+   }
+   OpenGlInterFaz::instance().bindFrameBuffer(t_f->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+   glClear(GL_COLOR_BUFFER_BIT);
+
  }

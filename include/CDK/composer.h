@@ -3,11 +3,15 @@
 #include "../post_process.h"
 #include <vector>
 #include <memory>
-#include "display_list.h"
+#include "CDK/material_composer.h"
 class Composer{
 
   std::vector<std::shared_ptr<PostProcess>> effects_list_;
-  std::unique_ptr<PostProcess> final_target_;
+  std::shared_ptr<FrameBuffer> final_target_;
+  std::shared_ptr<FrameBuffer> aux_target_;
+  std::shared_ptr<ComposerMaterial> composer_material_;
+  std::shared_ptr<Geometry> render_quad_;
+
   void init();
 public:
 
@@ -23,11 +27,13 @@ public:
   void addEffect(std::shared_ptr<PostProcess> new_effect);
   /**
   */
-  void compose(DisplayList * dl_to_update);
+  std::shared_ptr<Buffer> getQuad();
   /**
   */
+  void render();
   ~Composer();
-  
+  friend class UpdateDisplay;
+  friend class ComposePostProcess;
 
 };
 

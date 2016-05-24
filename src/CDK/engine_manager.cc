@@ -10,7 +10,7 @@ EngineManager& EngineManager::instance(){
 struct EngineManager::Data{
   std::shared_ptr<ShadowMapMaterial>  shadow_shader_;
   std::shared_ptr<CubeShadowMaterial>  shadow_points_shader_;
- Composer * main_composer_;
+ Composer * main_composer_ ;
   int width_;
   int height_;
 
@@ -26,7 +26,8 @@ void EngineManager::init(){
   data_->shadow_shader_ = std::make_shared<ShadowMapMaterial>();
   data_->shadow_points_shader_ = std::make_shared<CubeShadowMaterial>();
   last_display_list_ = std::make_shared<DisplayList>();
- //main_composer_ = std::make_shared < Composer >() ;
+  data_->main_composer_ = nullptr;
+
 }
 int EngineManager::width(){
   return data_->width_;
@@ -58,9 +59,9 @@ CubeShadowMaterial* EngineManager::getCubeShadowMap(){
 
 Composer * EngineManager::getMainComposer(){
   if (data_->main_composer_ != nullptr){
-  return (Composer*)data_->main_composer_;
+   return (Composer*)data_->main_composer_;
   }
-  
+  return nullptr;
 }
 
 void EngineManager::setMainComposer( const Composer* comp){

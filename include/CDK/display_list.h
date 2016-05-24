@@ -166,13 +166,27 @@ private:
 #include "opengl_interfaz.h"
 class PostProcessBegin : public Command{
 public:
-  PostProcessBegin(FrameBuffer* fb,Material * mat);
+  PostProcessBegin(FrameBuffer* fb,PostProcess * mat);
   PostProcessBegin();
   void runCommand()const;
 private:
 
   FrameBuffer *fb_ptr_;
-  Material * material_;
+  PostProcess * post_p_;
+};
+#endif
+
+#ifndef __H_COMPOSE__
+#define __H_COMPOSE__
+#include "opengl_interfaz.h"
+#include "composer.h"
+class ComposePostProcess : public Command{
+public:
+  ComposePostProcess(Composer* composer);
+  ComposePostProcess();
+  void runCommand()const;
+private:
+  Composer* composer_;
 
 };
 #endif
@@ -180,15 +194,36 @@ private:
 #ifndef __H_END_POSTPROCESS__
 #define __H_END_POSTPROCESS__
 #include "command.h"
-#include "material.h"
+#include "../post_process.h"
 #include "opengl_interfaz.h"
 class PostProcessEnd : public Command{
 public:
-  PostProcessEnd();
+  PostProcessEnd(PostProcess*  post_p,FrameBuffer*  last_fb);
  ~ PostProcessEnd(){}
   void runCommand()const;
 private:
 
+  PostProcess*  post_p_;
+  FrameBuffer* last_fb_;
+
+};
+
+#endif
+
+
+
+#ifndef __H_RENDER_COMPOSER__
+#define __H_RENDER_COMPOSER__
+#include "command.h"
+#include "composer.h"
+class RenderComposer : public Command{
+public:
+  RenderComposer(Composer *comp);
+  ~RenderComposer(){}
+  void runCommand()const;
+private:
+
+  Composer *composer_;
 
 
 };

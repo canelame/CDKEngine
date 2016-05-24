@@ -11,12 +11,14 @@
 #include "CDK/loader.h"
 #include "glm\glm.hpp"
 #include "CDK/texture.h"
-#include "post_process.h"
+#include "crazy_pp.h"
+#include "negative_pp.h"
 #include "CDK/gui_interface.h"
 #include "CDK/scene.h"
 #include "terrain.h"
 #include "../terrain_mat.h"
 #include "CDK/diffuse_material.h"
+#include "CDK/composer.h"
 std::shared_ptr<Scene> scene = std::make_shared<Scene>();
 
 
@@ -110,7 +112,7 @@ int Window::main(int argc, char** argv){
 
   ///LIGHTS
   
-
+  std::shared_ptr<Composer> composer = std::make_shared<Composer>();
 
   std::shared_ptr<PointLight> l2 = std::make_shared<PointLight>();
   l2->setPosition(vec3(0.0, 0.0, 5.0));
@@ -124,14 +126,18 @@ int Window::main(int argc, char** argv){
 
   scene->root_->setPosition(vec3(0.0,0.0,0.0));
 
-  std::shared_ptr<PostProcess>render_to_text = std::make_shared<PostProcess>();
+  std::shared_ptr<CrazyPP>render_to_text = std::make_shared<CrazyPP>();
+  render_to_text->init();
+  composer->addEffect(render_to_text);
+
+  std::shared_ptr<NegativePP>n_pp = std::make_shared<NegativePP>();
+  n_pp->init();
+  composer->addEffect(n_pp);
   glEnable(GL_DEPTH_TEST);
  
   while (window->processEvents()){
     scene->camera_->FpsCameraUpdate();
- //   render_to_text->begin();
     scene->render();
-  //  render_to_text->end();
 
     window->swap();
     
