@@ -1,9 +1,7 @@
 #ifndef __H_CAMERA__
 #define __H_CAMERA__
 
-#include "glm\glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+
 #include "types.h"
 #include "opengl_interfaz.h"
 #include "drawable.h"
@@ -26,7 +24,7 @@ public:
   * To use it only call this function in your update funtion.
   */
   void FpsCameraUpdate();
-  void controlMouse();
+
   /**
   * @brief This function allow us to set the perspective projection matrix.
   * @param fov Field of view cam. Should be 45.0f
@@ -73,24 +71,35 @@ public:
   @return View matrix
   */
   mat4 getView();
-
+  /**
+  @brief Get view matrix cam
+  @return View matrix
+  */
   void setLoaded(bool value);
+  /**
+  @brief Get if camera has been loaded
+  @return true or false
+  */
   bool getLoaded();
   friend class UpdateDisplay;
 private:
   struct Data;
   ///Internal Data
   Data *data_;
-  void setDirty(bool value){
-    dirty_ = value; 
-  }
-    bool dirty_; 
+  bool dirty_;
+  /**
+  @brief Set camera dirty if its modified
+  */
+  void setDirty(bool value);
   /**
   @brief Load node and puts into the display list.
   @param node Root node
   */
   void loadNode(std::shared_ptr<Node> node);
-
+  /**
+  @brief Control mouse movement input
+  */
+  void controlMouse();
 };
 
 #endif

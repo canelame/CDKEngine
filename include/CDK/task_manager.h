@@ -14,27 +14,36 @@ public:
 	*/
 	Task();
   /**
-  @brief
+  @brief Functionality of each task
   */
   virtual void runTask()=0;
+  /**
+  @brief Destructor
+  */
 	virtual ~Task();
+  /**
+  @brief Get lock state of the task, if is locked means that is executing
+  */
 	bool getLocked();
   /**
-  @brief
+  @brief Lock task when run function begins.
   */
 	void lock();
   /**
-  @brief
+  @brief Unock task when run function begins.
   */
 	void unlock();
   /**
-  @brief
+  @brief Set task id
+  @param id New task ID
   */
   void setId(int32 id);
-  int getId();
   /**
-  @brief
+  @brief Get task id
+  @return Task id
   */
+  int getId();
+
   bool finished_=false;
 private:
   int32 id_;
@@ -67,19 +76,32 @@ public:
 	* @brief Execute the task
 	*/
 	void runTask();
+  /**
+  @brief load real scene
+  @param node Scene node
+  */
   void loadNode(std::shared_ptr<Node>node);
+  /**
+  @brief Load scene objects to order them by material
+  @param node Scene root node
+  */
   void loadObjects(std::shared_ptr<Node>node);
 private:
+  /**
+  @brief Render only geometry objects to compute shadows
+  */
   void directionalShadowPass(bool is_directional);
-  void loadLights();
- Scene* nod_;
+
+  /////////////////////////////
+  // VARIABLES
+  /////////////////////////////
+  Scene* nod_;
 	DisplayList* dl_;
   mat4 proyex_mat_;
   mat4 model_mat_;
   mat4 view_mat_;
   bool cam_loaded_;
   std::map <Material*,std::vector<Drawable*>> objects_order_by_program_;
-  
   std::vector<Light> point_lights;
   std::vector<Light> spot_lights;
   std::vector<vec3> shadow_models_;
@@ -110,7 +132,7 @@ public:
 private:
   const char* name_;
   std::shared_ptr<Material> mat_;
-   std::string data_;
+  std::string data_;
 };
 
 #endif
@@ -143,7 +165,6 @@ private:
 #define __H_TASK_MANAGER__
 
 #include "geometry.h"
-
 #include <memory>
 #include <vector>
 #include <mutex>
@@ -161,16 +182,16 @@ class TaskManager {
   typedef std::shared_ptr<Task> TaskT_;
   typedef std::deque<TaskT_> TaskListT_;
   TaskManager() {};
-  static TaskManager* instance_;
-  //Needed variables to manage the threads
   void mainThreadLoop();
+  //Needed variables to manage the threads
+  static TaskManager* instance_;
   std::mutex mutex_;
   std::condition_variable cond_variable_;
+  std::vector<std::thread> list_thread_;
+  TaskListT_ task_list_;
   bool stop_;
   int num_cores_;
-  std::vector<std::thread> list_thread_;
-
-  TaskListT_ task_list_;
+  std::vector<TaskT_> run_tasks_list_;
 public:
   static TaskManager& instance();
 	~TaskManager();
@@ -183,10 +204,21 @@ public:
 	* @brief Init threads, the number of threads is equal to processor cores.
 	*/
   void init();
+  /**
+  * @brief Init threads, the number of threads is equal to processor cores.
+  */
   void waitTask(Task &t);
+  /**
+  * @brief Wait to task passed by parameter
+    @param t Task to wait.
+  */
   unsigned int totalTasks();
+  /**
+ * @brief Get current runing task
+   @return Total runing task
+  */
   unsigned int runingTasks();
-  std::vector<TaskT_> run_tasks_list_;
+
 
 };
 

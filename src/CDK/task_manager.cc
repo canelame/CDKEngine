@@ -126,14 +126,6 @@ int Task::getId(){
      view_mat_ = nod_->camera_->getView();
    
 	 }
-   void UpdateDisplay::loadLights(){
-     
-     
-     //More lights
-     for (int i = 0; i < nod_->lights_.size(); i++){
-
-     }
-   }
 
    void UpdateDisplay::directionalShadowPass(bool is_directional){
      for (std::map<Material*, std::vector<Drawable*>>::iterator it = objects_order_by_program_.begin();
@@ -143,30 +135,26 @@ int Task::getId(){
          if (t_geo){ dl_->add(std::make_shared<SendObjectShadow>(it->second[i]->geometry()->getBuffer().get(), it->second[i]->worldMat(), is_directional)); }
        }
      }
-     
+      dl_->add(std::make_shared < BindScreen>());
    }
 
    void UpdateDisplay::runTask(){
      lock();
 
-
      //Start rendering the scene into shadow maps
      if (nod_ == nullptr)return;
-     if (nod_->root_ == nullptr || nod_->camera_ == nullptr)return;
-     
+     if (nod_->root_ == nullptr || nod_->camera_ == nullptr)return;   
+     //Load objects
        loadObjects(nod_->root_);
-
-       dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
-     directionalShadowPass(true);
-       dl_->add(std::make_shared<EndShadowCommand>());
-
+     //Create directional depth
+        dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
+        directionalShadowPass(true);
+      //Create depths for each ligth
        for (int i = 0; i < nod_->lights_.size(); i++){
-         switch (nod_->lights_[i]->getType())
-         {
+         switch (nod_->lights_[i]->getType()){
          case Light::LightType::T_POINT_LIGHT:
-          dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get(), i));
+          dl_->add(std::make_shared<RenderPointShadowMapCommand>(nod_->lights_[i].get()));
           directionalShadowPass(false);
-          dl_->add(std::make_shared<EndShadowCubeMapCommand>());
            break;
          case Light::LightType::T_SPOT_LIGHT:
            /* dl_->add(std::make_shared<RenderDirectionalShadowMapCommand>(nod_->directional_light_.get()));
@@ -176,33 +164,25 @@ int Task::getId(){
          default:
            break;
          }
-
        }
 
-       // if (!nod_->directional_light_->getLoaded()){
-
-       //  }
-
+       //If composer is enabled, create each texture for each post_process.
        Composer * composer = EngineManager::instance().getMainComposer();
        if (composer ){
 
          if (composer->size() > 0){
            dl_->add(std::make_shared<ComposePostProcess>(composer));
            loadNode(nod_->root_);
-           //Render composer
-
            dl_->add(std::make_shared<RenderComposer>(composer));
          }
          else{
+           dl_->add(std::make_shared < BeginRender>());
            loadNode(nod_->root_);
          }
-
-       }else{
+       }else{ //If doesnt exist composer load normal scene
+         dl_->add(std::make_shared < BeginRender>());
          loadNode(nod_->root_);
        }
-       
-    
-
      unlock();
    }
 
@@ -236,9 +216,7 @@ int Task::getId(){
 
    }
 
-   void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
-
-    // if (t_drawable){
+void UpdateDisplay::loadNode(std::shared_ptr<Node> node){
        for (std::map<Material*, std::vector<Drawable*>>::iterator it = objects_order_by_program_.begin();
          it != objects_order_by_program_.end(); it++){
          //Use program
@@ -254,67 +232,57 @@ int Task::getId(){
            }
          }
 
-       }
-       
+       }   
      finished_ = true;
-
-   }
+}
 
 
 
 	 //READ_FILE_TASK
-	 ReadFile::ReadFile(const char* file_name,std::string &data){
+ReadFile::ReadFile(const char* file_name,std::string &data){
+   name_ = file_name;
+   data = data_;
+ };
 
-		 name_ = file_name;
-   //  out_file = &data_;
-     data = data_;
-     
-	 };
-
-	 void ReadFile::runTask(){
-     lock();
-		 std::stringstream temp_vertex_data;
-		 std::stringstream temp_fragment_data;
-		 std::string line;
-		 printf("Reading file task | %s | \n",name_);
-		 std::ifstream file_V(name_);
+void ReadFile::runTask(){
+ lock();
+ std::stringstream temp_vertex_data;
+ std::stringstream temp_fragment_data;
+ std::string line;
+ std::ifstream file_V(name_);
 		 if (file_V.is_open()){
 			 temp_vertex_data << file_V.rdbuf();
 			 file_V.close();
 			 line = temp_vertex_data.str();
 			 data_ = line;
-     
 		 }
-
 		 unlock();
      finished_ = true;
-	 }
+}
 
 	 //OTHERS TASKS
 	 //....
 #define STB_IMAGE_IMPLEMENTATION    
 #include "external/stb_image.h"
 
-   ReadTexture::ReadTexture(std::shared_ptr<Texture>t, const char*file_name, const char*type){
-     name_ = file_name;
-     type_ = type;
-     texture_ = t;
+ReadTexture::ReadTexture(std::shared_ptr<Texture>t, const char*file_name, const char*type){
+  name_ = file_name;
+  type_ = type;
+  texture_ = t;
+}
 
-   }
-
-   void ReadTexture::runTask(){
-     lock();
-     printf("Texture %s reading\n", name_);
-     int comp;
-     texture_->loadTexture(name_, type_);
-     unlock();
-     finished_ = true;
-   }
+void ReadTexture::runTask(){
+  lock();
+  int comp;   texture_->loadTexture(name_, type_);
+  unlock();
+  finished_ = true;
+}
 
 
-   unsigned int TaskManager::totalTasks(){
-     return task_list_.size();
-   }
-   unsigned int TaskManager::runingTasks(){
-     return run_tasks_list_.size();
-   }
+unsigned int TaskManager::totalTasks(){
+  return task_list_.size();
+}
+
+unsigned int TaskManager::runingTasks(){
+  return run_tasks_list_.size();
+}

@@ -10,18 +10,16 @@ EngineManager& EngineManager::instance(){
 struct EngineManager::Data{
   std::shared_ptr<ShadowMapMaterial>  shadow_shader_;
   std::shared_ptr<CubeShadowMaterial>  shadow_points_shader_;
- Composer * main_composer_ ;
+  Composer * main_composer_ ;
   int width_;
   int height_;
 
 };
 EngineManager::EngineManager(){
-
   data_ = new Data();
-
 }
 void EngineManager::init(){
-    data_->width_ = 0;
+  data_->width_ = 0;
   data_->height_ = 0;
   data_->shadow_shader_ = std::make_shared<ShadowMapMaterial>();
   data_->shadow_points_shader_ = std::make_shared<CubeShadowMaterial>();

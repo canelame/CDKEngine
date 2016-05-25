@@ -18,18 +18,15 @@
 class TaskManager;
 class ReadFile;
 class ReadTexture;
+
 class Material {
-
 public:
-
-
+  
   enum TYPE_SHADER {
     FRAGMENT_SHADER = 0,
     VERTEX_FRAGMENT 
   };
-  
- /// @brief Material Setting Struct 
-  
+    
   class MaterialSettings{
   public:
 
@@ -44,7 +41,6 @@ public:
         specular_color_ = vec3(1.0);
         diffuse_color_ = vec3(1.0);
     }
-
 
     void setDiffuseColor(vec3 value){ 
       diffuse_color_ = value;
@@ -66,7 +62,7 @@ public:
     }
   };
   Material();
-
+  ~Material(){};
   /**
   * @brief This function allows to load own shader.
   * @param vertex_file The name of vertex GLSL file.
@@ -83,9 +79,6 @@ public:
   @param value New program
   */
   void setProgram(int value);
-
-
-  ~Material(){};
   /**
   @brief Get current Vertex code
   @return Vertex shader code
@@ -97,15 +90,6 @@ public:
   @returnm Code glsl of fragment shader
   */
   std::string getFragmentData();
-
-
-
-  //Variables
-  bool is_compiled_=false;
-  std::string vertex_data_;
-  std::string fragment_data_;
-  std::string geometry_data_;
-  int type_;
 
   /**
   */
@@ -129,6 +113,13 @@ public:
   /**
   */
   int getUniformLocation(const char * name);
+
+  //Variables
+  bool is_compiled_ = false;
+  std::string vertex_data_;
+  std::string fragment_data_;
+  std::string geometry_data_;
+  int type_;
 
 
   protected:
@@ -160,10 +151,9 @@ public:
   UniformTypes value_type_;
   std::vector<UniformData> uniforms_;
   bool uniforms_loaded_;
+  unsigned int program_;
   /**
-  
   */
-
   UniformData* findUniform(const char * name);
   /**
   */
@@ -173,7 +163,6 @@ public:
   */
   void compileShader(GLuint shader)const;
 
-  unsigned int program_;
   friend class OpenGlInterFaz;
   
 

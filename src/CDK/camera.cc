@@ -1,3 +1,7 @@
+
+#include "glm\glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "CDK/engine_manager.h"
 #include "CDK/camera.h"
 #include "GLFW\glfw3.h"
@@ -26,28 +30,28 @@ struct Camera::Data{
   bool created_dl = false;
   const float fps_speed_move = 0.2;
   bool loaded=false;
+
 };
 
 Camera::Camera(){
   
   data_ = new Data;
- 
   data_->position_.x = 0.0; 	data_->position_.y = 0.0; 	data_->position_.z =0.0;
   data_->up_.x = 0; 	data_->up_.y = 1.0; 	data_->up_.z = 0;
   data_->front_.x = 0.0; 	data_->front_.y = 0.0; 	data_->front_.z = -100.0;
   setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
   int w = EngineManager::instance().width();
   int h = EngineManager::instance().height();
-
   if(w!=0 && h!=0)setPerspective(45.0f, w/h , 0.1f, 10000.0f);
-
   data_->dl_cam_ = std::make_shared<DisplayList>();
   data_->dl_copy_ = std::make_shared<DisplayList>();
 }
+
 void Camera::setPosition(vec3 position){
   data_->position_ = position;
   setDirty(true);
 }
+
 void Camera::setFront(vec3 front){
   setDirty(true);
   data_->front_ = front;
@@ -69,7 +73,6 @@ void Camera::render(Scene *node){
     setPerspective(45.0f, EngineManager::instance().width() / EngineManager::instance().height(), 0.1, 10000.0f);
     EngineManager::instance().setWindowModified(false);
   }
-
   if (node->root_->getDirtyNode() || node->camera_->dirty_){
     std::shared_ptr<UpdateDisplay> update_task = std::make_shared<UpdateDisplay>(data_->dl_copy_.get(), node, data_->loaded);
     TaskManager::instance().addTask(update_task);
@@ -87,9 +90,6 @@ void Camera::render(Scene *node){
   else{
     EngineManager::instance().last_display_list_->execute();
   }
- 
-
-
 
   //GuInterface::instance().draw(node->root_);
  
@@ -176,9 +176,11 @@ void Camera::controlMouse(){
   setLookAt(data_->position_, data_->position_ + data_->front_, data_->up_);
 
 }
+
  glm::mat4 Camera::getProyection(){
    return data_->proyection_mat_;
  }
+
  glm::mat4 Camera::getView(){
    return data_->look_at_mat_;
  }
@@ -189,4 +191,7 @@ void Camera::controlMouse(){
 
  bool Camera::getLoaded(){
    return data_->loaded;
+ }
+ void Camera::setDirty(bool value){
+   dirty_ = value;
  }

@@ -10,6 +10,12 @@
 #include "CDK/engine_manager.h"
 #include "CDK/texture_cache.h"
 
+const int texture_direction_light = 0;
+const int texture_point_light = 1;
+const int texture_pmaterial_i = 2;
+const int material_texture = 10;
+const int material_diffuse = 20;
+
 OpenGlInterFaz* OpenGlInterFaz::instance_ = nullptr;
 OpenGlInterFaz& OpenGlInterFaz::instance(){
   if (instance_ == NULL){
@@ -18,44 +24,33 @@ OpenGlInterFaz& OpenGlInterFaz::instance(){
   return *instance_;
 }
 
-
-struct OpenGlInterFaz::Data{
-  GLuint shadow_texture_;
-  GLuint shadow_vao_;
-  GLuint shadow_vbo_v_;
-  GLuint shadow_vbo_i_;
-  GLuint shadow_program_;
-  GLuint shadow_vertex_shader_;
-  GLuint shadow_fragment_shader_;
-  bool uniforms_loaded = false;
-  };
-
-OpenGlInterFaz::OpenGlInterFaz(){
-  data_ = new Data;
-
-};
+OpenGlInterFaz::OpenGlInterFaz(){};
 
 ////////////////////////////////////////////////////////
 ////// MATERIAL FUNCTIONS
 ////////////////////////////////////////////////////////
 int OpenGlInterFaz::loadMaterial(Material *mat){
 
-  data_->shadow_program_ = glCreateProgram();
-  data_->shadow_vertex_shader_ = glCreateShader(GL_VERTEX_SHADER);
+  GLuint shadow_vertex_shader_;
+  GLuint shadow_fragment_shader_;
+  GLuint shadow_program_;
+
+  shadow_program_ = glCreateProgram();
+  shadow_vertex_shader_ = glCreateShader(GL_VERTEX_SHADER);
   const char* vertex_data = mat->vertex_data_.c_str();
   GLint lenght = strlen(vertex_data);
-  glShaderSource(data_->shadow_vertex_shader_, 1, &vertex_data, &lenght);
-  compileShader(data_->shadow_vertex_shader_);
+  glShaderSource(shadow_vertex_shader_, 1, &vertex_data, &lenght);
+  compileShader(shadow_vertex_shader_);
 
   //FRAGENT SHADER
   const char * fragment_data = mat->fragment_data_.c_str();
   lenght = strlen(fragment_data);
-  data_->shadow_fragment_shader_ = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(data_->shadow_fragment_shader_, 1, &fragment_data, &lenght);
-  compileShader(data_->shadow_fragment_shader_);
+  shadow_fragment_shader_ = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(shadow_fragment_shader_, 1, &fragment_data, &lenght);
+  compileShader(shadow_fragment_shader_);
 
-  glAttachShader(data_->shadow_program_, data_->shadow_vertex_shader_);
-  glAttachShader(data_->shadow_program_, data_->shadow_fragment_shader_);
+  glAttachShader(shadow_program_, shadow_vertex_shader_);
+  glAttachShader(shadow_program_, shadow_fragment_shader_);
 
   GLuint geo_shader = 0;
   if (mat->geometry_data_.size() > 0){
@@ -64,28 +59,28 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
     geo_shader = glCreateShader(GL_GEOMETRY_SHADER);
     glShaderSource(geo_shader, 1, &geo_shader_data, &lenght);
     compileShader(geo_shader);
-    glAttachShader(data_->shadow_program_, geo_shader);
+    glAttachShader(shadow_program_, geo_shader);
   }
 
-  glLinkProgram(data_->shadow_program_);
+  glLinkProgram(shadow_program_);
   GLint program_compiled;
-  glGetProgramiv(data_->shadow_program_, GL_LINK_STATUS, &program_compiled);
+  glGetProgramiv(shadow_program_, GL_LINK_STATUS, &program_compiled);
 
   if (program_compiled == GL_FALSE){
     GLchar info_log[512];
-    glGetProgramInfoLog(data_->shadow_program_, 512, NULL, info_log);
+    glGetProgramInfoLog(shadow_program_, 512, NULL, info_log);
     printf("LINKED PROGRAM ERROR: %s\n", info_log);
   }
   else{
-    glDeleteShader(data_->shadow_vertex_shader_);
-    glDeleteShader(data_->shadow_fragment_shader_);
+    glDeleteShader(shadow_vertex_shader_);
+    glDeleteShader(shadow_fragment_shader_);
     int location = 0;
     GLint num_uniforms;
     Material::UniformTypes t_u;
     std::string name;
-    glGetProgramiv(data_->shadow_program_, GL_ACTIVE_UNIFORMS, &num_uniforms);
+    glGetProgramiv(shadow_program_, GL_ACTIVE_UNIFORMS, &num_uniforms);
     for (int i = 0; i < num_uniforms; i++){
-      getUniformInfo(data_->shadow_program_, i, name, location, t_u);
+      getUniformInfo(shadow_program_, i, name, location, t_u);
       Material::UniformData *t_uni = mat->findUniform(name.c_str());
       if (t_uni != nullptr){
         t_uni->location_ = location;
@@ -100,8 +95,8 @@ int OpenGlInterFaz::loadMaterial(Material *mat){
 
     }
     mat->is_compiled_ = true;
-    mat->setProgram( data_->shadow_program_);
-    return data_->shadow_program_;
+    mat->setProgram( shadow_program_);
+    return shadow_program_;
   }
 
 }
@@ -192,8 +187,8 @@ void OpenGlInterFaz::useDiffuseMaterial(Material *mat, Material::MaterialSetting
 
     //dir light
     int loc_d = mat->getUniformLocation("u_directional_light.depth_map");
-    OpenGlInterFaz::instance().useUniformI(loc_d, TEXTURE_DIRECTION_LIGHT);
-    glActiveTexture(GL_TEXTURE0 + TEXTURE_DIRECTION_LIGHT);
+    OpenGlInterFaz::instance().useUniformI(loc_d, texture_direction_light);
+    glActiveTexture(GL_TEXTURE0 + texture_direction_light);
     glBindTexture(GL_TEXTURE_2D, dir_l->getShadowMap()->getTexture()->getID());
 
     //Points
@@ -204,8 +199,8 @@ void OpenGlInterFaz::useDiffuseMaterial(Material *mat, Material::MaterialSetting
       mat->setUniform3fValue(("lights_d[" + std::to_string(l) + "].diffuse_color").c_str(), &lights[l]->getDiffuseColor());
       int loc_s = mat->getUniformLocation("shadow_texture");
       if (loc_s >= 0){
-        OpenGlInterFaz::instance().useUniformI(loc_s, TEXTURE_POINT_LIGHT + l);
-        glActiveTexture(GL_TEXTURE0 + TEXTURE_POINT_LIGHT + l);
+        OpenGlInterFaz::instance().useUniformI(loc_s, texture_point_light + l);
+        glActiveTexture(GL_TEXTURE0 + texture_point_light + l);
         PointLight * p_l = (PointLight*)lights[l].get();
         glBindTexture(GL_TEXTURE_CUBE_MAP, p_l->getShadowCubeMapTexture());
 
@@ -240,8 +235,8 @@ void OpenGlInterFaz::useTextureMaterial(Material *mat, Material::MaterialSetting
 
     //dir light
     int loc_d = mat->getUniformLocation("u_directional_light.depth_map");
-    OpenGlInterFaz::instance().useUniformI(loc_d, TEXTURE_DIRECTION_LIGHT);
-    glActiveTexture(GL_TEXTURE0 + TEXTURE_DIRECTION_LIGHT);
+    OpenGlInterFaz::instance().useUniformI(loc_d, texture_direction_light);
+    glActiveTexture(GL_TEXTURE0 + texture_direction_light);
     glBindTexture(GL_TEXTURE_2D, dir_l->getShadowMap()->getTexture()->getID());
 
     //Points
@@ -252,8 +247,8 @@ void OpenGlInterFaz::useTextureMaterial(Material *mat, Material::MaterialSetting
       mat->setUniform3fValue(("lights[" + std::to_string(l) + "].diffuse_color").c_str(), &lights[l]->getDiffuseColor());
       int loc_s = mat->getUniformLocation("shadow_texture");
       if (loc_s >= 0){
-        OpenGlInterFaz::instance().useUniformI(loc_s, TEXTURE_POINT_LIGHT);
-        glActiveTexture(GL_TEXTURE0 + TEXTURE_POINT_LIGHT);
+        OpenGlInterFaz::instance().useUniformI(loc_s, texture_point_light);
+        glActiveTexture(GL_TEXTURE0 + texture_point_light);
         PointLight * p_l = (PointLight*)lights[l].get();
         glBindTexture(GL_TEXTURE_CUBE_MAP, p_l->getShadowCubeMapTexture());
 
@@ -285,8 +280,8 @@ void OpenGlInterFaz::useTextureMaterial(Material *mat, Material::MaterialSetting
     }
     //Use texture
     int loc_d = mat->getUniformLocation("u_diffuse_texture1");
-    OpenGlInterFaz::instance().useUniformI(loc_d, TEXTURE_MATERIAL_I + i);
-    glActiveTexture(GL_TEXTURE0 + TEXTURE_MATERIAL_I + i);
+    OpenGlInterFaz::instance().useUniformI(loc_d, texture_pmaterial_i + i);
+    glActiveTexture(GL_TEXTURE0 + texture_pmaterial_i + i);
 
     glBindTexture(GL_TEXTURE_2D, current_texture->getID());
 
@@ -301,6 +296,10 @@ void OpenGlInterFaz::useTextureMaterial(Material *mat, Material::MaterialSetting
 ////////////////////////////////////////////////////////
 void OpenGlInterFaz::loadBuffer(Buffer *buff){
 
+  GLuint shadow_vao_;
+  GLuint shadow_vbo_v_;
+  GLuint shadow_vbo_i_;
+
   GLint position_size = buff->vertexSize() * sizeof(float);
   GLint normal_size = buff->normalSize() * sizeof(float);
   GLint uv_size = buff->uvSize() * sizeof(float);
@@ -308,11 +307,11 @@ void OpenGlInterFaz::loadBuffer(Buffer *buff){
   GLint bitan_size = buff->bitangentSize() * sizeof(float);
   GLint index_size = buff->indiceSize() * sizeof(unsigned int);
 
-  glGenVertexArrays(1, &data_->shadow_vao_);
-  glGenBuffers(1, &data_->shadow_vbo_v_);
-  glGenBuffers(1, &data_->shadow_vbo_i_);
-  glBindVertexArray(data_->shadow_vao_);
-  glBindBuffer(GL_ARRAY_BUFFER, data_->shadow_vbo_v_);
+  glGenVertexArrays(1, &shadow_vao_);
+  glGenBuffers(1, &shadow_vbo_v_);
+  glGenBuffers(1, &shadow_vbo_i_);
+  glBindVertexArray(shadow_vao_);
+  glBindBuffer(GL_ARRAY_BUFFER, shadow_vbo_v_);
   glBufferData(GL_ARRAY_BUFFER, position_size + normal_size + uv_size, NULL, GL_STATIC_DRAW);
   //Load positions
   glBufferSubData(GL_ARRAY_BUFFER, 0, position_size, &buff->getData()[0]);
@@ -321,7 +320,7 @@ void OpenGlInterFaz::loadBuffer(Buffer *buff){
   int a = strlen(buff->getData());
   glBufferSubData(GL_ARRAY_BUFFER, position_size, normal_size, &buff->getData()[position_size]);
   glBufferSubData(GL_ARRAY_BUFFER, position_size + normal_size, uv_size, &buff->getData()[position_size + normal_size]);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data_->shadow_vbo_i_);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shadow_vbo_i_);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, &buff->getData()[position_size + normal_size + uv_size + tan_size + bitan_size], GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
@@ -334,9 +333,9 @@ void OpenGlInterFaz::loadBuffer(Buffer *buff){
   glEnableVertexAttribArray(2);
 
   glBindVertexArray(0);
-  glDeleteBuffers(1, &data_->shadow_vbo_i_);
-  glDeleteBuffers(1, &data_->shadow_vbo_v_);
-  buff->setVAO(data_->shadow_vao_);
+  glDeleteBuffers(1, &shadow_vbo_i_);
+  glDeleteBuffers(1, &shadow_vbo_v_);
+  buff->setVAO(shadow_vao_);
 }
 
 void OpenGlInterFaz::drawGeometry(int vao, unsigned int indices){
@@ -372,7 +371,7 @@ void OpenGlInterFaz::bindFrameBuffer(int fb_id, FrameBuffer::kFramebufferBindTyp
 
 }
 
-void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb, bool use_render_buffer){
+void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb){
 
   //Create Program for frameBuffer
 
@@ -432,13 +431,6 @@ void OpenGlInterFaz::createFrameBuffer(FrameBuffer &fb, bool use_render_buffer){
     fb.setLoaded(true);
   }
 
-}
-
-void OpenGlInterFaz::renderFrameBuffer(FrameBuffer &fb){
-
-  glBindTexture(GL_TEXTURE_2D, fb.getTexture()->getID());
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-  glBindVertexArray(0);
 }
 
 void OpenGlInterFaz::createShadoCubeMap(PointLight *pl){

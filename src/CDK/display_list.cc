@@ -4,21 +4,20 @@
 #include "CDK/engine_manager.h"
 
 #define ENGINE EngineManager::instance()
-DisplayList::DisplayList(){
-
-}
-DisplayList::~DisplayList(){
-}
+DisplayList::DisplayList(){}
+DisplayList::~DisplayList(){}
 void DisplayList::add(Comm_ c){
 	listCommand_.push_back(c);
-  
 }
 void DisplayList::execute(){
-
   renderScene();
-
 }
 
+void DisplayList::renderScene(){
+  for (int i = 0; i < listCommand_.size(); ++i){
+    listCommand_[i]->runCommand();
+  }
+}
 
 void DisplayList::clear(){
   listCommand_.clear();
@@ -27,19 +26,10 @@ void DisplayList::clear(){
 int DisplayList::size(){ 
 	return 0;
 }
-
-
-
-
-
-
 ///////// DRAW_COMMAND CLASS/////////////////
 ////////////////////////////////////////////
 DrawCommand::DrawCommand(Buffer *g){
-	
 		t_geo = g;
-    indices_size_ = t_geo->indiceSize();
-    vao_ = t_geo->getVAO();
 }
 
 void DrawCommand::runCommand()const{
@@ -47,7 +37,7 @@ void DrawCommand::runCommand()const{
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
   }
-  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), indices_size_);
+  OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), t_geo->indiceSize());
 
 }
 
@@ -64,7 +54,6 @@ void UseMaterialCommand::runCommand()const{
     material_->is_compiled_ = true;
   }
   OpenGlInterFaz::instance().useMaterial(material_);
-  
 }
 ///////////////////////////////////////////////////
 UseMaterialUniformsCommand::UseMaterialUniformsCommand(Material* mat, Material::MaterialSettings *mat_s,
@@ -94,19 +83,22 @@ void UseMaterialUniformsCommand::runCommand()const{
     OpenGlInterFaz::instance().useMaterialUniforms(mat_);
     break;
   }
- 
 
 }
 
+BindScreen::BindScreen(){
+
+}
+/**
+@brief Reimplemented method , to give funtionality
+*/
+void BindScreen::runCommand()const{
+  //glViewport(0, 0, 1024, 1024);
+  glBindFramebuffer( GL_FRAMEBUFFER,0);
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  //glEnable(GL_DEPTH_TEST);
+}
 ///////////////////////////////////////////////////
-
-void DisplayList::renderScene(){
-
-  for (int i = 0; i < listCommand_.size(); ++i){
-    listCommand_[i]->runCommand();
-  }
-}
-
 
 SendObjectShadow::SendObjectShadow(Buffer * g,mat4 m,bool is_directional){
   m_ = m;
@@ -123,35 +115,19 @@ void SendObjectShadow::runCommand()const{
     int location = ENGINE.getCubeShadowMap()->getUniformLocation("u_model_sp");
       OpenGlInterFaz::instance().useUniformMat4(location,m_);
   }
-
   if (t_geo->isDirty()){
     OpenGlInterFaz::instance().loadBuffer(t_geo);
     t_geo->setDirty(false);
    }
- 
   OpenGlInterFaz::instance().drawGeometry(t_geo->getVAO(), (unsigned int)t_geo->indiceSize());
 }
 
- EndShadowCommand::EndShadowCommand(){}
- void EndShadowCommand::runCommand()const{
-   
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   glViewport(0, 0, EngineManager::instance().width(), EngineManager::instance().height());
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
- }
 
- EndShadowCubeMapCommand::EndShadowCubeMapCommand(){}
- void EndShadowCubeMapCommand::runCommand()const{
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  
- }
 
  RenderDirectionalShadowMapCommand::RenderDirectionalShadowMapCommand(Light* l){
    light_ = l;
  }
- void RenderDirectionalShadowMapCommand::useMaterial(){
-  
- }
+
 #include "CDK/directional_light.h"
  void RenderDirectionalShadowMapCommand::runCommand()const{
    
@@ -175,7 +151,7 @@ void SendObjectShadow::runCommand()const{
        d_texture->setMinFilter(Texture::kTextureFiltering::kTextureFiltering_Nearest);
        d_texture->setWrapCoordinateS(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
        d_texture->setWrapCoordinateT(Texture::kTextureWrapping::kTextureWrapping_Clamp_Border);
-       OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map, false);
+       OpenGlInterFaz::instance().createFrameBuffer(*light_depth_map);
        ENGINE.getShadowMap()->setUniformMat4Value("light_screen", &dr_light->getLightProyection());
        light_depth_map->setLoaded(true);
      }
@@ -184,18 +160,18 @@ void SendObjectShadow::runCommand()const{
                                                  FrameBuffer::kFramebufferBindType::
                                                  kFramebufferBindType_FrameBuffer);
      OpenGlInterFaz::instance().useMaterial(ENGINE.getShadowMap());
+     glClear(GL_DEPTH_BUFFER_BIT);
      int loca_proj_light = ENGINE.getShadowMap()->getUniformLocation("light_screen");
      OpenGlInterFaz::instance().useUniformMat4(loca_proj_light, dr_light->getLightProyection());
-     glClear(GL_DEPTH_BUFFER_BIT);
+     
      
    }
  }
 
 #include "CDK/point_light.h"
 
- RenderPointShadowMapCommand::RenderPointShadowMapCommand(Light * l, int face){
+ RenderPointShadowMapCommand::RenderPointShadowMapCommand(Light * l){
    light_ = (PointLight*)l;
-   face_ = face;
  }
  void RenderPointShadowMapCommand::runCommand()const{
 
@@ -207,17 +183,12 @@ void SendObjectShadow::runCommand()const{
    if (light_->getShadowCubeMapTexture() < 0 && light_->getShadowCubeMapBuffer() < 0){
      OpenGlInterFaz::instance().createShadoCubeMap(light_);
    }
-   //
-
-
-
    glViewport(0, 0, 1024, 1024);
    OpenGlInterFaz::instance().bindFrameBuffer(light_->getShadowCubeMapBuffer(),
-     FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
-
+   FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
+   glClear(GL_DEPTH_BUFFER_BIT);
    OpenGlInterFaz::instance().useMaterial(ENGINE.getCubeShadowMap());
-   
-     std::vector<mat4> s_m = light_->getShadowMatrices();
+   std::vector<mat4> s_m = light_->getShadowMatrices();
      //Set correct values to uniforms
      for (int i = 0; i < 6; i++){
        int u_pos = ENGINE.getCubeShadowMap()->getUniformLocation(("shadow_matrices[" + std::to_string(i) + "]").c_str());
@@ -234,65 +205,26 @@ void SendObjectShadow::runCommand()const{
        OpenGlInterFaz::instance().useUniformF(l_fp, 25.0);
      }
 
-     glClear(GL_DEPTH_BUFFER_BIT);
  }
 
  PostProcessBegin::PostProcessBegin(){
 
  }
  PostProcessBegin::PostProcessBegin(FrameBuffer* fb, PostProcess * mat){
-   //fb_ptr_ = fb;
+
    post_p_ = mat;
    fb_ptr_ = fb;
  }
  void PostProcessBegin::runCommand()const{
 
-
    glViewport(0, 0, 1024, 1024);
-
-
    if (!fb_ptr_->isLoaded()){
-     OpenGlInterFaz::instance().createFrameBuffer(*fb_ptr_, true);
+     OpenGlInterFaz::instance().createFrameBuffer(*fb_ptr_);
    }
    OpenGlInterFaz::instance().bindFrameBuffer(fb_ptr_->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
    glClear(GL_COLOR_BUFFER_BIT);
-
- 
-  
-  
  }
 
-
- PostProcessEnd::PostProcessEnd(PostProcess* post_p_scene, FrameBuffer* last_fb){
-   post_p_ = post_p_scene;
-   last_fb_ = &post_p_->getFrameBuffer();
- }
- void PostProcessEnd::runCommand()const{
-   Material * mat = &post_p_->getMaterial();
-   if (last_fb_->isLoaded() == false){
-     mat->setProgram(OpenGlInterFaz::instance().loadMaterial(mat));
-   }
-
-
-
-  /* OpenGlInterFaz::instance().bindFrameBuffer(0, FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
-
-   OpenGlInterFaz::instance().useMaterial(composer_material_.get());
-
-   if (pos_texture0 >= 0){
-     OpenGlInterFaz::instance().useUniformI(pos_texture0, TEXTURE_LOCATION + 0);
-     //OpenGlInterFaz::instance().useTexture(TEXTURE_LOCATION + 0, effects_list_[0]->getFrameBuffer().getTexture()->getID());
-     OpenGlInterFaz::instance().useTexture(TEXTURE_LOCATION + 0, aux_target_->getTexture()->getID());
-   }
-   Buffer * buff = render_quad_->getBuffer().get();
-   if (buff->isDirty()){
-     OpenGlInterFaz::instance().loadBuffer(buff);
-
-     buff->setDirty(false);
-   }
-   OpenGlInterFaz::instance().drawGeometry((unsigned int)buff->getVAO(), 6);
- */
- }
 
  RenderComposer::RenderComposer(Composer * comp){
    composer_ = comp;
@@ -310,18 +242,25 @@ void SendObjectShadow::runCommand()const{
  }
  void ComposePostProcess::runCommand()const{
  
-
    glViewport(0, 0, 1024, 1024);
    FrameBuffer *t_f = composer_->aux_target_.get();
    
    if ( !composer_->aux_target_->isLoaded() ){
-     OpenGlInterFaz::instance().createFrameBuffer(*t_f, true);
-     //Material * mat = &post_p_->getMaterial();
-     //FrameBuffer *pp_ = &post_p_->getFrameBuffer();
-    // OpenGlInterFaz::instance().createFrameBuffer(*pp_, true);
-     //mat->setProgram(OpenGlInterFaz::instance().loadMaterial(&post_p_->getMaterial()));
+     OpenGlInterFaz::instance().createFrameBuffer(*t_f);
    }
+
    OpenGlInterFaz::instance().bindFrameBuffer(t_f->getId(), FrameBuffer::kFramebufferBindType::kFramebufferBindType_FrameBuffer);
    glClear(GL_COLOR_BUFFER_BIT);
+   glDisable(GL_DEPTH_TEST);
+ }
+
+ BeginRender::BeginRender(){
+ 
+ }
+
+ void BeginRender::runCommand()const{
+   glViewport(0, 0, 1024, 2014);
+   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
  }

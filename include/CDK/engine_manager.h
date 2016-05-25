@@ -4,8 +4,8 @@
 #include "composer.h"
 class EngineManager{
 public:
-  friend class Material;
-  bool window_size_modified_ = false;
+
+bool window_size_modified_ = false;
 static  EngineManager& instance();
 /**
 */
@@ -28,18 +28,28 @@ void setHeight(int h);
 */
 void setWindowModified(bool value);
 
-
-
 private:
+ EngineManager();
+
  struct Data;
  Data *data_;
- EngineManager();
  std::shared_ptr<DisplayList> last_display_list_;
  static EngineManager * instance_;
+
+ /**
+ */
  Composer * getMainComposer();
+ /**
+ */
  void setMainComposer(const Composer* comp);
+ /**
+ */
  ShadowMapMaterial* getShadowMap();
+ /**
+ */
  CubeShadowMaterial* getCubeShadowMap();
+ /**
+ */
  void setMainComposer();
 
 
@@ -49,4 +59,5 @@ private:
  friend class RenderPointShadowMapCommand;
  friend class Composer;
  friend class UpdateDisplay;
+ friend class Material;
 };

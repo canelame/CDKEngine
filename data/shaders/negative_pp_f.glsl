@@ -8,5 +8,5 @@ uniform sampler2D u_wb_texture;
 
 void main()
 {
-		color = vec4(1.0 - vec3(texture(u_wb_texture, TexCoords)), 1.0);
+	color = vec4(1.0 - vec3(texture(u_wb_texture, TexCoords)), 1.0);
 }  

@@ -75,8 +75,6 @@ int Window::main(int argc, char** argv){
   //terrain->setMaterial(mater);
   drawable_cube->setMaterialSettings(mat_p);
   
-
-
   scene->addChild(drawable_cube);
   terrain->setMaterial(mater);
   terrain->setMaterialSettings(mat_p);
@@ -125,17 +123,17 @@ int Window::main(int argc, char** argv){
 
 
   scene->root_->setPosition(vec3(0.0,0.0,0.0));
-
   std::shared_ptr<CrazyPP>render_to_text = std::make_shared<CrazyPP>();
   render_to_text->init();
-  composer->addEffect(render_to_text);
+   //composer->addEffect(render_to_text);
 
   std::shared_ptr<NegativePP>n_pp = std::make_shared<NegativePP>();
   n_pp->init();
-  composer->addEffect(n_pp);
-  glEnable(GL_DEPTH_TEST);
+  //composer->addEffect(n_pp);
+
  
   while (window->processEvents()){
+    glEnable(GL_DEPTH_TEST);
     scene->camera_->FpsCameraUpdate();
     scene->render();
 

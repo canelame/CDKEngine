@@ -14,59 +14,82 @@ ESAT 2016.
 #include "geometry.h"
 class DrawCommand : public Command{
 public:
+  /**
+  @brief Constructor
+  @param g Geometry buffer to load
+  */
 	DrawCommand(Buffer* g);
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
 	void runCommand()const;
 private:
   Buffer *t_geo;
-  int indices_size_;
-  int vao_;
+
 };
 #endif
+#ifndef __H_BIND_SCREEN_COMMAND__
+#define __H_BIND_SCREEN_COMMAND__
+#include "command.h"
+#include "opengl_interfaz.h"
 
-
-///SHADOWS COMMAND CLASS
-
-
-
-///SHADOWS COMMAND CLASS
-
-#ifndef __H_SHADOW_END_COMMAND__
-#define __H_SHADOW_END_COMMAND__
-class EndShadowCommand : public Command{
+class BindScreen : public Command{
 public:
-  EndShadowCommand();
- 
-  void runCommand()const;
-private:
-
-
-};
-#ifndef __H_SHADOW_CUBE_END_COMMAND__
-#define __H_SHADOW_CUBE_END_COMMAND__
-class EndShadowCubeMapCommand : public Command{
-public:
-  EndShadowCubeMapCommand();
-
+  /**
+  @brief Constructor
+  @param g Geometry buffer to load
+  */
+  BindScreen();
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
 
 
 };
 #endif
+
+
+#ifndef __H_BEGIN_RENDER_COMMAND__
+#define __H_BEGIN_RENDER_COMMAND__
+#include "command.h"
+#include "opengl_interfaz.h"
+class BeginRender : public Command{
+public:
+  /**
+  @brief Constructor
+  @param g Geometry buffer to load
+  */
+  BeginRender();
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
+  void runCommand()const;
+private:
+
+
+};
 #endif
 
+///SHADOWS COMMAND CLASS
 
 #ifndef __RENDER_SHADOW_MAP__
 #define __RENDER_SHADOW_MAP__
 
 class RenderDirectionalShadowMapCommand : public Command{
 public:
+  /**
+  @brief Constructor
+  @param Light to create depth map
+  */
   RenderDirectionalShadowMapCommand(Light * l);
-  Light *light_;
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
-  void useMaterial();
 private:
-
+  Light *light_;
 
 };
 #endif
@@ -76,12 +99,17 @@ private:
 
 class RenderPointShadowMapCommand : public Command{
 public:
-  RenderPointShadowMapCommand(Light * l, int face);
-  PointLight *light_;
+  /**
+  @brief Constructor
+  @param l Light to create depth map
+  */
+  RenderPointShadowMapCommand(Light *l);
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
-  int face_;
-
+  PointLight *light_;
 };
 #endif
 
@@ -90,11 +118,17 @@ private:
 #include "spot_light.h"
 class RenderSpotShadowMapCommand : public Command{
 public:
+  /**
+  @brief Constructor
+  @param l Light to create depth map
+  */
   RenderSpotShadowMapCommand(Light * l, int face);
-  SpotLight *light_;
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
-
+  SpotLight *light_;
 
 };
 #endif
@@ -104,9 +138,20 @@ private:
 #define __H_SEND_OBJECT_SHADOW__
 class SendObjectShadow : public Command{
 public:
+  /**
+  @brief Constructor
+  @param g Object buffer 
+  @param m Model mat for the object 
+  @param is_directional Set if is a directional or not
+  */
   SendObjectShadow(Buffer *g,mat4 m,bool is_directional);
-
+  /**
+  @brief Constructor
+  */
   SendObjectShadow(){}
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
   mat4 m_;
@@ -125,8 +170,18 @@ private:
 #include "opengl_interfaz.h"
 class UseMaterialCommand : public Command{
 public:
+  /**
+  @brief Constructor
+  @param mat Material to use
+  */
 	UseMaterialCommand(Material *mat);
+  /**
+  @brief Destructor
+  */
   UseMaterialCommand(){}
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
 	void runCommand()const;
 private:
   Material *material_;
@@ -141,9 +196,25 @@ private:
 #include "opengl_interfaz.h"
 class UseMaterialUniformsCommand : public Command{
 public:
+  /**
+  @brief Constructor
+  @param mat Material to use
+  @param m Material settings to use
+  @param projection Cam projection
+  @param view Cam view
+  @param model Cam model
+  @param lights point lights
+  @param dir_light Dir light
+  */
   UseMaterialUniformsCommand( Material* mat,Material::MaterialSettings *mat_s,
-    mat4 projection,mat4 view,mat4 model, std::vector<std::shared_ptr<Light>> geo, Light *dir_light);
+    mat4 projection,mat4 view,mat4 model, std::vector<std::shared_ptr<Light>> lights, Light *dir_light);
+  /**
+  @brief Constructor
+  */
   UseMaterialUniformsCommand(){}
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
   Material::MaterialSettings *mat_set_;
@@ -153,7 +224,6 @@ private:
   mat4 model_;
   mat4 view_;
   std::vector<std::shared_ptr<Light>> lights_;
-
 
 };
 
@@ -166,8 +236,17 @@ private:
 #include "opengl_interfaz.h"
 class PostProcessBegin : public Command{
 public:
+  /**
+  @brief Constructor
+  */
   PostProcessBegin(FrameBuffer* fb,PostProcess * mat);
+  /**
+  @brief Destructor
+  */
   PostProcessBegin();
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
 
@@ -182,8 +261,17 @@ private:
 #include "composer.h"
 class ComposePostProcess : public Command{
 public:
+  /**
+  @brief Constructor
+  */
   ComposePostProcess(Composer* composer);
+  /**
+  @brief Destructor
+  */
   ComposePostProcess();
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
   Composer* composer_;
@@ -191,24 +279,7 @@ private:
 };
 #endif
 
-#ifndef __H_END_POSTPROCESS__
-#define __H_END_POSTPROCESS__
-#include "command.h"
-#include "../post_process.h"
-#include "opengl_interfaz.h"
-class PostProcessEnd : public Command{
-public:
-  PostProcessEnd(PostProcess*  post_p,FrameBuffer*  last_fb);
- ~ PostProcessEnd(){}
-  void runCommand()const;
-private:
 
-  PostProcess*  post_p_;
-  FrameBuffer* last_fb_;
-
-};
-
-#endif
 
 
 
@@ -216,10 +287,22 @@ private:
 #define __H_RENDER_COMPOSER__
 #include "command.h"
 #include "composer.h"
+/**
+@brief Render post-process to their frambuffer
+*/
 class RenderComposer : public Command{
 public:
+  /**
+  @brief Constructor
+  */
   RenderComposer(Composer *comp);
+  /**
+  @brief Destructor
+  */
   ~RenderComposer(){}
+  /**
+  @brief Reimplemented method , to give funtionality
+  */
   void runCommand()const;
 private:
 
@@ -248,19 +331,13 @@ private:
 */
 
 class DisplayList{
- //private funtions
-  ///Draw Command variable
-  unsigned int indices_size_;
-  unsigned int vao_;
-  bool shadow_buffer_created_=false;
-  GLuint  depth_buffer_id__;
+
 public:
   typedef std::shared_ptr<Command> Comm_;
   typedef std::vector < Comm_ > List;
-
   DisplayList();
 	/**
-	*
+	@brief Destructor
 	*/
   ~DisplayList();
 	/**
@@ -277,22 +354,19 @@ public:
 	* @brief Execute display list
 	*/
   void execute();
-
   /**
   *@brief Clean commands list
   * @param  Update the display list.
   */
   void clear();
 private:
+  /**
+  *@brief Execute displaylist to render scene
+  */
   void renderScene();
 
-
-  std::shared_ptr<Material> shadow_shader_;
-
+  //////////////////////
 	List listCommand_;
-
-  List post_process_commands_;
-  List shadowList_;
 
 };
 
