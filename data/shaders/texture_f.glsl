@@ -55,7 +55,7 @@ uniform float u_shinn;
 
  uniform PointLight lights[10];
  uniform Light u_directional_light;
-
+ uniform int enable_shadow;
 
 vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir);
 vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir);
@@ -120,7 +120,13 @@ vec3 computeDirectionLight(Light l_dir,vec3 normal,vec3 viewDir){
 
 	vec3 diffuse = l_dir.diffuse_color*diff*u_material_diff* vec3(texture(u_diffuse_texture1,o_uv));
 	vec3 specular = l_dir.specular_color *spec*u_material_specular* vec3(texture(u_diffuse_texture1,o_uv));
-	float shadow = computeShadows(directional_light_proyection,normal,lightDir);
+
+		float shadow = 0.0;
+	if(enable_shadow == 1){
+		shadow = computeShadows(directional_light_proyection,normal,lightDir);
+	}
+
+
 	vec3 lighting = ( ambient +( 1.0 - shadow ) *  (diffuse + specular));
 	return  lighting;
 
@@ -143,7 +149,12 @@ vec3 computePointLight(PointLight l_dir,vec3 normal ,vec3 fragPos,vec3 viewDir){
 	vec3 diffuse = (l_dir.diffuse_color*u_material_diff*vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
 	vec3 specular = (l_dir.specular_color*u_material_specular * vec3(texture(u_diffuse_texture1,o_uv))*attenuation);
 
-	float shadow  =  computePointLightShadow(fragPos, l_dir);
+	float shadow = 0.0;
+	if(enable_shadow == 1){
+		shadow = computePointLightShadow(fragPos, l_dir);
+	}
+
+	
 
 	return  ( ambient + ( 1.0f - shadow ) * (diffuse+specular) );
 
@@ -182,6 +193,7 @@ void main(){
 	for(int i = 0 ; i< 10;i++){
 		color.xyz += computePointLight(lights[i],o_normal ,o_world_position.xyz,view);
 	}
+
 
 }
 
